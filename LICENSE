@@ -1,38 +1,18 @@
-Creative Commons Attribution-NonCommercial 4.0 International Public License
+Copyright (c) 2025 John Timmermann
 
-By exercising the Licensed Rights (defined below), You accept and agree to be bound by the terms and conditions of this Creative Commons Attribution-NonCommercial 4.0 International Public License ("Public License").
+Permission is hereby granted to any person obtaining a copy of this software and associated documentation files (the "Software"), to use, copy, modify, and distribute the Software, subject to the following conditions:
 
-1. Definitions.
+1. **Commercial Use**: You may use the Software in commercial contexts (e.g., monetized streams, videos, or events), provided that you do not sell, sublicense, or distribute the Software itself for a fee or as part of a paid product or service.
 
-a. "Licensed Material" means the artistic or literary work, database, or other material to which the Licensor applied this Public License.
+2. **No Resale**: You may not sell, license, or distribute the Software or modified versions of it as a standalone product, or as part of any commercial offering.
 
-b. "Licensed Rights" means the rights granted to You subject to the terms and conditions of this Public License, which are limited to all Copyright and Similar Rights that apply to Your use of the Licensed Material and that the Licensor has authority to license.
+3. **Attribution**:
+   - You must retain the above copyright notice and this license.
+   - If you modify and distribute the Software (in any form), you must:
+     - Clearly state that you have made changes.
+     - Include a notice identifying the original author (John Timmermann) and a link to the original repository if available.
+     - Document the nature of the changes made.
 
-c. "NonCommercial" means not primarily intended for or directed towards commercial advantage or monetary compensation.
+4. **No Trademark Use**: This license does not grant permission to use the name, logo, or branding of the original project without separate permission.
 
-2. License Grant.
-
-Subject to the terms and conditions of this Public License, the Licensor hereby grants You a worldwide, royalty-free, non-sublicensable, non-exclusive, irrevocable license to:
-
-- Share: copy and redistribute the material in any medium or format
-- Adapt: remix, transform, and build upon the material
-
-for **non-commercial purposes only**, under the following terms:
-
-3. Attribution.
-
-You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the Licensor endorses you or your use.
-
-4. NonCommercial.
-
-You may not use the material for commercial purposes.
-
-5. No additional restrictions.
-
-You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
-
-6. Disclaimer.
-
-THE LICENSED MATERIAL IS PROVIDED "AS IS", WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND. THE LICENSOR SHALL NOT BE LIABLE FOR ANY DAMAGES ARISING FROM USE OF THE LICENSED MATERIAL.
-
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc/4.0/
+5. **Disclaimer**: THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY...

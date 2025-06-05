@@ -7,9 +7,11 @@ Join the community [Discord](https://discord.gg/HApB9HyaWM)!
 
 ## License
 
-This project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
+This software is licensed under a custom license that allows free use and modification — including in monetized streams and videos — but **forbids resale** of the program or modified versions.
 
-You are free to use, modify, and distribute this software for non-commercial purposes only. Commercial use is not permitted.
+If you redistribute modified versions, you must provide proper credit and disclose what changes were made.
+
+See [LICENSE](./LICENSE) for full details.
 
 # Getting Started:
 
