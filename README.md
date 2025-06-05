@@ -5,6 +5,12 @@ Join the community [Discord](https://discord.gg/HApB9HyaWM)!
 - Tech: Electron, React, Typescript, NodeJS, Express, Socketio, SQLite3
 - Styling: TailwindCSS (admin panel) / Sass (hud)
 
+## License
+
+This project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
+
+You are free to use, modify, and distribute this software for non-commercial purposes only. Commercial use is not permitted.
+
 # Getting Started:
 
 - Download the latest .zip form the releases page and unzip it.
