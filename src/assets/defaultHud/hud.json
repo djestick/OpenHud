@@ -1,13 +1,13 @@
 {
-  "name": "OpenHud CS2 Default HUD",
-  "version": "1.0.1",
-  "author": "John Timmermann",
-  "legacy": false,
-  "radar": true,
-  "killfeed": false,
-  "game": "cs2",
-  "boltobserv": {
-    "css": false,
-    "maps": false
-  }
+    "name":"LHM CS2 Default HUD",
+    "version":"1.0.6",
+    "author":"Lexogrine",
+    "legacy": false,
+    "radar": true,
+    "killfeed": false,
+    "game":"cs2",
+    "boltobserv":{
+        "css":false,
+        "maps":false
+    }
 }

@@ -31,3 +31,4 @@ dist-electron
 .env
 .env.development
 TODO.TXT
+/uploads

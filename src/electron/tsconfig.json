@@ -6,7 +6,7 @@
     "strict": true,
     // tell TypeScript to generate ESM Syntax (import/export instead of require)
     "target": "ESNext",
-    // tell TypeScript to requre ESM Syntax as input (including .js file imports)
+    // tell TypeScript to require ESM Syntax as input (including .js file imports)
     "module": "NodeNext",
     // define where to put compiled JavaScript
     "outDir": "../../dist-electron",

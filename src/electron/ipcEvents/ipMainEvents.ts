@@ -5,11 +5,11 @@ import {
   openHudsDirectory,
 } from "../helpers/index.js";
 import { createHudWindow } from "../hudWindow.js";
-import { getPlayers } from "../server/services/index.js";
+import * as PlayersModel from "../api/v2/players/players.model.js";
 // Handle expects a response
 export function ipcMainEvents(mainWindow: BrowserWindow) {
   ipcMainHandle("getPlayers", async () => {
-    const players = await getPlayers();
+    const players = await PlayersModel.selectAll();
     return players;
   });
 

@@ -146,6 +146,8 @@ interface Match {
   vetos: Veto[];
 }
 
+type MapConfig = SingleLayer | DoubleLayer;
+
 type Weapon =
   | "ak47"
   | "aug"

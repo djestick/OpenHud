@@ -1,8 +1,8 @@
-import { app, BrowserWindow, Menu, Tray } from "electron";
+import { app, Menu, Tray } from "electron";
 import path from "path";
 import { getAssetPath } from "./helpers/index.js";
 
-export function createTray(mainWindow: BrowserWindow) {
+export function createTray() {
   /* 
   Tray Icon
   to add template icons for mac os: 
@@ -14,15 +14,16 @@ export function createTray(mainWindow: BrowserWindow) {
   tray.setContextMenu(
     /* Tray menu items */
     Menu.buildFromTemplate([
-      {
-        label: "Show",
-        click: () => {
-          mainWindow.show();
-          if (app.dock) {
-            app.dock.show();
-          }
-        },
-      },
+      /* Option to show hud when minimized to tray */
+      // {
+      //   label: "Show",
+      //   click: () => {
+      //     mainWindow.show();
+      //     if (app.dock) {
+      //       app.dock.show();
+      //     }
+      //   },
+      // },
       {
         label: "Quit",
         click: () => app.quit(),
