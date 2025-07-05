@@ -41,7 +41,7 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const loadMatch = async () => {
     try {
-      const match = await axios.get(`${apiUrl}/current_match`);
+      const match = await axios.get(`${apiUrl}/matches/current`);
       if (!match) {
         setCurrentMatch(null);
       } else {

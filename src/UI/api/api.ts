@@ -1,9 +1,8 @@
-import * as I from "./types";
 // import { MapConfig } from "../HUD/Radar/LexoRadar/maps";
 export const port = 1349;
-export const apiUrl = `http://localhost:${port}`;
+export const apiUrl = `http://localhost:${port}/api`;
 
-export async function apiV2(url: string, method = "GET", body?: any) {
+export async function apiV2(url: string, method = "GET", body?: unknown) {
   const options: RequestInit = {
     method,
     headers: { Accept: "application/json", "Content-Type": "application/json" },
@@ -11,18 +10,18 @@ export async function apiV2(url: string, method = "GET", body?: any) {
   if (body) {
     options.body = JSON.stringify(body);
   }
-  let data: any = null;
+  let data: Response | null = null;
   // return fetch(`${apiUrl}api/${url}`, options)
   return fetch(`${apiUrl}${url}`, options).then((res) => {
     data = res;
-    return res.json().catch((_e) => data && data.status < 300);
+    return res.json().catch(() => data && data.status < 300);
   });
 }
 
 const api = {
   match: {
-    getAll: async (): Promise<I.Match[]> => apiV2(`/matches`),
-    getCurrent: async (): Promise<I.Match> => apiV2(`/current_match`),
+    getAll: async (): Promise<Match[]> => apiV2(`/matches`),
+    getCurrent: async (): Promise<Match> => apiV2(`/current_match`),
   },
   camera: {
     get: (): Promise<{
@@ -31,14 +30,14 @@ const api = {
     }> => apiV2("camera"),
   },
   teams: {
-    getOne: async (id: string): Promise<I.Team> => apiV2(`/teams/${id}`),
-    getAll: (): Promise<I.Team[]> => apiV2(`/teams`),
+    getOne: async (id: string): Promise<Team> => apiV2(`/teams/${id}`),
+    getAll: (): Promise<Team[]> => apiV2(`/teams`),
   },
   players: {
-    getAll: async (steamids?: string[]): Promise<I.Player[]> =>
+    getAll: async (steamids?: string[]): Promise<Player[]> =>
       apiV2(steamids ? `/players?steamids=${steamids.join(";")}` : `/players`),
     getAvatarURLs: async (
-      steamid: string
+      steamid: string,
     ): Promise<{ custom: string; steam: string }> =>
       apiV2(`/players/avatar/steamid/${steamid}`),
   },

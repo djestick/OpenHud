@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
-import { apiUrl } from "../api/api";
-import { Player } from "../api/types";
+import { playerApi } from "./playersApi";
 
 interface PlayersContextProps {
   players: Player[];
@@ -31,10 +29,10 @@ export const PlayersProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const fetchPlayers = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/players`);
-      if (response.data) {
-        setPlayers(response.data);
-        setFilteredPlayers(response.data);
+      const players = await playerApi.getAll();
+      if (players) {
+        setPlayers(players);
+        setFilteredPlayers(players);
       }
     } catch (error) {
       console.error("Error fetching players:", error);

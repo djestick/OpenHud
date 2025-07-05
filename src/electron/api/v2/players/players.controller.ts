@@ -47,7 +47,7 @@ export const getPlayerByIDHandler = async (req: Request, res: Response) => {
  */
 export const getPlayerBySteamIDHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const player = await PlayerService.getPlayerBySteamID(req.params.steamid);
@@ -63,7 +63,7 @@ export const getPlayerBySteamIDHandler = async (
  */
 export const getPlayersBySteamIDHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const players = await PlayerService.getPlayersBySteamID(req.body);
@@ -81,7 +81,7 @@ export const getPlayersBySteamIDHandler = async (
  */
 export const getPlayerAvatarHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<any> => {
   const steamid = req.params.steamid;
   if (!steamid) {
@@ -111,7 +111,7 @@ export const getPlayerAvatarHandler = async (
  */
 export const getPlayerAvatarFileHandler = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<any> => {
   const playerId = req.params.id;
   if (!playerId) {
@@ -127,7 +127,7 @@ export const getPlayerAvatarFileHandler = async (
     const avatarPath = path.join(
       getUploadsPath(),
       "player_pictures",
-      player.avatar
+      player.avatar,
     );
     if (!fs.existsSync(avatarPath)) {
       return res.sendStatus(404);
@@ -144,6 +144,7 @@ export const getPlayerAvatarFileHandler = async (
  * @returns The _id of the newly created player
  */
 export const createPlayerHandler = async (req: Request, res: Response) => {
+  console.log(req.body);
   try {
     const creadtedPlayerID = await PlayerService.createPlayer({
       ...req.body,
@@ -160,8 +161,12 @@ export const createPlayerHandler = async (req: Request, res: Response) => {
  * @returns The _id of the updated player
  */
 export const updatePlayerHandler = async (req: Request, res: Response) => {
+  console.log(req.body);
   try {
-    const updatedPlayerID = await PlayerService.createPlayer(req.body);
+    const updatedPlayerID = await PlayerService.updatePlayer({
+      ...req.body,
+      avatar: req.file?.filename,
+    });
     res.status(201).json(updatedPlayerID);
   } catch (err: any) {
     res.status(400).json({ error: err.message });

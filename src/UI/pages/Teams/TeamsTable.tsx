@@ -60,7 +60,11 @@ const TeamRow = ({ team, onEdit, deleteTeam }: TeamRowProps) => {
   return (
     <tr>
       <td className="px-4 py-2" align="left">
-        <img src={apiUrl + team.logo} alt="Team Logo" className="size-12" />
+        <img
+          src={apiUrl + "/teams/logo/" + team._id}
+          alt="Team Logo"
+          className="size-12"
+        />
       </td>
       <td className="px-4 py-2 text-lg font-semibold" align="center">
         {team.name}

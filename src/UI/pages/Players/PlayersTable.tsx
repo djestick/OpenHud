@@ -1,8 +1,7 @@
 import { MdDelete, MdEdit } from "react-icons/md";
-import { usePlayers, useTeams } from "../../hooks";
+import { usePlayers } from "../../hooks";
 import { PrimaryButton } from "../../components/PrimaryButton";
 import { apiUrl } from "../../api/api";
-import { useState, useEffect } from "react";
 import { PlayerSilhouette } from "./PlayersPage";
 
 interface PlayersTableProps {
@@ -54,19 +53,6 @@ interface PlayerRowProps {
 
 const PlayerRow = ({ player, onEdit }: PlayerRowProps) => {
   const { deletePlayer } = usePlayers();
-  const { getTeamById } = useTeams();
-  const [team, setTeam] = useState<Team | null>(null);
-
-  // Fetch team asynchronously
-  useEffect(() => {
-    let isMounted = true;
-    getTeamById(player.team).then((result: Team) => {
-      if (isMounted) setTeam(result);
-    });
-    return () => {
-      isMounted = false;
-    };
-  }, [player.team, getTeamById]);
 
   const handleEditClick = () => {
     if (onEdit) {
@@ -78,7 +64,11 @@ const PlayerRow = ({ player, onEdit }: PlayerRowProps) => {
     <tr>
       <td className="px-4 py-2" align="left">
         <img
-          src={player.avatar ? apiUrl + player.avatar : PlayerSilhouette}
+          src={
+            player.avatar
+              ? apiUrl + "/players/avatar/" + player._id
+              : PlayerSilhouette
+          }
           alt="Player avatar"
           className="size-20"
         />
@@ -96,7 +86,13 @@ const PlayerRow = ({ player, onEdit }: PlayerRowProps) => {
         {player.steamid}
       </td>
       <td className="px-4 py-2 font-semibold" align="center">
-        {team?.logo && <img src={apiUrl + team?.logo} alt="Team Logo" />}
+        {player?.team && (
+          <img
+            src={apiUrl + "/teams/logo/" + player.team}
+            alt="Team Logo"
+            className="size-12"
+          />
+        )}
       </td>
       <td className="px-4 py-2" align="right">
         <div className="inline-flex">

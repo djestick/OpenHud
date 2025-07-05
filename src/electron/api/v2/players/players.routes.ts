@@ -13,7 +13,7 @@ playersRoutes.get("/id/:id", PlayersController.getPlayerByIDHandler);
 playersRoutes.get("/:steamid", PlayersController.getPlayerBySteamIDHandler);
 playersRoutes.get(
   "/avatar/steamid/:steamid",
-  PlayersController.getPlayerAvatarHandler
+  PlayersController.getPlayerAvatarHandler,
 );
 playersRoutes.get("/avatar/:id", PlayersController.getPlayerAvatarFileHandler);
 
@@ -21,11 +21,15 @@ playersRoutes.get("/avatar/:id", PlayersController.getPlayerAvatarFileHandler);
 playersRoutes.post(
   "/",
   playerPictureStorage.single("avatar"),
-  PlayersController.createPlayerHandler
+  PlayersController.createPlayerHandler,
 );
 
 /* ================== PUTs ===================== */
-playersRoutes.put("/:id", PlayersController.updatePlayerHandler);
+playersRoutes.put(
+  "/:id",
+  playerPictureStorage.single("avatar"),
+  PlayersController.updatePlayerHandler,
+);
 
 /* ================== DELETESs ===================== */
 playersRoutes.delete("/:id", PlayersController.removePlayerHandler);

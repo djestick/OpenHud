@@ -10,6 +10,7 @@ import { cameraRoutes } from "./cameras/cameras.routes.js";
 
 export const APIRouter = Router();
 
+/* eslint-disable react-hooks/rules-of-hooks */
 APIRouter.use("/players", playersRoutes);
 APIRouter.use("/teams", teamsRoutes);
 APIRouter.use("/match", matchesRoutes);
