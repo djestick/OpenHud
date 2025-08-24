@@ -1,5 +1,5 @@
 import { MdDelete, MdEdit } from "react-icons/md";
-import { useTeams } from "../../hooks";
+import { useTeams } from "./useTeams";
 import { PrimaryButton } from "../../components/PrimaryButton";
 import { apiUrl } from "../../api/api";
 
@@ -58,7 +58,7 @@ const TeamRow = ({ team, onEdit, deleteTeam }: TeamRowProps) => {
   };
 
   return (
-    <tr>
+    <tr id={"team_" + team._id}>
       <td className="px-4 py-2" align="left">
         <img
           src={apiUrl + "/teams/logo/" + team._id}

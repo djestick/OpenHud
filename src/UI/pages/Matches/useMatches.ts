@@ -1,25 +1,26 @@
-import { useMatchesContext } from "../context";
-import { apiUrl } from "../api/api";
-import axios from "axios";
-
+import { useMatchesContext } from "./MatchesContext";
+import { matchApi } from "./matchApi";
 export const useMatches = () => {
   const {
     matches,
+    selectedMatch,
     currentMatch,
     filteredMatches,
     isLoading,
+    isEditing,
+    setSelectedMatch,
     setFilteredMatches,
     setCurrentMatch,
     fetchMatches,
-    loadMatch,
+    handleStartMatch,
+    handleStopMatch,
     setIsLoading,
+    setIsEditing,
   } = useMatchesContext();
 
-  const searchMatches = (searchValue: string) => {
-    const filtered = matches.filter(
-      (match) =>
-        match.left.id &&
-        match.left.id.toLowerCase().includes(searchValue.toLowerCase()),
+    const searchMatches = (searchValue: string) => {
+    const filtered = matches.filter((match) =>
+      match.left.id?.toLowerCase().includes(searchValue.toLowerCase()),
     );
     if (searchValue === "") {
       setFilteredMatches(matches);
@@ -28,36 +29,46 @@ export const useMatches = () => {
     }
   };
 
+
   const createMatch = async (match: Match) => {
+    // Handle create or update match logic
     setIsLoading(true);
-    await axios.post(`${apiUrl}/matches`, match);
+    await matchApi.create(match);
     fetchMatches();
     setIsLoading(false);
   };
 
-  const updateMatch = async (match: Match) => {
+  const updateMatch = async (match_id: string, match: Match) => {
+    // Handle update match logic
     setIsLoading(true);
-    await axios.put(`${apiUrl}/matches/${match.id}`, match);
+    await matchApi.update(match_id, match);
     fetchMatches();
+    setSelectedMatch(null);
     setIsLoading(false);
   };
 
   const deleteMatch = async (id: string) => {
+    // Handle delete match logic
     setIsLoading(true);
-    await axios.delete(`${apiUrl}/matches/${id}`);
+    await await matchApi.remove(id);
     fetchMatches();
     setIsLoading(false);
   };
 
   return {
     matches,
+    selectedMatch,
     currentMatch,
     filteredMatches,
     isLoading,
+    isEditing,
+    setSelectedMatch,
     setFilteredMatches,
     setCurrentMatch,
+    setIsEditing,
     fetchMatches,
-    loadMatch,
+    handleStartMatch,
+    handleStopMatch,
     createMatch,
     updateMatch,
     deleteMatch,

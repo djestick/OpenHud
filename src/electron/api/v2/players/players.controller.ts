@@ -23,8 +23,12 @@ export const getAllPlayersHandler = async (req: Request, res: Response) => {
       const allPlayers = await PlayerService.getAllPlayers();
       res.status(200).json(allPlayers);
     }
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -36,8 +40,12 @@ export const getPlayerByIDHandler = async (req: Request, res: Response) => {
   try {
     const player = await PlayerService.getPlayerByID(req.params.id);
     res.status(200).json(player);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -52,8 +60,12 @@ export const getPlayerBySteamIDHandler = async (
   try {
     const player = await PlayerService.getPlayerBySteamID(req.params.steamid);
     res.status(200).json(player);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -68,8 +80,12 @@ export const getPlayersBySteamIDHandler = async (
   try {
     const players = await PlayerService.getPlayersBySteamID(req.body);
     res.status(200).json(players);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -100,8 +116,12 @@ export const getPlayerAvatarHandler = async (
     }
 
     return res.json(response);
-  } catch (err) {
-    return res.status(500).json({ error: "Failed to load avatar info" });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -134,8 +154,12 @@ export const getPlayerAvatarFileHandler = async (
     }
 
     return res.sendFile(avatarPath);
-  } catch (err) {
-    return res.status(500).json({ error: "Internal server error" });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -151,8 +175,12 @@ export const createPlayerHandler = async (req: Request, res: Response) => {
       avatar: req.file?.filename,
     });
     res.status(201).json(creadtedPlayerID);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -168,8 +196,12 @@ export const updatePlayerHandler = async (req: Request, res: Response) => {
       avatar: req.file?.filename,
     });
     res.status(201).json(updatedPlayerID);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -181,7 +213,11 @@ export const removePlayerHandler = async (req: Request, res: Response) => {
   try {
     const removedPlayerID = await PlayerService.removePlayer(req.params.id);
     res.status(201).json(removedPlayerID);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };

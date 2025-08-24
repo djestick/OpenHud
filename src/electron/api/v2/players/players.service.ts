@@ -1,5 +1,5 @@
 import { run_transaction } from "../helpers/utilities.js";
-import * as PlayerModel from "./players.model.js";
+import * as PlayerModel from "./players.data.js";
 import { v4 as uuidv4 } from "uuid";
 
 /* ====================== Notes: ======================*/

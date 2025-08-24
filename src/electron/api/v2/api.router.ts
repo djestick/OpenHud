@@ -7,6 +7,7 @@ import { tournmentRoutes } from "./tournaments/tournaments.routes.js";
 import { HudRoutes } from "./huds/huds.routes.js";
 import { readGameData } from "./gsi/gsi.js";
 import { cameraRoutes } from "./cameras/cameras.routes.js";
+import { coachRoutes } from "./coaches/coaches.routes.js";
 
 export const APIRouter = Router();
 
@@ -14,6 +15,7 @@ export const APIRouter = Router();
 APIRouter.use("/players", playersRoutes);
 APIRouter.use("/teams", teamsRoutes);
 APIRouter.use("/match", matchesRoutes);
+APIRouter.use("/coach", coachRoutes);
 APIRouter.use("/tournament", tournmentRoutes);
 APIRouter.use("/camera", cameraRoutes);
 APIRouter.get("/radar/maps", getMapsHandler);

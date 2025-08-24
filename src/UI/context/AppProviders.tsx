@@ -1,7 +1,7 @@
 import React from "react";
 import { PlayersProvider } from "../pages/Players/PlayersContext";
-import { TeamsProvider } from "./TeamsContext";
-import { MatchesProvider } from "./MatchesContext";
+import { MatchesProvider } from "../pages/Matches/MatchesContext";
+import { TeamsProvider } from "../pages/Teams/TeamsContext";
 import { ThemesProvider } from "./ThemesContext";
 import { DrawerProvider } from "./DrawerContext";
 

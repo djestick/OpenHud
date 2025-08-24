@@ -25,8 +25,12 @@ export const getAllMatchesHandler = async (_req: Request, res: Response) => {
     // All matches
     const allmatches = await MatchServices.getAllMatches();
     res.status(200).json(allmatches);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -38,8 +42,12 @@ export const getMatchByIDHandler = async (req: Request, res: Response) => {
   try {
     const match = await MatchServices.getMatchByID(req.params.id);
     res.status(200).json(match);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -51,8 +59,12 @@ export const createMatchHandler = async (req: Request, res: Response) => {
   try {
     const createdmatchID = await MatchServices.createMatch(req.body);
     res.status(201).json(createdmatchID);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -64,8 +76,12 @@ export const updateMatchHandler = async (req: Request, res: Response) => {
   try {
     const updatedmatchID = await MatchServices.updateMatch(req.body);
     res.status(201).json(updatedmatchID);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
 
@@ -76,8 +92,38 @@ export const updateMatchHandler = async (req: Request, res: Response) => {
 export const getCurrentMatchHandler = async (req: Request, res: Response) => {
   try {
     const match = await MatchServices.getCurrentMatch();
-    match ? res.status(200).json(match) : res.status(204).json(null);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+    if (match) {
+      res.status(200).json(match);
+    } else {
+      res.status(204).json(null);
+    }
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
   }
 };
+
+/**
+ * Controller for setting the current match.
+ * @returns Id of the updated match
+ */
+export const setCurrentMatchHandler = async (req: Request, res: Response) => {
+  try {
+    const match = await MatchServices.setCurrentMatch(req.params.id, req.body.current);
+    if (match) {
+      res.status(200).json(match);
+    } else {
+      res.status(204).json(null);
+    }
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
+  }
+};
+

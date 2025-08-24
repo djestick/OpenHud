@@ -6,7 +6,7 @@ import {
   Dialog,
 } from "../../components";
 import { countries } from "../../api/countries";
-import { useTeams } from "../../hooks";
+import { useTeams } from "./useTeams";
 import { apiUrl } from "../../api/api";
 
 interface TeamsFormProps {
@@ -15,14 +15,6 @@ interface TeamsFormProps {
 }
 
 export const TeamsForm = ({ open, setOpen }: TeamsFormProps) => {
-  const [teamName, setTeamName] = useState("");
-  const [shortName, setShortName] = useState("");
-  const [country, setCountry] = useState("");
-  const [logo, setLogo] = useState<File | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [teamNameError, setTeamNameError] = useState("");
-  const [logoError, setLogoError] = useState("");
-
   const {
     createTeam,
     updateTeam,
@@ -31,6 +23,15 @@ export const TeamsForm = ({ open, setOpen }: TeamsFormProps) => {
     selectedTeam,
     setSelectedTeam,
   } = useTeams();
+
+  const [teamName, setTeamName] = useState("");
+  const [shortName, setShortName] = useState("");
+  const [country, setCountry] = useState("");
+  const [logo, setLogo] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [teamNameError, setTeamNameError] = useState("");
+  const [logoError, setLogoError] = useState("");
+
 
   useEffect(() => {
     if (isEditing && selectedTeam) {
@@ -76,15 +77,19 @@ export const TeamsForm = ({ open, setOpen }: TeamsFormProps) => {
       formData.append("logo", logo);
     }
 
-    if (isEditing && selectedTeam) {
-      await updateTeam(selectedTeam._id, formData);
-    } else if (createTeam) {
-      await createTeam(formData);
+    try {
+      if (isEditing && selectedTeam) {
+        await updateTeam(selectedTeam._id, formData);
+      } else if (createTeam) {
+        await createTeam(formData);
+      }
+    } catch (error) {
+      console.error("Error submitting team:", error);
+    } finally {
+      setIsSubmitting(false);
+      setOpen(false);
+      handleReset();
     }
-
-    setIsSubmitting(false);
-    setOpen(false);
-    handleReset();
   };
 
   const handleCancel = () => {

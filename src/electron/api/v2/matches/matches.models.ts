@@ -1,4 +1,5 @@
 import { database } from "../../../configs/database.js";
+import { io } from "../sockets/sockets.js";
 
 /* ====================== Notes: ======================*/
 // Parameterbinding to stop SQL injection
@@ -11,11 +12,30 @@ import { database } from "../../../configs/database.js";
 export const selectAll = (): Promise<Match[]> => {
   return new Promise((resolve, reject) => {
     const statement = "SELECT * FROM matches";
-    database.all(statement, [], (error: Error, matches: Match[]) => {
+    database.all(statement, [], (error: Error, rows: any[]) => {
       if (error) {
         console.error("Error getting all matches:", error);
         reject(error);
-      } else resolve(matches);
+      } else {
+        const matches: Match[] = rows.map(row => {
+          return {
+            id: row.id,
+            current: !!row.current, // convert 0/1 into boolean
+            matchType: row.matchType,
+            left: {
+              id: row.left_id,
+              wins: row.left_wins
+            },
+            right: {
+              id: row.right_id,
+              wins: row.right_wins
+            },
+            vetos: JSON.parse(row.vetos),
+          };
+        });
+
+        resolve(matches);
+      }
     });
   });
 };
@@ -201,7 +221,7 @@ export const updateCurrent = (match: Match) => {
 };
 
 /**
- * Model for updating the current match by its id () the matches table.
+ * Model for updating a matches current state by its id in the matches table.
  * @returns id of updated current match
  */
 const updateCurrentByID = (id: string, current: boolean): Promise<string> => {
@@ -222,15 +242,15 @@ const updateCurrentByID = (id: string, current: boolean): Promise<string> => {
  * @returns id of newly set current match
  */
 export const setCurrent = async (id: string, current: boolean) => {
-  return new Promise<string>(async (resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     try {
       database.serialize(async () => {
         const currentMatch = await selectCurrentID();
         if (current && currentMatch) {
           return reject("There is already a current match");
         }
-
         await updateCurrentByID(id, current);
+        io.emit("match", { id, current });
         resolve(id);
       });
     } catch (err) {

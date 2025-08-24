@@ -8,7 +8,7 @@ export const playerApi = {
   },
 
   getById: async (id: string): Promise<Player> => {
-    const response = await fetch(`${API_BASE_URL}/players/id/${id}`);
+    const response = await fetch(`${API_BASE_URL}/players/${id}`);
     if (!response.ok) throw new Error(`Failed to fetch player with id: ${id}`);
     return response.json();
   },

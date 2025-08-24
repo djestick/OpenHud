@@ -99,11 +99,11 @@ export const PlayerForm = ({ open, setOpen }: PlayerFormProps) => {
       } else if (createPlayer) {
         await createPlayer(formData); // Pass FormData to createPlayer
       }
-      setOpen(false);
-      handleReset();
     } catch (error) {
       console.error("Error submitting player:", error);
     } finally {
+      setOpen(false);
+      handleReset();
       setIsSubmitting(false);
     }
   };

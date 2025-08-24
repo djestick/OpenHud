@@ -2,23 +2,27 @@ import { useEffect, useState } from "react";
 import { MatchTypes } from "./MatchPage";
 import { VetoRow } from "./VetoRow";
 import { ButtonContained, Container, Dialog } from "../../components";
-import { useTeams, useMatches } from "../../hooks";
+import { useMatches } from "./useMatches";
+import { useTeams } from "../../hooks";
 
 interface MatchFormProps {
-  match?: Match;
-  isEditing?: boolean;
-  onCancel?: () => void;
   open: boolean;
   setOpen: (open: boolean) => void;
 }
 
-export const MatchForm = ({
-  match,
-  onCancel,
-  open,
-  setOpen,
-  isEditing,
-}: MatchFormProps) => {
+export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
+  const {
+    isEditing,
+    selectedMatch,
+    currentMatch,
+    setCurrentMatch,
+    createMatch,
+    updateMatch,
+    setIsEditing,
+    setSelectedMatch
+  } = useMatches();
+  const { teams } = useTeams();
+
   const [matchType, setMatchType] = useState<"bo1" | "bo2" | "bo3" | "bo5">(
     "bo1",
   );
@@ -26,7 +30,6 @@ export const MatchForm = ({
   const [leftTeamWins, setLeftTeamWins] = useState<number>(0);
   const [rightTeamId, setRightTeamId] = useState<string | null>(null);
   const [rightTeamWins, setRightTeamWins] = useState<number>(0);
-  const [currentMatch, setCurrentMatch] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState(""); // Added for error message
   const [vetos, setVetos] = useState<Veto[]>(
@@ -41,25 +44,22 @@ export const MatchForm = ({
       })),
   );
 
-  const { teams } = useTeams();
-  const { createMatch, updateMatch, fetchMatches } = useMatches();
-
   const leftTeam = teams.find((team) => team._id === leftTeamId);
   const rightTeam = teams.find((team) => team._id === rightTeamId);
 
   useEffect(() => {
-    if (isEditing && match) {
-      setLeftTeamId(match.left.id);
-      setRightTeamId(match.right.id);
-      setLeftTeamWins(match.left.wins);
-      setRightTeamWins(match.right.wins);
-      setMatchType(match.matchType);
-      setCurrentMatch(match.current);
-      setVetos(match.vetos);
+    if (isEditing && selectedMatch) {
+      setLeftTeamId(selectedMatch.left.id);
+      setRightTeamId(selectedMatch.right.id);
+      setLeftTeamWins(selectedMatch.left.wins);
+      setRightTeamWins(selectedMatch.right.wins);
+      setMatchType(selectedMatch.matchType);
+      setCurrentMatch(selectedMatch);
+      setVetos(selectedMatch.vetos);
     } else {
       handleReset();
     }
-  }, [isEditing, match]);
+  }, [isEditing, selectedMatch]);
 
   const validateForm = () => {
     let isValid = true;
@@ -88,38 +88,42 @@ export const MatchForm = ({
     if (!validateForm()) return; // Early return if validation fails
 
     setIsSubmitting(true);
+
     const newMatch: Match = {
-      id: match?.id || "",
+      id: selectedMatch?.id || "",
       left: { id: leftTeamId, wins: leftTeamWins },
       right: { id: rightTeamId, wins: rightTeamWins },
       matchType: matchType as "bo1" | "bo2" | "bo3" | "bo5",
-      current: currentMatch,
+      current: currentMatch ? true : false,
       vetos: vetos,
     };
 
-    if (isEditing && updateMatch) {
-      await updateMatch(newMatch);
-    } else if (createMatch) {
-      await createMatch(newMatch);
+    try {
+      if (isEditing && selectedMatch) {
+        await updateMatch(selectedMatch.id, newMatch);
+      } else if (createMatch) {
+        await createMatch(newMatch);
+      }
+    } catch (error) {
+      console.error("Error creating/updating match:", error);
+    } finally {
+      setOpen(false);
+      handleReset();
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
-    setOpen(false);
-    handleReset();
-    fetchMatches();
   };
 
   const handleCancel = () => {
+    handleReset();
     setOpen(false);
-    handleReset(); // Reset form fields
-    if (onCancel) {
-      onCancel(); // Call onCancel prop function if provided
-    }
   };
 
   const handleReset = () => {
+    setIsEditing(false);
+    setSelectedMatch(null);
     setLeftTeamId(null);
     setRightTeamId(null);
-    setCurrentMatch(false);
+    setCurrentMatch(null);
     setMatchType("bo1");
     setErrorMessage("");
     const newVetos: Veto[] = vetos.map(() => ({
@@ -133,7 +137,7 @@ export const MatchForm = ({
     setVetos(newVetos);
   };
 
-  const vetoSource = match?.vetos || vetos;
+  const vetoSource = selectedMatch?.vetos || vetos;
 
   return (
     <Dialog onClose={handleCancel} open={open}>

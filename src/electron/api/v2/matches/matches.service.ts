@@ -46,9 +46,17 @@ export const updateMatch = (match: Match) => {
 };
 
 /**
- * Service getting the current match.
+ * Service getting the current match. 
  * @returns A single match or null
  */
 export const getCurrentMatch = async (): Promise<Match | null> => {
   return await MatchModels.selectCurrent();
+};
+
+/**
+ * Service setting the current match.
+ * @returns Id of the updated match
+ */
+export const setCurrentMatch = async (id: string, current: boolean): Promise<string> => {
+  return await MatchModels.setCurrent(id, current);
 };

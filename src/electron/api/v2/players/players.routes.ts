@@ -8,7 +8,7 @@ export const playersRoutes = Router();
 playersRoutes.get("/", PlayersController.getAllPlayersHandler);
 
 // /:steamid overwrites :_id
-playersRoutes.get("/id/:id", PlayersController.getPlayerByIDHandler);
+playersRoutes.get("/:id", PlayersController.getPlayerByIDHandler);
 
 playersRoutes.get("/:steamid", PlayersController.getPlayerBySteamIDHandler);
 playersRoutes.get(

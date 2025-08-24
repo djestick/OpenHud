@@ -39,7 +39,7 @@ export const database = new sqlite3.Database(getDatabasePath(), (error) => {
         steamid TEXT NOT NULL UNIQUE,
         team TEXT,
         extra TEXT,
-        FOREIGN KEY (team) REFERENCES teams(_id)
+        FOREIGN KEY (team) REFERENCES teams(_id) ON DELETE SET NULL
       )`,
     (error) => {
       if (error) {
@@ -59,13 +59,25 @@ export const database = new sqlite3.Database(getDatabasePath(), (error) => {
         right_wins INTEGER DEFAULT 0 CHECK (right_wins BETWEEN 0 AND 5),
         matchType TEXT NOT NULL CHECK (matchType IN ('bo1', 'bo2', 'bo3', 'bo5')),
         vetos TEXT NOT NULL,
-        FOREIGN KEY (left_id) REFERENCES teams(_id),
-        FOREIGN KEY (right_id) REFERENCES teams(_id),
+        FOREIGN KEY (left_id) REFERENCES teams(_id) ON DELETE SET NULL,
+        FOREIGN KEY (right_id) REFERENCES teams(_id) ON DELETE SET NULL,
         CHECK (left_id != right_id)
       )`,
     (error) => {
       if (error) {
         console.error("Error creating players table:", error.message);
+      }
+    },
+  );
+
+  /* Create coaches table */
+  database.run(
+    `CREATE TABLE IF NOT EXISTS coaches (
+        steamid TEXT PRIMARY KEY NOT NULL UNIQUE
+      )`,
+    (error) => {
+      if (error) {
+        console.error("Error creating coaches table:", error.message);
       }
     },
   );

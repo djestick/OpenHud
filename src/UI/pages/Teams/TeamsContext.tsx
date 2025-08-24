@@ -1,13 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import axios from "axios";
-import { apiUrl } from "../api/api";
+import { teamApi } from "./teamsApi";
 
 interface TeamsContextProps {
   teams: Team[];
   selectedTeam: Team | null;
   filteredTeams: Team[];
-  isLoading: boolean;
   isEditing: boolean;
+  isLoading: boolean;
   setFilteredTeams: React.Dispatch<React.SetStateAction<Team[]>>;
   setSelectedTeam: React.Dispatch<React.SetStateAction<Team | null>>;
   fetchTeams: () => Promise<void>;
@@ -15,23 +14,25 @@ interface TeamsContextProps {
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const TeamsContext = createContext<TeamsContextProps | undefined>(undefined);
+const TeamsContext = createContext<TeamsContextProps | undefined>(
+  undefined,
+);
 
 export const TeamsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [filteredTeams, setFilteredTeams] = useState<Team[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchTeams = async () => {
     try {
-      const response = await axios.get(`${apiUrl}/teams`);
-      if (response.data) {
-        setTeams(response.data);
-        setFilteredTeams(response.data);
+      const teams = await teamApi.getAll();
+      if (teams) {
+        setTeams(teams);
+        setFilteredTeams(teams);
       }
     } catch (error) {
       console.error("Error fetching teams:", error);
@@ -50,11 +51,11 @@ export const TeamsProvider: React.FC<{ children: React.ReactNode }> = ({
         filteredTeams,
         isLoading,
         isEditing,
+        setSelectedTeam,
         setFilteredTeams,
         fetchTeams,
         setIsLoading,
         setIsEditing,
-        setSelectedTeam,
       }}
     >
       {children}

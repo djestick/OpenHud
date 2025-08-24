@@ -1,7 +1,5 @@
-import { useTeamsContext } from "../context/TeamsContext";
-import axios from "axios";
-import { apiUrl } from "../api/api";
-
+import { useTeamsContext } from "../../context";
+import { teamApi } from "./teamsApi";
 export const useTeams = () => {
   const {
     teams,
@@ -28,54 +26,28 @@ export const useTeams = () => {
   };
 
   const createTeam = async (team: FormData) => {
-    // Handle create or update player logic
+    // Handle create or update team logic
     setIsLoading(true);
-    await axios.post(`${apiUrl}/teams`, team);
+    await teamApi.create(team);
     fetchTeams();
     setIsLoading(false);
   };
 
   const updateTeam = async (team_id: string, team: FormData) => {
-    // Handle update player logic
+    // Handle update team logic
     setIsLoading(true);
-    await axios.put(`${apiUrl}/teams/${team_id}`, team);
+    await teamApi.update(team_id, team);
     fetchTeams();
     setSelectedTeam(null);
     setIsLoading(false);
   };
 
   const deleteTeam = async (id: string) => {
-    // Handle delete player logic
+    // Handle delete team logic
     setIsLoading(true);
-    await axios.delete(`${apiUrl}/teams/${id}`);
+    await await teamApi.remove(id);
     fetchTeams();
     setIsLoading(false);
-  };
-
-  const getTeams = async () => {
-    try {
-      const teams = await axios.get(`${apiUrl}/teams`);
-      if (!teams) {
-        return [];
-      }
-      return teams.data;
-    } catch (error) {
-      console.log("Error getting teams:\n", error);
-      return [];
-    }
-  };
-
-  const getTeamById = async (id: string) => {
-    try {
-      const team = await axios.get(`${apiUrl}/teams/${id}`);
-      if (!teams) {
-        return [];
-      }
-      return team.data;
-    } catch (error) {
-      console.log("Error getting teams:\n", error);
-      return [];
-    }
   };
 
   return {
@@ -84,15 +56,13 @@ export const useTeams = () => {
     filteredTeams,
     isLoading,
     isEditing,
-    setFilteredTeams,
     setSelectedTeam,
+    setFilteredTeams,
     setIsEditing,
     fetchTeams,
-    searchTeams,
     createTeam,
     updateTeam,
     deleteTeam,
-    getTeams,
-    getTeamById,
+    searchTeams,
   };
 };

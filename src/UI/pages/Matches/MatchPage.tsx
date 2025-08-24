@@ -3,7 +3,7 @@ import { MatchCard } from "./MatchCard";
 import { MatchesTable } from "./MatchesTable";
 import { MatchForm } from "./MatchForm";
 import { Topbar } from "../MainPanel/Topbar";
-import { useMatches } from "../../hooks";
+import { useMatches } from "./useMatches";
 
 export const MatchTypes = ["bo1", "bo2", "bo3", "bo5"];
 export const maps = [
@@ -20,14 +20,12 @@ export const maps = [
 ];
 
 export const MatchesPage = () => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null); // Store selected player for editing
   const [open, setOpen] = useState(false);
-  const { currentMatch } = useMatches();
+  const { setSelectedMatch, setIsEditing, currentMatch } = useMatches();
 
   const handleEditMatch = (match: Match) => {
-    setOpen(true);
     setIsEditing(true);
+    setOpen(true);
     setSelectedMatch(match);
   };
 
@@ -35,19 +33,8 @@ export const MatchesPage = () => {
     <section id="MatchPage" className="relative flex size-full flex-col gap-1">
       <Topbar header="Matches" buttonText="Match" openForm={setOpen} />
       {currentMatch && <MatchCard match={currentMatch} />}
-
+      <MatchForm setOpen={setOpen} open={open} />
       <MatchesTable onEdit={handleEditMatch} />
-      {isEditing && selectedMatch ? (
-        <MatchForm
-          match={selectedMatch}
-          isEditing={isEditing}
-          onCancel={() => setIsEditing(false)}
-          setOpen={setOpen}
-          open={open}
-        />
-      ) : (
-        <MatchForm setOpen={setOpen} open={open} />
-      )}
     </section>
   );
 };

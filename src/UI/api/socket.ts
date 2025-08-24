@@ -1,8 +1,8 @@
 import { io } from "socket.io-client";
 import { CSGOGSI } from "csgogsi";
-import { apiUrl } from "./api";
+import { port } from "./api";
 
-export const socket = io(`${apiUrl}`);
+export const socket = io(`localhost:${port}`);
 export const GSI = new CSGOGSI();
 
 socket.on("update", (data) => {

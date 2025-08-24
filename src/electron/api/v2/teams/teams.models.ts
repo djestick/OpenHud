@@ -28,11 +28,23 @@ export const selectAll = (): Promise<Team[]> => {
 export const selectByID = (id: string): Promise<Team> => {
   return new Promise((resolve, reject) => {
     const statement = "SELECT * FROM teams WHERE _id = ?";
-    database.get(statement, [id], (error: Error, team: Team) => {
+    database.get(statement, [id], (error: Error, row: any) => {
       if (error) {
         console.error(`Error finding team with id: ${id}`, error);
         reject(error);
-      } else resolve(team);
+      } else if (!row) {
+        const notFoundError = new Error(`No team found with id: ${id}`);
+        reject(notFoundError);
+      } else {
+        resolve({
+          _id: id,
+          name: row.name,
+          country: row.country,
+          shortName: row.shortName,
+          logo: row.logo,
+          extra: JSON.parse(row.extra)
+        });
+      }
     });
   });
 };
@@ -71,7 +83,7 @@ export const insert = (team: Team) => {
         team.country,
         team.shortName,
         team.logo,
-        team.extra,
+        JSON.stringify(team.extra)
       ],
       (error: Error) => {
         if (error) {

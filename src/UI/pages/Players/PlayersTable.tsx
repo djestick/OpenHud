@@ -1,6 +1,6 @@
 import { MdDelete, MdEdit } from "react-icons/md";
-import { usePlayers } from "../../hooks";
 import { PrimaryButton } from "../../components/PrimaryButton";
+import { usePlayers } from "../../hooks";
 import { apiUrl } from "../../api/api";
 import { PlayerSilhouette } from "./PlayersPage";
 
