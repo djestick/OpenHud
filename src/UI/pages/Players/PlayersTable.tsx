@@ -5,10 +5,10 @@ import { apiUrl } from "../../api/api";
 import { PlayerSilhouette } from "./PlayersPage";
 
 interface PlayersTableProps {
-  onEdit: (player: Player) => void;
+  setOpenState: (open: boolean) => void;
 }
 
-export const PlayersTable = ({ onEdit }: PlayersTableProps) => {
+export const PlayersTable = ({ setOpenState }: PlayersTableProps) => {
   const { filteredPlayers } = usePlayers();
   return (
     <table className="table-fixed">
@@ -39,7 +39,7 @@ export const PlayersTable = ({ onEdit }: PlayersTableProps) => {
       </thead>
       <tbody className="divide-y divide-border bg-background-secondary">
         {filteredPlayers.map((player: Player, index) => (
-          <PlayerRow key={index} player={player} onEdit={onEdit} />
+          <PlayerRow key={index} player={player} setOpenState={setOpenState} />
         ))}
       </tbody>
     </table>
@@ -48,16 +48,16 @@ export const PlayersTable = ({ onEdit }: PlayersTableProps) => {
 
 interface PlayerRowProps {
   player: Player;
-  onEdit: (player: Player) => void;
+  setOpenState: (open: boolean) => void;
 }
 
-const PlayerRow = ({ player, onEdit }: PlayerRowProps) => {
-  const { deletePlayer } = usePlayers();
+const PlayerRow = ({ player, setOpenState }: PlayerRowProps) => {
+  const { deletePlayer, setIsEditing, setSelectedPlayer } = usePlayers();
 
   const handleEditClick = () => {
-    if (onEdit) {
-      onEdit(player); // Call onEdit prop function if provided
-    }
+    setIsEditing(true);
+    setOpenState(true);
+    setSelectedPlayer(player);
   };
 
   return (
@@ -66,7 +66,8 @@ const PlayerRow = ({ player, onEdit }: PlayerRowProps) => {
         <img
           src={
             player.avatar
-              ? apiUrl + "/players/avatar/" + player._id
+            //Browser caches avatars, so we append a timestamp to the URL
+              ? `${apiUrl}/players/avatar/${player._id}?t=${new Date().getTime()}`
               : PlayerSilhouette
           }
           alt="Player avatar"

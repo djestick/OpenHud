@@ -44,7 +44,8 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({
         setMatches([]);
         setFilteredMatches([]);
       }
-      const current = await matchApi.getCurrennt();
+      console.log("Fetching current match:");
+      const current = await matchApi.getCurrent();
       if (current) {
         setCurrentMatch(current);
       } else {
@@ -57,32 +58,38 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  socket.on("match", () => {
-    fetchMatches();
-  });
-
   useEffect(() => {
+    // initial load
     fetchMatches();
+
+    // listen for server-side match events and refresh
+    socket.on("match", () => {
+      fetchMatches();
+    });
+
+    return () => {
+      socket.off("match");
+    };
   }, []);
 
   const handleStartMatch = async (matchId: string) => {
-        try {
-          matchApi.setCurrent(matchId, true);
-          fetchMatches();
-        } catch (error) {
-          console.error("Error updating match:", error);
-      };
+    try {
+      await matchApi.setCurrent(matchId, true); // wait for server update
+      await fetchMatches(); // refresh state after server confirmed
+    } catch (error) {
+      console.error("Error updating match:", error);
     }
-  
-  
-    const handleStopMatch = async (matchId: string) => {
-      try {
-        matchApi.setCurrent(matchId, false);
-        fetchMatches();
-      } catch (error) {
-        console.error("Error updating match:", error);
-      }
-    };
+  };
+
+  const handleStopMatch = async (matchId: string) => {
+    try {
+      await matchApi.setCurrent(matchId, false); // wait for server update
+      // fetch updated matches and clear current
+      await fetchMatches();
+    } catch (error) {
+      console.error("Error updating match:", error);
+    }
+  };
 
   return (
     <MatchesContext.Provider
@@ -108,6 +115,7 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useMatchesContext = () => {
   const context = useContext(MatchesContext);
   if (!context) {

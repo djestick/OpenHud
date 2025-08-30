@@ -83,7 +83,23 @@ export const createTeamHandler = async (req: Request, res: Response) => {
  */
 export const updateTeamHandler = async (req: Request, res: Response) => {
   try {
-    const updatedTeamID = await TeamsServices.createTeam(req.body);
+    const team = await TeamsServices.getTeamByID(req.body._id);
+
+    if (req.file?.filename && team?.logo) {
+          const oldLogoPath = path.join(
+            getUploadsPath(),
+            "team_logos",
+            team.logo
+          );
+          if (fs.existsSync(oldLogoPath)) {
+            fs.unlinkSync(oldLogoPath);
+          }
+        }
+
+    const updatedTeamID = await TeamsServices.updateTeam({
+      ...req.body,
+      logo: req.file?.filename || req.body.logo, // Fallback to existing logo if no file is uploaded
+    });
     res.status(201).json(updatedTeamID);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
@@ -96,8 +112,22 @@ export const updateTeamHandler = async (req: Request, res: Response) => {
  */
 export const removeTeamHandler = async (req: Request, res: Response) => {
   try {
-    const removedPlayerID = await TeamsServices.removeTeam(req.params.id);
-    res.status(201).json(removedPlayerID);
+
+    const team = await TeamsServices.getTeamByID(req.params.id);
+    
+    if (team?.logo) {
+      const oldLogoPath = path.join(
+        getUploadsPath(),
+        "team_logos",
+        team.logo
+      );
+      if (fs.existsSync(oldLogoPath)) {
+        fs.unlinkSync(oldLogoPath);
+      }
+    }
+
+    const removedTeamID = await TeamsServices.removeTeam(req.params.id);
+    res.status(201).json(removedTeamID);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }

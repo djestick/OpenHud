@@ -32,8 +32,8 @@ export const MatchesTable = ({ onEdit }: MatchTableProps) => {
         </tr>
       </thead>
       <tbody className="divide-y divide-border bg-background-secondary">
-        {filteredMatches.map((match: Match, index) => (
-          <MatchRow key={index} match={match} onEdit={onEdit} />
+        {filteredMatches.map((match: Match) => (
+          <MatchRow key={match.id} match={match} onEdit={onEdit} />
         ))}
       </tbody>
     </table>
@@ -55,13 +55,17 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
     const fetchTeams = async () => {
       if (match.left && match.left.id) {
         setTeamOne(await teamApi.getById(match.left.id));
+      } else {
+        setTeamOne(undefined);
       }
       if (match.right && match.right.id) {
         setTeamTwo(await teamApi.getById(match.right.id));
+      } else {
+        setTeamTwo(undefined);
       }
     };
     fetchTeams();
-  }, []);
+  }, [match]);
 
   const handleEditClick = () => {
     if (onEdit) {
@@ -90,13 +94,13 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
       <td className="px-4 py-2 text-lg font-semibold" align="center">
         <h6 className="flex items-center justify-center gap-2">
           <img
-            src={apiUrl + "/teams/logo/" + teamOne?._id}
+            src={`${apiUrl}/teams/logo/${teamOne?._id}?t=${new Date().getTime()}`}
             alt="Team Logo"
             className="size-12"
           />
         {match.left && match.left.wins} - {match.right && match.right.wins}{" "}
           <img
-            src={apiUrl + "/teams/logo/" + teamTwo?._id}
+            src={`${apiUrl}/teams/logo/${teamTwo?._id}?t=${new Date().getTime()}`}
             alt="Team Logo"
             className="size-12"
           />

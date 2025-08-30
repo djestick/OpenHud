@@ -168,7 +168,6 @@ export const getPlayerAvatarFileHandler = async (
  * @returns The _id of the newly created player
  */
 export const createPlayerHandler = async (req: Request, res: Response) => {
-  console.log(req.body);
   try {
     const creadtedPlayerID = await PlayerService.createPlayer({
       ...req.body,
@@ -189,12 +188,26 @@ export const createPlayerHandler = async (req: Request, res: Response) => {
  * @returns The _id of the updated player
  */
 export const updatePlayerHandler = async (req: Request, res: Response) => {
-  console.log(req.body);
   try {
+    const player = await PlayerService.getPlayerByID(req.body._id);
+
+    // Delete old avatar if a new one is uploaded
+    if (req.file?.filename && player?.avatar) {
+      const oldAvatarPath = path.join(
+        getUploadsPath(),
+        "player_pictures",
+        player.avatar
+      );
+      if (fs.existsSync(oldAvatarPath)) {
+        fs.unlinkSync(oldAvatarPath);
+      }
+    }
+
     const updatedPlayerID = await PlayerService.updatePlayer({
       ...req.body,
-      avatar: req.file?.filename,
+      avatar: req.file?.filename || req.body.avatar, // Fallback to existing avatar if no file is uploaded
     });
+
     res.status(201).json(updatedPlayerID);
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -211,6 +224,20 @@ export const updatePlayerHandler = async (req: Request, res: Response) => {
  */
 export const removePlayerHandler = async (req: Request, res: Response) => {
   try {
+    const player = await PlayerService.getPlayerByID(req.params.id);
+
+    // Delete current avatar if it exists
+    if (player?.avatar) {
+      const avatarPath = path.join(
+        getUploadsPath(),
+        "player_pictures",
+        player.avatar
+      );
+      if (fs.existsSync(avatarPath)) {
+        fs.unlinkSync(avatarPath);
+      }
+    }
+
     const removedPlayerID = await PlayerService.removePlayer(req.params.id);
     res.status(201).json(removedPlayerID);
   } catch (err: unknown) {

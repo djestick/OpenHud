@@ -30,13 +30,9 @@ export const playerApi = {
   },
 
   update: async (id: string, playerData: FormData): Promise<string> => {
-    console.log(playerData.values);
     const response = await fetch(`${API_BASE_URL}/players/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(playerData),
+      body: playerData, // Pass FormData directly
     });
     if (!response.ok) throw new Error("Failed to update player");
     return response.json();

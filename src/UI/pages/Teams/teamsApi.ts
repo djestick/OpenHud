@@ -23,13 +23,9 @@ export const teamApi = {
   },
 
   update: async (id: string, teamData: FormData): Promise<string> => {
-    console.log(teamData.values);
-    const response = await fetch(`${API_BASE_URL}/teams/${id}`, {
+     const response = await fetch(`${API_BASE_URL}/teams/${id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(teamData),
+      body: teamData, // Pass FormData directly
     });
     if (!response.ok) throw new Error("Failed to update team");
     return response.json();

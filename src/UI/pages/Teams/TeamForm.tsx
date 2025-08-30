@@ -46,18 +46,11 @@ export const TeamsForm = ({ open, setOpen }: TeamsFormProps) => {
   const validateForm = () => {
     let isValid = true;
     setTeamNameError("");
-    setLogoError("");
 
     if (!teamName) {
       setTeamNameError("Team name is required");
       isValid = false;
     }
-
-    if (!logo) {
-      setLogoError("Logo URL is required");
-      isValid = false;
-    }
-
     return isValid;
   };
 
@@ -147,7 +140,7 @@ export const TeamsForm = ({ open, setOpen }: TeamsFormProps) => {
             {/* Show current avatar if editing and player has one */}
             {isEditing && selectedTeam?.logo && (
               <img
-                src={apiUrl + selectedTeam?.logo}
+                src={apiUrl + "/teams/logo/" + selectedTeam._id}
                 alt="Current Logo"
                 className="size-36 rounded border object-cover"
               />

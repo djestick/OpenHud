@@ -27,6 +27,7 @@ export const PlayerForm = ({ open, setOpen }: PlayerFormProps) => {
 
   const [username, setUsername] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null); // For file upload
+  const [avatar, setAvatar] = useState(""); // For file upload
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [steamId, setSteamId] = useState("");
@@ -46,6 +47,7 @@ export const PlayerForm = ({ open, setOpen }: PlayerFormProps) => {
       setSteamId(selectedPlayer.steamid);
       setTeam(selectedPlayer.team || "");
       setCountry(selectedPlayer.country || "");
+      setAvatar(selectedPlayer.avatar || "");
     } else {
       handleReset();
     }
@@ -91,6 +93,8 @@ export const PlayerForm = ({ open, setOpen }: PlayerFormProps) => {
     formData.append("country", country);
     if (avatarFile) {
       formData.append("avatar", avatarFile); // Append the file
+    } else if (selectedPlayer?.avatar) {
+      formData.append("avatar", avatar);
     }
 
     try {
@@ -212,7 +216,7 @@ export const PlayerForm = ({ open, setOpen }: PlayerFormProps) => {
               {/* Show current avatar if editing and player has one */}
               {isEditing && selectedPlayer?.avatar && (
                 <img
-                  src={apiUrl + selectedPlayer.avatar}
+                  src={apiUrl + "/players/avatar/" + selectedPlayer._id}
                   alt="Current Avatar"
                   className="size-36 rounded border object-cover"
                 />

@@ -13,10 +13,16 @@ export const matchApi = {
     return response.json();
   },
   
-  getCurrennt: async (): Promise<Match> => {
+  getCurrent: async (): Promise<Match | null> => {
     const response = await fetch(`${API_BASE_URL}/match/current`);
+    // If server returns 204 No Content, treat as no current match
+    if (response.status === 204) return null;
     if (!response.ok) throw new Error(`Failed to fetch current match`);
-    return response.json();
+
+    // Some responses may have an empty body; guard against calling .json() on empty
+    const text = await response.text();
+    if (!text) return null;
+    return JSON.parse(text);
   },
 
   create: async (matchData: Match): Promise<Match> => {

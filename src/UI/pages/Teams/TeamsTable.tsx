@@ -4,11 +4,11 @@ import { PrimaryButton } from "../../components/PrimaryButton";
 import { apiUrl } from "../../api/api";
 
 interface TeamsTableProps {
-  onEdit: (team: Team) => void;
+  setOpenState: (open: boolean) => void;
 }
 
-export const TeamsTable = ({ onEdit }: TeamsTableProps) => {
-  const { filteredTeams, deleteTeam } = useTeams();
+export const TeamsTable = ({ setOpenState }: TeamsTableProps) => {
+  const { filteredTeams} = useTeams();
   return (
     <table className="table-fixed">
       <thead className="sticky top-16 border-b border-border bg-background-secondary shadow">
@@ -35,8 +35,7 @@ export const TeamsTable = ({ onEdit }: TeamsTableProps) => {
           <TeamRow
             key={index}
             team={team}
-            onEdit={onEdit}
-            deleteTeam={deleteTeam}
+            setOpenState={setOpenState}
           />
         ))}
       </tbody>
@@ -46,22 +45,23 @@ export const TeamsTable = ({ onEdit }: TeamsTableProps) => {
 
 interface TeamRowProps {
   team: Team;
-  onEdit: (team: Team) => void;
-  deleteTeam: (id: string) => void;
+  setOpenState: (open: boolean) => void;
 }
 
-const TeamRow = ({ team, onEdit, deleteTeam }: TeamRowProps) => {
+const TeamRow = ({ team, setOpenState }: TeamRowProps) => {
+  const { setIsEditing, setSelectedTeam, deleteTeam } = useTeams();
+
   const handleEditClick = () => {
-    if (onEdit) {
-      onEdit(team); // Call onEdit prop function if provided
-    }
+    setIsEditing(true);
+    setOpenState(true);
+    setSelectedTeam(team);
   };
 
   return (
     <tr id={"team_" + team._id}>
       <td className="px-4 py-2" align="left">
         <img
-          src={apiUrl + "/teams/logo/" + team._id}
+          src={`${apiUrl}/teams/logo/${team._id}?t=${new Date().getTime()}`}
           alt="Team Logo"
           className="size-12"
         />

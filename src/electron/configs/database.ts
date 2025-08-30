@@ -53,9 +53,9 @@ export const database = new sqlite3.Database(getDatabasePath(), (error) => {
     `CREATE TABLE IF NOT EXISTS matches (
         id TEXT PRIMARY KEY NOT NULL UNIQUE,
         current INTEGER DEFAULT 0 CHECK (current IN (0, 1)),
-        left_id TEXT NOT NULL,
+        left_id TEXT,
         left_wins INTEGER DEFAULT 0 CHECK (left_wins BETWEEN 0 AND 5),
-        right_id TEXT NOT NULL,
+        right_id TEXT,
         right_wins INTEGER DEFAULT 0 CHECK (right_wins BETWEEN 0 AND 5),
         matchType TEXT NOT NULL CHECK (matchType IN ('bo1', 'bo2', 'bo3', 'bo5')),
         vetos TEXT NOT NULL,

@@ -17,7 +17,12 @@ teamsRoutes.post(
 );
 
 /* ================== PUTs ===================== */
-teamsRoutes.put("/:id", TeamsController.updateTeamHandler);
+teamsRoutes.put(
+  "/:id",
+  teamLogoStorage.single("logo"),
+  TeamsController.updateTeamHandler
+);
+
 
 /* ================== DELETESs ===================== */
 teamsRoutes.delete("/:id", TeamsController.removeTeamHandler);
