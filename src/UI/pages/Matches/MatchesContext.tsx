@@ -44,7 +44,6 @@ export const MatchesProvider: React.FC<{ children: React.ReactNode }> = ({
         setMatches([]);
         setFilteredMatches([]);
       }
-      console.log("Fetching current match:");
       const current = await matchApi.getCurrent();
       if (current) {
         setCurrentMatch(current);

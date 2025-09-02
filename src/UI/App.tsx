@@ -5,6 +5,7 @@ import { PlayersPage } from "./pages/Players/PlayersPage";
 import { TeamsPage } from "./pages/Teams/TeamsPage";
 import { AppProviders } from "./context/AppProviders";
 import { Layout } from "./pages/Layout";
+import { CoachesPage } from "./pages/Coaches/CoachesPage";
 
 const AuthenticatedRoutes = () => (
   <AppProviders>
@@ -15,6 +16,7 @@ const AuthenticatedRoutes = () => (
           <Route path="matches" element={<Navigate to="/" />} />
           <Route path="players" element={<PlayersPage />} />
           <Route path="teams" element={<TeamsPage />} />
+          <Route path="coaches" element={<CoachesPage />} />
           <Route path="dashboard" element={<Dashboard />} />
         </Route>
       </Routes>

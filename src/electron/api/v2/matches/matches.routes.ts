@@ -16,3 +16,6 @@ matchesRoutes.post("/current", MatchesController.createMatchHandler);
 /* ================== PUTs ===================== */
 matchesRoutes.put("/:id", MatchesController.updateMatchHandler);
 matchesRoutes.put("/current/:id", MatchesController.setCurrentMatchHandler);
+
+/* ================== DELETEs ===================== */
+matchesRoutes.delete("/:id", MatchesController.removeMatchHandler);

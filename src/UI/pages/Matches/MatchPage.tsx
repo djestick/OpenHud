@@ -32,7 +32,7 @@ export const MatchesPage = () => {
   return (
     <section id="MatchPage" className="relative flex size-full flex-col gap-1">
       <Topbar header="Matches" buttonText="Match" openForm={setOpen} />
-      {currentMatch && <MatchCard match={currentMatch} />}
+      {/* {currentMatch && <MatchCard match={currentMatch} />} */}
       <MatchForm setOpen={setOpen} open={open} />
       <MatchesTable onEdit={handleEditMatch} />
     </section>

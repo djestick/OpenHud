@@ -19,6 +19,23 @@ export const getAllCoachesHandler = async (req: Request, res: Response) => {
 };
 
 /**
+ * Controller for getting multiple/all coaches depending on steamid query.
+ * @returns An array of coaches
+ */
+export const getAllSteamIDsHandler = async (req: Request, res: Response) => {
+  try {
+      const allSteamIDs = await CoachService.getAllSteamIds();
+      res.status(200).json(allSteamIDs);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
+  }
+};
+
+/**
  * Controller for getting one coach by steamid.
  * @returns A single coach
  */
@@ -45,7 +62,12 @@ export const getCoachBySteamIDHandler = async (
  */
 export const createCoachHandler = async (req: Request, res: Response) => {
   try {
-    const createdCoachID = await CoachService.createCoach(req.body.steamid);
+    console.log("Creating coach:", req.body);
+    const createdCoachID = await CoachService.createCoach(
+      req.body.steamid,
+      req.body.name || "",
+      req.body.team || ""
+    );
     res.status(201).json(createdCoachID);
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -63,8 +85,29 @@ export const createCoachHandler = async (req: Request, res: Response) => {
  */
 export const removeCoachHandler = async (req: Request, res: Response) => {
   try {
-    const removedCoachID = await CoachService.removeCoach(req.params.id);
+    const removedCoachID = await CoachService.removeCoach(req.params.steamid);
     res.status(201).json(removedCoachID);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
+  }
+};
+
+/**
+ * Controller for updating a coach.
+ * @returns The steamid of the updated coach
+ */
+export const updateCoachHandler = async (req: Request, res: Response) => {
+  try {
+    const updatedCoachID = await CoachService.updateCoach(
+      req.params.steamid,
+      req.body.name,
+      req.body.team
+    );
+    res.status(200).json(updatedCoachID);
   } catch (err: unknown) {
     if (err instanceof Error) {
       res.status(500).json({ error: err.message });

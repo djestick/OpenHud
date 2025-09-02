@@ -127,3 +127,21 @@ export const setCurrentMatchHandler = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * Controller for removing a match.
+ * @returns The id of the removed match
+ */
+export const removeMatchHandler = async (req: Request, res: Response) => {
+  try {
+    const removedMatchID = await MatchServices.removeMatch(req.params.id);
+    res.status(201).json(removedMatchID);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
+  }
+};
+
+

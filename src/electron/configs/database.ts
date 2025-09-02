@@ -73,7 +73,10 @@ export const database = new sqlite3.Database(getDatabasePath(), (error) => {
   /* Create coaches table */
   database.run(
     `CREATE TABLE IF NOT EXISTS coaches (
-        steamid TEXT PRIMARY KEY NOT NULL UNIQUE
+        steamid TEXT PRIMARY KEY NOT NULL UNIQUE,
+        name TEXT,
+        team TEXT,
+        FOREIGN KEY (team) REFERENCES teams(_id) ON DELETE SET NULL
       )`,
     (error) => {
       if (error) {

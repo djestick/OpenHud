@@ -12,10 +12,9 @@ interface MatchFormProps {
 
 export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
   const {
-    isEditing,
-    selectedMatch,
-    currentMatch,
-    setCurrentMatch,
+  isEditing,
+  selectedMatch,
+  setCurrentMatch,
     createMatch,
     updateMatch,
     setIsEditing,
@@ -85,7 +84,7 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return; // Early return if validation fails
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
 
@@ -94,7 +93,7 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
       left: { id: leftTeamId, wins: leftTeamWins },
       right: { id: rightTeamId, wins: rightTeamWins },
       matchType: matchType as "bo1" | "bo2" | "bo3" | "bo5",
-      current: currentMatch ? true : false,
+      current: selectedMatch ? selectedMatch.current : false,
       vetos: vetos,
     };
 
@@ -125,6 +124,8 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
     setRightTeamId(null);
     setCurrentMatch(null);
     setMatchType("bo1");
+    setLeftTeamWins(0);
+    setRightTeamWins(0);
     setErrorMessage("");
     const newVetos: Veto[] = vetos.map(() => ({
       type: "ban",
@@ -188,6 +189,29 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          <div className="my-2 flex items-center justify-center gap-4">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium">Left Wins</label>
+              <input
+                type="number"
+                min={0}
+                className="h-8 w-20 rounded border border-gray-300 px-2"
+                value={leftTeamWins}
+                onChange={(e) => setLeftTeamWins(Number(e.target.value || 0))}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium">Right Wins</label>
+              <input
+                type="number"
+                min={0}
+                className="h-8 w-20 rounded border border-gray-300 px-2"
+                value={rightTeamWins}
+                onChange={(e) => setRightTeamWins(Number(e.target.value || 0))}
+              />
             </div>
           </div>
 

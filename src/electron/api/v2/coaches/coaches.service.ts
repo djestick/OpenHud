@@ -13,6 +13,15 @@ export const getAllCoaches = async (): Promise<string[]> => {
 };
 
 /**
+ * Service for selecting all coaches.
+ * @returns An array of coaches steamids
+ */
+export const getAllSteamIds = async (): Promise<string[]> => {
+  return await CoachModel.selectAllSteamids();
+};
+
+
+/**
  * Service for selecting a coach by their steamid.
  * @returns A single coach
  */
@@ -24,9 +33,9 @@ export const getCoachBySteamID = async (steamid: string): Promise<string> => {
  * Service for creating a coach
  * @returns The _id of newly created coach
  */
-export const createCoach = async (coach: string): Promise<string> => {
+export const createCoach = async (steamid: string, name: string, team: string): Promise<string> => {
   return run_transaction(async () => {
-    return await CoachModel.insert(coach);
+    return await CoachModel.insert(steamid, name, team);
   });
 };
 
@@ -40,3 +49,14 @@ export const removeCoach = (id: string) => {
     return await CoachModel.remove(id);
   });
 };
+
+/**
+ * Service for updating a coach
+ * @returns The id of the updated coach
+ */
+export const updateCoach = (id: string, name: string, team: string) => {
+  return run_transaction(async () => {
+    return await CoachModel.update(id, name, team);
+  });
+};
+

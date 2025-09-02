@@ -1,19 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Container } from "../../components";
-import { CSGO } from "csgogsi";
-import { GSI } from "../../api/socket";
+import { useGameData } from "../../context/useGameData";
 import { Tile } from "./Tile";
 import { Topbar } from "../MainPanel/Topbar";
 
 export const Dashboard = () => {
-  const [gameData, setGameData] = useState<CSGO | null>(null);
+  const { gameData } = useGameData();
   const [copyStatus, setCopyStatus] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    GSI.on("data", (data: CSGO) => {
-      setGameData(data);
-    });
-  }, []);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(

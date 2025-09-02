@@ -6,6 +6,7 @@ import {
   MdDashboard,
   MdAddCircle,
   MdPlayArrow,
+  MdSports
 } from "react-icons/md";
 import { useDrawer } from "../../hooks";
 
@@ -21,6 +22,7 @@ const routes: RouteProps[] = [
   { Icon: MdAddCircle, title: "Matches", to: "" },
   { Icon: MdOutlinePerson, title: "Players", to: "players" },
   { Icon: MdGroups, title: "Teams", to: "teams" },
+  { Icon: MdSports, title: "Coaches", to: "coaches" },
   { Icon: MdDashboard, title: "Dashboard", to: "dashboard" },
 ];
 

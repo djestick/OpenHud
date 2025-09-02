@@ -60,3 +60,13 @@ export const getCurrentMatch = async (): Promise<Match | null> => {
 export const setCurrentMatch = async (id: string, current: boolean): Promise<string> => {
   return await MatchModels.setCurrent(id, current);
 };
+
+/**
+ * Service for removing a match
+ * @returns The id of the removed match
+ */
+export const removeMatch = (id: string) => {
+  return run_transaction(async () => {
+    return await MatchModels.remove(id);
+  });
+};

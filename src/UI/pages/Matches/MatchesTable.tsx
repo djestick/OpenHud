@@ -1,7 +1,8 @@
-import { MdPlayArrow, MdCancel, MdDelete, MdEdit } from "react-icons/md";
+import { MdPlayArrow, MdCancel, MdDelete, MdEdit, MdSwapHoriz } from "react-icons/md";
 import { PrimaryButton } from "../../components/PrimaryButton";
 import { apiUrl } from "../../api/api";
 import { useMatches } from "../../hooks";
+import useGameData from "../../context/useGameData";
 import { teamApi } from '../Teams/teamsApi';
 import React from "react";
 
@@ -46,7 +47,8 @@ interface MatchRowProps {
 }
 
 const MatchRow = ({ match, onEdit }: MatchRowProps) => {
-  const { deleteMatch, handleStartMatch, handleStopMatch } = useMatches();
+  const { deleteMatch, handleStartMatch, handleStopMatch, currentMatch, updateMatch } = useMatches();
+  const { gameData } = useGameData();
   const [teamOne, setTeamOne] = React.useState<Team>();
   const [teamTwo, setTeamTwo] = React.useState<Team>();
 
@@ -70,6 +72,22 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
   const handleEditClick = () => {
     if (onEdit) {
       onEdit(match);
+    }
+  };
+
+  const handleReverseSides = async () => {
+    try {
+      if (!gameData || !gameData.map || !gameData.map.name) return;
+      const mapName = gameData.map.name.substring(gameData.map.name.lastIndexOf("/") + 1);
+      const veto = match.vetos.find((v) => v.mapName === mapName);
+      if (!veto) return;
+      const updatedVetos = match.vetos.map((v) =>
+        v.mapName === mapName ? { ...v, reverseSide: !v.reverseSide } : v,
+      );
+      const updatedMatch: Match = { ...match, vetos: updatedVetos };
+      await updateMatch(match.id, updatedMatch);
+    } catch (err) {
+      console.error("Failed to reverse sides on veto:", err);
     }
   };
 
@@ -107,17 +125,40 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
         </h6>
       </td>
       <td className="px-4 py-2" align="right">
+        <div className="inline-flex">
         {match.current ? (
-          <div className="inline-flex">
-            <PrimaryButton onClick={() => handleStopMatch(match.id)}>
-              <MdCancel className="size-6 text-secondary-light" />
-            </PrimaryButton>
-          </div>
+            <>
+              <PrimaryButton onClick={() => handleStopMatch(match.id)}>
+                <MdCancel className="size-6 text-secondary-light" />
+              </PrimaryButton>
+              <PrimaryButton
+                onClick={() => handleReverseSides()}
+                title="Reverse sides for current map veto"
+                disabled={
+                  !(
+                    gameData &&
+                    gameData.map &&
+                    match.vetos.find(
+                      (v) =>
+                        gameData.map.name
+                          .substring(gameData.map.name.lastIndexOf("/") + 1) ===
+                        v.mapName,
+                    )
+                  )
+                }
+              >
+                <MdSwapHoriz className="size-6" />
+              </PrimaryButton>
+            </>
         ) : (
-          <div className="inline-flex">
+          currentMatch && currentMatch.id !== match.id ? (
+            <></>
+          ) : (
             <PrimaryButton onClick={() => handleStartMatch(match.id)}>
               <MdPlayArrow className="size-6" />
             </PrimaryButton>
+          )
+        )}
             <PrimaryButton onClick={() => handleEditClick()}>
               <MdEdit className="size-6" />
             </PrimaryButton>
@@ -126,7 +167,6 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
               <MdDelete className="size-6" />
             </PrimaryButton>
           </div>
-        )}
       </td>
     </tr>
   );
