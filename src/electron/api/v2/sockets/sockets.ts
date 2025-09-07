@@ -13,14 +13,20 @@ export function initializeWebSocket(server: http.Server) {
     },
   });
 
+  // IO sends to all clients including sender
+  // socket.broadcast.emit sends to all clients except sender
+  // socket.emit sends to the sender only
+
   io.on("connection", (socket) => {
-    console.log("Client connected");
     socket.emit("update", { data: "Initial data from server" });
+
     socket.on("match", () => {
       console.log("test");
     });
-    socket.on("disconnect", () => {
-      console.log("Client disconnected");
+
+    socket.on("refreshHUD", () => {
+      // Broadcast to all connected clients including sender
+      io.emit("refreshHUD");
     });
   });
 

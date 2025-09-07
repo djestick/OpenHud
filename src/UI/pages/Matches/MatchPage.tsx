@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { MatchCard } from "./MatchCard";
 import { MatchesTable } from "./MatchesTable";
 import { MatchForm } from "./MatchForm";
 import { Topbar } from "../MainPanel/Topbar";
@@ -21,7 +20,7 @@ export const maps = [
 
 export const MatchesPage = () => {
   const [open, setOpen] = useState(false);
-  const { setSelectedMatch, setIsEditing, currentMatch } = useMatches();
+  const { setSelectedMatch, setIsEditing } = useMatches();
 
   const handleEditMatch = (match: Match) => {
     setIsEditing(true);
@@ -32,7 +31,6 @@ export const MatchesPage = () => {
   return (
     <section id="MatchPage" className="relative flex size-full flex-col gap-1">
       <Topbar header="Matches" buttonText="Match" openForm={setOpen} />
-      {/* {currentMatch && <MatchCard match={currentMatch} />} */}
       <MatchForm setOpen={setOpen} open={open} />
       <MatchesTable onEdit={handleEditMatch} />
     </section>

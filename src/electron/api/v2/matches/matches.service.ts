@@ -1,5 +1,5 @@
 import { run_transaction } from "../helpers/utilities.js";
-import * as MatchModels from "./matches.models.js";
+import * as MatchData from "./matches.data.js";
 import { v4 as uuidv4 } from "uuid";
 
 /* ====================== Notes: ======================*/
@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from "uuid";
  * @returns An array of matches
  */
 export const getAllMatches = async (): Promise<Match[]> => {
-  return await MatchModels.selectAll();
+  return await MatchData.selectAll();
 };
 
 /**
@@ -18,7 +18,7 @@ export const getAllMatches = async (): Promise<Match[]> => {
  * @returns A single match
  */
 export const getMatchByID = async (id: string): Promise<Match> => {
-  return await MatchModels.selectByID(id);
+  return await MatchData.selectByID(id);
 };
 
 /**
@@ -31,7 +31,7 @@ export const createMatch = async (match: Match): Promise<string> => {
     id: uuidv4(),
   };
   return run_transaction(async () => {
-    return await MatchModels.insert(newmatch);
+    return await MatchData.insert(newmatch);
   });
 };
 
@@ -41,7 +41,7 @@ export const createMatch = async (match: Match): Promise<string> => {
  */
 export const updateMatch = (match: Match) => {
   return run_transaction(async () => {
-    return await MatchModels.update(match);
+    return await MatchData.update(match);
   });
 };
 
@@ -50,7 +50,7 @@ export const updateMatch = (match: Match) => {
  * @returns A single match or null
  */
 export const getCurrentMatch = async (): Promise<Match | null> => {
-  return await MatchModels.selectCurrent();
+  return await MatchData.selectCurrent();
 };
 
 /**
@@ -58,7 +58,7 @@ export const getCurrentMatch = async (): Promise<Match | null> => {
  * @returns Id of the updated match
  */
 export const setCurrentMatch = async (id: string, current: boolean): Promise<string> => {
-  return await MatchModels.setCurrent(id, current);
+  return await MatchData.setCurrent(id, current);
 };
 
 /**
@@ -67,6 +67,6 @@ export const setCurrentMatch = async (id: string, current: boolean): Promise<str
  */
 export const removeMatch = (id: string) => {
   return run_transaction(async () => {
-    return await MatchModels.remove(id);
+    return await MatchData.remove(id);
   });
 };

@@ -1,7 +1,7 @@
 import path from "path";
 import { database } from "../../../configs/index.js";
-import { getUploadsPath } from "./paths.js";
 import fs from "fs";
+import { getPlayerPicturesPath, getTeamLogosPath, getUploadsPath } from "../../../helpers/pathResolver.js";
 
 export function isDev(): boolean {
   return process.env.NODE_ENV === "development";
@@ -48,8 +48,8 @@ export const run_transaction = (
 /* === Ensure directories exist for uploaded pictures === */
 export function checkDirectories() {
   const uploadsDir = getUploadsPath();
-  const playerPicturesDir = path.join(uploadsDir, "player_pictures");
-  const teamLogosDir = path.join(uploadsDir, "team_logos");
+  const playerPicturesDir = getPlayerPicturesPath();
+  const teamLogosDir = getTeamLogosPath();
 
   [uploadsDir, playerPicturesDir, teamLogosDir].forEach(createMissingDir);
 }

@@ -3,6 +3,7 @@ import { PrimaryButton } from "../../components/PrimaryButton";
 import { apiUrl } from "../../api/api";
 import { useMatches } from "../../hooks";
 import useGameData from "../../context/useGameData";
+import { canReverseSides } from "./matchUtils";
 import { teamApi } from '../Teams/teamsApi';
 import React from "react";
 
@@ -112,13 +113,13 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
       <td className="px-4 py-2 text-lg font-semibold" align="center">
         <h6 className="flex items-center justify-center gap-2">
           <img
-            src={`${apiUrl}/teams/logo/${teamOne?._id}?t=${new Date().getTime()}`}
+            src={`${apiUrl}/teams/logo/${teamOne?._id}`}
             alt="Team Logo"
             className="size-12"
           />
         {match.left && match.left.wins} - {match.right && match.right.wins}{" "}
           <img
-            src={`${apiUrl}/teams/logo/${teamTwo?._id}?t=${new Date().getTime()}`}
+            src={`${apiUrl}/teams/logo/${teamTwo?._id}`}
             alt="Team Logo"
             className="size-12"
           />
@@ -134,18 +135,7 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
               <PrimaryButton
                 onClick={() => handleReverseSides()}
                 title="Reverse sides for current map veto"
-                disabled={
-                  !(
-                    gameData &&
-                    gameData.map &&
-                    match.vetos.find(
-                      (v) =>
-                        gameData.map.name
-                          .substring(gameData.map.name.lastIndexOf("/") + 1) ===
-                        v.mapName,
-                    )
-                  )
-                }
+                disabled={!canReverseSides(match, gameData)}
               >
                 <MdSwapHoriz className="size-6" />
               </PrimaryButton>

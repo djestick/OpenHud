@@ -1,5 +1,5 @@
 import { run_transaction } from "../helpers/utilities.js";
-import * as TeamModels from "./teams.models.js";
+import * as TeamData from "./teams.data.js";
 import { v4 as uuidv4 } from "uuid";
 
 /* ====================== Notes: ======================*/
@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from "uuid";
  * @returns An array of teams
  */
 export const getAllTeams = async (): Promise<Team[]> => {
-  return await TeamModels.selectAll();
+  return await TeamData.selectAll();
 };
 
 /**
@@ -18,7 +18,7 @@ export const getAllTeams = async (): Promise<Team[]> => {
  * @returns A single team
  */
 export const getTeamByID = async (id: string): Promise<Team> => {
-  return await TeamModels.selectByID(id);
+  return await TeamData.selectByID(id);
 };
 
 /**
@@ -26,7 +26,7 @@ export const getTeamByID = async (id: string): Promise<Team> => {
  * @returns A path string to the teams logo
  */
 export const getTeamLogo = async (id: string): Promise<string> => {
-  return await TeamModels.selectLogoURL(id);
+  return await TeamData.selectLogoURL(id);
 };
 
 /**
@@ -39,7 +39,7 @@ export const createTeam = async (team: Team): Promise<string> => {
     _id: uuidv4(),
   };
   return run_transaction(async () => {
-    return await TeamModels.insert(newTeam);
+    return await TeamData.insert(newTeam);
   });
 };
 
@@ -49,7 +49,7 @@ export const createTeam = async (team: Team): Promise<string> => {
  */
 export const updateTeam = (team: Team) => {
   return run_transaction(async () => {
-    return await TeamModels.update(team);
+    return await TeamData.update(team);
   });
 };
 
@@ -59,7 +59,7 @@ export const updateTeam = (team: Team) => {
  */
 export const removeTeam = (id: string) => {
   return run_transaction(async () => {
-    return await TeamModels.remove(id);
+    return await TeamData.remove(id);
   });
 };
 

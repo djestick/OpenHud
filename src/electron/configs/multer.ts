@@ -1,13 +1,14 @@
 import multer from "multer";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
-import { getUploadsPath } from "../api/v2/helpers/paths.js";
+import { getPlayerPicturesPath, getTeamLogosPath } from "../helpers/index.js";
+
 
 // Player avatar storage
 export const playerPictureStorage = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, path.join(getUploadsPath(), "player_pictures"));
+      cb(null, getPlayerPicturesPath());
     },
     filename: (req, file, cb) => {
       const uniqueName = `${uuidv4()}${path.extname(file.originalname)}`;
@@ -28,7 +29,7 @@ export const playerPictureStorage = multer({
 export const teamLogoStorage = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, path.join(getUploadsPath(), "team_logos"));
+      cb(null, getTeamLogosPath());
     },
     filename: (req, file, cb) => {
       const uniqueName = `${uuidv4()}${path.extname(file.originalname)}`;

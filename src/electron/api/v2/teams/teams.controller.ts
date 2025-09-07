@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import * as TeamsServices from "./teams.service.js";
 import path from "path";
-import { getUploadsPath } from "../helpers/paths.js";
 import fs from "fs";
+import { getTeamLogosPath } from "../../../helpers/pathResolver.js";
 
 /**
  * Controller for getting all teams.
@@ -50,7 +50,7 @@ export const getTeamLogoHandler = async (
       return res.sendStatus(404);
     }
 
-    const logoPath = path.join(getUploadsPath(), "team_logos", team.logo);
+    const logoPath = path.join(getTeamLogosPath(), team.logo);
     if (!fs.existsSync(logoPath)) {
       return res.sendStatus(404);
     }
@@ -87,8 +87,7 @@ export const updateTeamHandler = async (req: Request, res: Response) => {
 
     if (req.file?.filename && team?.logo) {
           const oldLogoPath = path.join(
-            getUploadsPath(),
-            "team_logos",
+            getTeamLogosPath(),
             team.logo
           );
           if (fs.existsSync(oldLogoPath)) {
@@ -117,8 +116,7 @@ export const removeTeamHandler = async (req: Request, res: Response) => {
     
     if (team?.logo) {
       const oldLogoPath = path.join(
-        getUploadsPath(),
-        "team_logos",
+        getTeamLogosPath(),
         team.logo
       );
       if (fs.existsSync(oldLogoPath)) {

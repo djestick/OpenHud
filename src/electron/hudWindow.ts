@@ -1,10 +1,13 @@
 import { BrowserWindow } from "electron";
-import { getHudPath, getPreloadPath } from "./helpers/index.js";
+import { getPreloadPath } from "./helpers/index.js";
 import { checkDirectories } from "./helpers/util.js";
-import path from "path";
+import { apiUrl } from "./index.js";
+import { createMenu } from "./menu.js";
+
+export let hudWindoow: BrowserWindow | null = null;
 
 export function createHudWindow() {
-  const hudWindow = new BrowserWindow({
+  hudWindoow = new BrowserWindow({
     fullscreen: true,
     transparent: true,
     alwaysOnTop: true,
@@ -15,11 +18,20 @@ export function createHudWindow() {
       preload: getPreloadPath(),
       backgroundThrottling: false,
     },
+    
   });
 
+  createMenu(hudWindoow);
   checkDirectories();
-  hudWindow.loadFile(path.join(getHudPath(), "index.html"));
-  hudWindow.setIgnoreMouseEvents(true);
+  // In development load from the dev server so changes are live.
+  // In non-dev load from the local API endpoint which serves the HUD HTML.
+  // Note: The HUD window is always loaded from localhost to avoid CORS issues with local files.
+  hudWindoow.loadURL("http://" + apiUrl + "/hud");
+  hudWindoow.setIgnoreMouseEvents(true);
 
-  return hudWindow;
+  hudWindoow.on("closed", () => {
+    hudWindoow = null;
+  });
+
+  return hudWindoow;
 }

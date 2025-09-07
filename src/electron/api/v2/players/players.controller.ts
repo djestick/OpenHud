@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import * as PlayerService from "./players.service.js";
-import { getUploadsPath } from "../helpers/paths.js";
 import path from "path";
 import fs from "fs";
+import { getPlayerPicturesPath } from "../../../helpers/pathResolver.js";
 
 /**
  * Controller for getting multiple/all players depending on steamid query.
@@ -145,8 +145,7 @@ export const getPlayerAvatarFileHandler = async (
     }
 
     const avatarPath = path.join(
-      getUploadsPath(),
-      "player_pictures",
+      getPlayerPicturesPath(),
       player.avatar,
     );
     if (!fs.existsSync(avatarPath)) {
@@ -194,8 +193,7 @@ export const updatePlayerHandler = async (req: Request, res: Response) => {
     // Delete old avatar if a new one is uploaded
     if (req.file?.filename && player?.avatar) {
       const oldAvatarPath = path.join(
-        getUploadsPath(),
-        "player_pictures",
+        getPlayerPicturesPath(),
         player.avatar
       );
       if (fs.existsSync(oldAvatarPath)) {
@@ -229,8 +227,7 @@ export const removePlayerHandler = async (req: Request, res: Response) => {
     // Delete current avatar if it exists
     if (player?.avatar) {
       const avatarPath = path.join(
-        getUploadsPath(),
-        "player_pictures",
+        getPlayerPicturesPath(),
         player.avatar
       );
       if (fs.existsSync(avatarPath)) {

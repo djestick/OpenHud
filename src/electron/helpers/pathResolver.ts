@@ -1,6 +1,7 @@
 import path from "path";
 import { app } from "electron";
-import { isDev, userHasCustomHud } from "./util.js";
+import fs from "fs";
+import { isDev } from "./util.js";
 
 /* Determine preload path based on if we are in dev */
 export function getPreloadPath() {
@@ -41,7 +42,17 @@ export function getDefaultHUDPath() {
 
 /* If a user has a custom HUD, use that path, otherwise use the default path */
 export function getHudPath() {
-  return userHasCustomHud ? getCustomHudPath() : getDefaultHUDPath();
+  // Determine at runtime whether a custom HUD build exists under the user's home
+  const customIndex = path.join(
+    app.getPath("home"),
+    "OpenHud-Huds",
+    "build",
+    "index.html",
+  );
+  if (fs.existsSync(customIndex)) {
+    return getCustomHudPath();
+  }
+  return getDefaultHUDPath();
 }
 
 // Path for uploads folder

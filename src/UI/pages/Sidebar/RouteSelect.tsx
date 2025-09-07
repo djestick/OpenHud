@@ -6,9 +6,11 @@ import {
   MdDashboard,
   MdAddCircle,
   MdPlayArrow,
-  MdSports
+  MdSports,
+  MdRefresh
 } from "react-icons/md";
 import { useDrawer } from "../../hooks";
+import { socket } from "../../api/socket";
 
 interface RouteProps {
   Icon: IconType;
@@ -26,6 +28,11 @@ const routes: RouteProps[] = [
   { Icon: MdDashboard, title: "Dashboard", to: "dashboard" },
 ];
 
+const refreshHud = () => {
+  console.log("Refreshing hud");
+  socket.emit("refreshHUD");
+};
+
 export const RouteSelect = () => {
   const { isOpen } = useDrawer();
   return (
@@ -41,6 +48,15 @@ export const RouteSelect = () => {
           >
             <MdPlayArrow className="absolute left-3.5 size-7" />
             {isOpen && <p className="pl-14 font-semibold">Overlay</p>}
+          </button>
+        </div>
+        <div className="flex size-full w-full text-text">
+          <button
+            className="relative flex h-7 w-full items-center gap-1 rounded-lg bg-primary py-5 hover:bg-primary-dark"
+            onClick={refreshHud}
+          >
+            <MdRefresh className="absolute left-3.5 size-7" />
+            {isOpen && <p className="pl-14 font-semibold">Refresh hud</p>}
           </button>
         </div>
       </div>
