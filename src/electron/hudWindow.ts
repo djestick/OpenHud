@@ -4,10 +4,10 @@ import { checkDirectories } from "./helpers/util.js";
 import { apiUrl } from "./index.js";
 import { createMenu } from "./menu.js";
 
-export let hudWindoow: BrowserWindow | null = null;
+export let hudWindow: BrowserWindow | null = null;
 
 export function createHudWindow() {
-  hudWindoow = new BrowserWindow({
+  hudWindow = new BrowserWindow({
     fullscreen: true,
     transparent: true,
     alwaysOnTop: true,
@@ -21,17 +21,23 @@ export function createHudWindow() {
     
   });
 
-  createMenu(hudWindoow);
+  createMenu(hudWindow);
   checkDirectories();
-  // In development load from the dev server so changes are live.
-  // In non-dev load from the local API endpoint which serves the HUD HTML.
+  
   // Note: The HUD window is always loaded from localhost to avoid CORS issues with local files.
-  hudWindoow.loadURL("http://" + apiUrl + "/hud");
-  hudWindoow.setIgnoreMouseEvents(true);
+  hudWindow.loadURL("http://" + apiUrl + "/hud");
+  hudWindow.setIgnoreMouseEvents(true);
 
-  hudWindoow.on("closed", () => {
-    hudWindoow = null;
+  // Focus the HUD window a short time after it's shown to ensure it goes on top.
+    hudWindow.on("show", () => {
+    setTimeout(() => {
+      hudWindow?.focus();
+    }, 200);
   });
 
-  return hudWindoow;
+  hudWindow.on("closed", () => {
+    hudWindow = null;
+  });
+
+  return hudWindow;
 }
