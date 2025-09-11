@@ -11,9 +11,14 @@ import { Coach } from "./coachApi";
 interface CoachFormProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  prefill?: {
+    name?: string;
+    steamid?: string;
+    teamId?: string;
+  };
 }
 
-export const CoachForm = ({ open, setOpen }: CoachFormProps) => {
+export const CoachForm = ({ open, setOpen, prefill }: CoachFormProps) => {
   const {
     createCoach,
     updateCoach,
@@ -33,14 +38,28 @@ export const CoachForm = ({ open, setOpen }: CoachFormProps) => {
 
   useEffect(() => {
     if (isEditing && selectedCoach) {
-      // Update form fields when selectedCoach prop changes
+      // Editing an existing coach
       setSteamId(selectedCoach.steamid);
       setName(selectedCoach.name || "");
       setTeam(selectedCoach.team || "");
-    } else {
-      handleReset();
+    } else if (open && prefill) {
+      // Creating with prefilled values
+      setSteamId(prefill.steamid || "");
+      setName(prefill.name || "");
+      setTeam(prefill.teamId || "");
+      setSteamIdError("");
+      setSteamIdFormatError("");
+    } else if (!isEditing && !prefill) {
+      // Fresh create without prefill
+      setIsEditing(false);
+      setSelectedCoach(null);
+      setName("");
+      setSteamId("");
+      setTeam("");
+      setSteamIdError("");
+      setSteamIdFormatError("");
     }
-  }, [isEditing, selectedCoach]);
+  }, [isEditing, selectedCoach, open, prefill, setIsEditing, setSelectedCoach]);
 
   const validateForm = () => {
     let isValid = true;

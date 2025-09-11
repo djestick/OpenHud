@@ -12,9 +12,13 @@ import { apiUrl } from "../../api/api";
 interface PlayerFormProps {
   open: boolean;
   setOpen: (open: boolean) => void;
+  prefill?: {
+    username?: string;
+    steamId?: string;
+  };
 }
 
-export const PlayerForm = ({ open, setOpen }: PlayerFormProps) => {
+export const PlayerForm = ({ open, setOpen, prefill }: PlayerFormProps) => {
   const {
     createPlayer,
     updatePlayer,
@@ -40,7 +44,7 @@ export const PlayerForm = ({ open, setOpen }: PlayerFormProps) => {
 
   useEffect(() => {
     if (isEditing && selectedPlayer) {
-      // Update form fields when selectedPlayer prop changes
+      // Editing an existing player
       setUsername(selectedPlayer.username);
       setFirstName(selectedPlayer.firstName || "");
       setLastName(selectedPlayer.lastName || "");
@@ -48,10 +52,34 @@ export const PlayerForm = ({ open, setOpen }: PlayerFormProps) => {
       setTeam(selectedPlayer.team || "");
       setCountry(selectedPlayer.country || "");
       setAvatar(selectedPlayer.avatar || "");
-    } else {
-      handleReset();
+    } else if (open && prefill) {
+      // Creating a new player with prefilled values
+      setUsername(prefill.username || "");
+      setSteamId(prefill.steamId || "");
+      setFirstName("");
+      setLastName("");
+      setTeam("");
+      setCountry("");
+      setAvatar("");
+      setAvatarFile(null);
+      setUsernameError("");
+      setSteamIdError("");
+      setSteamIdFormatError("");
+    } else if (!isEditing && !prefill) {
+      // Fresh create without prefill: inline reset to avoid handleReset dependency
+      setSelectedPlayer(null);
+      setUsername("");
+      setAvatarFile(null);
+      setFirstName("");
+      setLastName("");
+      setSteamId("");
+      setTeam("");
+      setCountry("");
+      setUsernameError("");
+      setSteamIdError("");
+      setSteamIdFormatError("");
     }
-  }, [isEditing, selectedPlayer]);
+  }, [isEditing, selectedPlayer, open, prefill, setSelectedPlayer]);
 
   const validateForm = () => {
     let isValid = true;
