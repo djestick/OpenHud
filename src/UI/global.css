@@ -1,7 +1,68 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap')
+layer(base);
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+
+/* 
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2.5rem;
+  @media (width >= theme(--breakpoint-sm)) {
+    padding-inline: 2.5rem;
+  }
+} */
+
+@theme {
+  --color-background-primary: var(--background-primary);
+  --color-background-contrast: var(--background-contrast);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-hover: var(--background-hover);
+  --color-background-light: var(--background-light);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-disabled: var(--text-disabled);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-secondary: var(--secondary);
+  --color-secondary-light: var(--secondary-light);
+  --color-secondary-dark: var(--secondary-dark);
+  --color-border: var(--border-color);
+  --color-button: var(--button-color);
+  --color-button-text: var(--button-text);
+
+  --animate-fade-in: fadeIn 0.1s ease;
+
+  --shadow-custom: 1px 3px 5px 0px rgba(0, 0, 0, 0.5);
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 @layer base {
   h1 {
@@ -85,44 +146,44 @@ body,
 } */
 
 .dark {
-  --background-primary: 0.21 0.006 285.885; /* main background color */
-  --background-contrast: 0.141 0.005 285.823;
-  --background-secondary: 0.274 0.006 286.033; /* spacing, secondary elements */
-  --background-light: 0.37 0.013 285.805; /* slightly lighter for hover */
-  --background-hover: 0.552 0.016 285.938; /* even lighter for light background */
-  --text-color: 1 0 0; /* White */
-  --border-color: 0.37 0.013 285.805; /* same as hover */
-  --button-color: 0.72 0.18 142.08; /* Medium Green */
-  --button-text: 1 0 0; /* White */
-  --primary: 0.588 0.158 241.966;
-  --primary-light: 0.685 0.169 237.323;
-  --primary-dark: 0.5 0.134 242.749;
-  --secondary: 0.645 0.246 16.439;
-  --secondary-light: 0.712 0.194 13.428;
-  --secondary-dark: 0.514 0.222 16.935;
-  --text: 1 0 0; /* White */
-  --text-secondary: 1 0 0 / 0.7; /* Semi-transparent White */
-  --text-disabled: 1 0 0 / 0.5; /* More Transparent White */
+  --color-background-primary: oklch(0.21 0.006 285.885);
+  --color-background-contrast: oklch(0.141 0.005 285.823);
+  --color-background-secondary: oklch(0.274 0.006 286.033); 
+  --color-background-light: oklch(0.37 0.013 285.805);
+  --color-background-hover: oklch(0.552 0.016 285.938);
+  --color-text-color: oklch(1 0 0);
+  --color-border: oklch(0.37 0.013 285.805);
+  --color-button-color: oklch(0.72 0.18 142.08); 
+  --color-button-text: oklch(1 0 0);
+  --color-primary: oklch(0.588 0.158 241.966);
+  --color-primary-light: oklch(0.685 0.169 237.323);
+  --color-primary-dark: oklch(0.5 0.134 242.749);
+  --color-secondary: oklch(0.645 0.246 16.439);
+  --color-secondary-light: oklch(0.712 0.194 13.428);
+  --color-secondary-dark: oklch(0.514 0.222 16.935);
+  --color-text: oklch(1 0 0);
+  --color-text-secondary: oklch(1 0 0 / 0.7); 
+  --color-text-disabled: oklch(1 0 0 / 0.5); 
   background: oklch(var(--background-secondary));
 }
 
 .light {
-  --background-primary: 0.94 0 0;
-  --background-contrast: 0.871 0.006 286.286;
-  --background-secondary: 1 0 0;
-  --background-hover: 0.86 0 0; /* Gray */
-  --background-light: 0.78 0 0; /* Darker Gray */
-  --text-color: 0 0 0; /* Black */
-  --border-color: 0.78 0 0; /* Darker Gray */
-  --button-text: 1 0 0; /* White */
-  --primary: 0.588 0.158 241.966;
-  --primary-dark: 0.685 0.169 237.323;
-  --primary-light: 0.588 0.158 241.966;
-  --secondary: 0.645 0.246 16.439;
-  --secondary-light: 0.514 0.222 16.935;
-  --secondary-dark: 0.712 0.194 13.428;
-  --text: 0 0 0; /* Black */
-  --text-secondary: 0 0 0 / 0.7; /* Semi-transparent Black */
-  --text-disabled: 0 0 0 / 0.5; /* More Transparent Black */
+  --color-background-primary: oklch(0.94 0 0);
+  --color-background-contrast: oklch(0.871 0.006 286.286);
+  --color-background-secondary: oklch(1 0 0);
+  --color-background-hover: oklch(0.86 0 0); 
+  --color-background-light: oklch(0.78 0 0); 
+  --color-text-color: oklch(0 0 0); 
+  --color-border-color: oklch(0.78 0 0);
+  --color-button-text: oklch(1 0 0); 
+  --color-primary: oklch(0.588 0.158 241.966);
+  --color-primary-dark: oklch(0.685 0.169 237.323);
+  --color-primary-light: oklch(0.588 0.158 241.966);
+  --color-secondary: oklch(0.645 0.246 16.439);
+  --color-secondary-light: oklch(0.514 0.222 16.935);
+  --color-secondary-dark: oklch(0.712 0.194 13.428);
+  --color-text: oklch(0 0 0); 
+  --color-text-secondary: oklch(0 0 0 / 0.7); 
+  --color-text-disabled: oklch(0 0 0 / 0.5); 
   background: oklch(var(--background-secondary));
 }
