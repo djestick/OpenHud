@@ -14,7 +14,7 @@ export const CurrentMapRounds: React.FC<Props> = ({ veto, playersMap = {} }) => 
         <div className="max-h-96 overflow-y-auto">
         {veto.rounds && veto.rounds.length ? (
             veto.rounds.map((round, i) => (
-            <div key={i} className="mb-2 p-2 border rounded-sm">
+            <div key={i} className="mb-2 p-2 border rounded">
                 <p className="font-semibold">Round {i + 1}</p>
                 <p>Winner: {round?.winner ?? "-"}</p>
                 <p>Win type: {round?.win_type ?? "-"}</p>

@@ -142,7 +142,7 @@ export const TeamsForm = ({ open, setOpen }: TeamsFormProps) => {
               <img
                 src={apiUrl + "/teams/logo/" + selectedTeam._id}
                 alt="Current Logo"
-                className="size-36 rounded-sm border object-cover"
+                className="size-36 rounded border object-cover"
               />
             )}
             <input

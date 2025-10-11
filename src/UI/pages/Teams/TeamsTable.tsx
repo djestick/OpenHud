@@ -11,7 +11,7 @@ export const TeamsTable = ({ setOpenState }: TeamsTableProps) => {
   const { filteredTeams} = useTeams();
   return (
     <table className="table-fixed">
-      <thead className="sticky top-16 border-b border-border bg-background-secondary shadow-sm">
+      <thead className="sticky top-16 border-b border-border bg-background-secondary shadow">
         <tr>
           <th className="p-4 text-sm" align="left">
             Logo

@@ -198,7 +198,7 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
               <input
                 type="number"
                 min={0}
-                className="h-8 w-20 rounded-sm border border-gray-300 px-2"
+                className="h-8 w-20 rounded border border-gray-300 px-2"
                 value={leftTeamWins}
                 onChange={(e) => setLeftTeamWins(Number(e.target.value || 0))}
               />
@@ -208,7 +208,7 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
               <input
                 type="number"
                 min={0}
-                className="h-8 w-20 rounded-sm border border-gray-300 px-2"
+                className="h-8 w-20 rounded border border-gray-300 px-2"
                 value={rightTeamWins}
                 onChange={(e) => setRightTeamWins(Number(e.target.value || 0))}
               />
