@@ -24,12 +24,13 @@ See [LICENSE](./LICENSE) for full details.
 
 Hopefully it ends up looking very nice and lets a lot of people use it in their streams!
 
-# OpenHud React Hud based on [Lexogrine react hud](https://github.com/JohnTimmermann/OpenHud-React-Hud)
+# OpenHud React Hud based on [Lexogrine react hud](https://github.com/lexogrine/cs2-react-hud)
 
-![Custom CS2 Hud](https://i.imgur.com/OWexW9T.png)
+![Custom CS2 Hud](https://i.imgur.com/tWK5Bqj.jpeg)
 
 # Admin Panel
 
-![AdminPanel/Matches](https://i.imgur.com/8WwunXg.png)
-![AdminPanel/Players](https://i.imgur.com/3oKFgIJ.png)
-![AdminPanel/Teams](https://i.imgur.com/vIlKeM6.png)
+![AdminPanel/Matches](https://i.imgur.com/kr1SMvB.png)
+![AdminPanel/Players](https://i.imgur.com/nkBt4Kn.png)
+![AdminPanel/Teams](https://i.imgur.com/tQVVFAJ.png)
+![AdminPanel/Dashboard](https://i.imgur.com/JNg9Gw8.png)
