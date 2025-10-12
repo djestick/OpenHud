@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { Router, static as static_ } from "express";
 import path from "path";
-import { getDefaultHUDPath, getHudPath } from "../../../helpers/pathResolver.js";
+import { getHudPath } from "../../../helpers/pathResolver.js";
 export const HudRoutes = Router();
 
 /* ================== GETs ===================== */
