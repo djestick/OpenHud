@@ -28,7 +28,7 @@ export function createHudWindow() {
   createMenu(hudWindow);
 
   // Note: The HUD window is always loaded from localhost to avoid CORS issues with local files.
-  hudWindow.loadURL("http://" + apiUrl + "/hud");
+  hudWindow.loadURL("http://" + apiUrl + "/api/hud");
   hudWindow.setIgnoreMouseEvents(true);
 
   // Focus the HUD window a short time after it's shown to ensure it goes on top.

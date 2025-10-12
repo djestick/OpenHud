@@ -36,7 +36,7 @@ export function getDefaultHUDPath() {
   return path.join(
     app.getAppPath(),
     isDev() ? "." : "..",
-    "/src/assets/defaultHud",
+    "/src/assets/defaultHudv2",
   );
 }
 

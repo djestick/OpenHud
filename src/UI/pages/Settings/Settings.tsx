@@ -1,10 +1,6 @@
 import { ButtonContained } from "../../components";
 
-interface SettingsProps {
-  onClose: () => void;
-}
-
-export const Settings = ({ onClose }: SettingsProps) => {
+export const Settings = () => {
 
   return (
     <div className="flex flex-col gap-6 overflow-y-auto">
