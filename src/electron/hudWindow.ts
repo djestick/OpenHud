@@ -1,13 +1,18 @@
 import { BrowserWindow } from "electron";
 import { getPreloadPath } from "./helpers/index.js";
-import { checkDirectories } from "./helpers/util.js";
 import { apiUrl } from "./index.js";
 import { createMenu } from "./menu.js";
 
-export let hudWindow: BrowserWindow | null = null;
+const hudWindows: BrowserWindow[] = [];
+
+export const closeAllWindows = () => {
+  [...hudWindows].forEach((window) => {
+    window.close();
+  });
+};
 
 export function createHudWindow() {
-  hudWindow = new BrowserWindow({
+  let hudWindow: BrowserWindow | null = new BrowserWindow({
     fullscreen: true,
     transparent: true,
     alwaysOnTop: true,
@@ -18,26 +23,31 @@ export function createHudWindow() {
       preload: getPreloadPath(),
       backgroundThrottling: false,
     },
-    
   });
 
   createMenu(hudWindow);
-  checkDirectories();
-  
+
   // Note: The HUD window is always loaded from localhost to avoid CORS issues with local files.
   hudWindow.loadURL("http://" + apiUrl + "/hud");
   hudWindow.setIgnoreMouseEvents(true);
 
   // Focus the HUD window a short time after it's shown to ensure it goes on top.
-    hudWindow.on("show", () => {
+  hudWindow.on("show", () => {
     setTimeout(() => {
       hudWindow?.focus();
     }, 200);
   });
 
+  hudWindows.push(hudWindow);
+
   hudWindow.on("closed", () => {
+    const index = hudWindows.indexOf(hudWindow as BrowserWindow);
+    if (index > -1) {
+      hudWindows.splice(index, 1);
+    }
     hudWindow = null;
   });
 
   return hudWindow;
 }
+
