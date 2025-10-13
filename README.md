@@ -20,7 +20,7 @@ See [LICENSE](./LICENSE) for full details.
 - Launch openhud.exe and run CS2 in WindowedFullscreen mode.
 - You're done! Create your players, teams, and matches. Start CS2 and join a match (or demo) as a spectator.
 - For the Spectator overlay, click the overlay button in the side menu of the app.
-- For OBS overlay, create a Browser Source, delete all of the custom css, and use the url: http://localhost:1349/hud
+- For OBS overlay, create a Browser Source, delete all of the custom css, and use the url: http://localhost:1349/api/hud
 
 Hopefully it ends up looking very nice and lets a lot of people use it in their streams!
 
