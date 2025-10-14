@@ -2,7 +2,7 @@
 export const port = 1349;
 export const apiUrl = `http://localhost:${port}/api`;
 
-export async function apiV2(url: string, method = "GET", body?: unknown) {
+export async function apiV2<T = any>(url: string, method = "GET", body?: unknown): Promise<T> {
   const options: RequestInit = {
     method,
     headers: { Accept: "application/json", "Content-Type": "application/json" },
@@ -14,8 +14,21 @@ export async function apiV2(url: string, method = "GET", body?: unknown) {
   // return fetch(`${apiUrl}api/${url}`, options)
   return fetch(`${apiUrl}${url}`, options).then((res) => {
     data = res;
-    return res.json().catch(() => data && data.status < 300);
+    return res.json().catch(() => (data && data.status < 300 ? (true as unknown as T) : (false as unknown as T)));
   });
+}
+
+export interface HudDescriptor {
+  id: string;
+  name: string;
+  type: "builtin" | "custom";
+  folder: string;
+  path: string;
+  version?: string;
+  author?: string;
+  thumbnailDataUri: string | null;
+  metadata: Record<string, unknown>;
+  isActive: boolean;
 }
 
 const api = {
@@ -47,6 +60,12 @@ const api = {
   // maps: {
   //   get: (): Promise<{ [key: string]: MapConfig }> => apiV2("radar/maps"),
   // },
+  hud: {
+    list: (): Promise<HudDescriptor[]> => apiV2<HudDescriptor[]>(`/hud/available`),
+    select: (id: string): Promise<HudDescriptor> =>
+      apiV2<HudDescriptor>(`/hud/select`, "POST", { id }),
+    selected: (): Promise<HudDescriptor> => apiV2<HudDescriptor>(`/hud/selected`),
+  },
 };
 
 export default api;

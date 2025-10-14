@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { IconType } from "react-icons";
 import {
@@ -7,10 +8,13 @@ import {
   MdAddCircle,
   MdPlayArrow,
   MdSports,
-  MdRefresh
+  MdRefresh,
+  MdViewQuilt,
 } from "react-icons/md";
 import { useDrawer } from "../../hooks";
 import { socket } from "../../api/socket";
+import api, { HudDescriptor } from "../../api/api";
+import { HudSelectorDialog } from "./HudSelectorDialog";
 
 interface RouteProps {
   Icon: IconType;
@@ -35,12 +39,50 @@ const refreshHud = () => {
 
 export const RouteSelect = () => {
   const { isOpen } = useDrawer();
+  const [isHudDialogOpen, setHudDialogOpen] = useState(false);
+  const [activeHudName, setActiveHudName] = useState<string | null>(null);
+
+  useEffect(() => {
+    api.hud
+      .selected()
+      .then((hud) => {
+        if (hud && typeof hud.name === "string") {
+          setActiveHudName(hud.name);
+        }
+      })
+      .catch(() => undefined);
+  }, []);
+
+  const handleHudSelected = (hud: HudDescriptor) => {
+    setActiveHudName(hud.name);
+    setHudDialogOpen(false);
+    refreshHud();
+  };
+
   return (
     <div className="relative size-full overflow-y-auto">
       <div className="relative flex flex-col items-center justify-between gap-4 py-5">
         {routes.map((route, index) => (
           <NavRoutes key={index} {...route} />
         ))}
+        <div className="flex size-full w-full text-text">
+          <button
+            className="relative flex h-7 w-full items-center gap-1 rounded-lg bg-primary py-5 hover:bg-primary-dark"
+            onClick={() => setHudDialogOpen(true)}
+          >
+            <MdViewQuilt className="absolute left-3.5 size-7" />
+            {isOpen && (
+              <div className="flex flex-col pl-14 pr-3 text-left">
+                <p className="font-semibold">HUD</p>
+                {activeHudName && (
+                  <span className="truncate text-xs text-text-secondary">
+                    {activeHudName}
+                  </span>
+                )}
+              </div>
+            )}
+          </button>
+        </div>
         <div className="flex size-full w-full border-t border-border pt-4 text-text">
           <button
             className="relative flex h-7 w-full items-center gap-1 rounded-lg bg-primary py-5 hover:bg-primary-dark"
@@ -60,6 +102,11 @@ export const RouteSelect = () => {
           </button>
         </div>
       </div>
+      <HudSelectorDialog
+        open={isHudDialogOpen}
+        onClose={() => setHudDialogOpen(false)}
+        onSelected={handleHudSelected}
+      />
     </div>
   );
 };
