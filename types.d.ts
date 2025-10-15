@@ -2,7 +2,13 @@ interface Window {
   electron: {
     startServer: (callback: (message: string) => void) => void;
     sendFrameAction: (payload: FrameWindowAction) => void;
-    startOverlay: () => void;
+    startOverlay: (config?: Partial<OverlayConfig>) => void;
+    stopOverlay: () => void;
+    onOverlayStatus: (
+      callback: (status: OverlayStatus) => void,
+    ) => () => void;
+    getOverlayStatus: () => Promise<OverlayStatus>;
+    setOverlayConfig: (config: Partial<OverlayConfig>) => void;
     openExternalLink: (url: string) => void;
     openHudsDirectory: () => void;
     openHudAssetsDirectory: () => void;
@@ -23,7 +29,13 @@ interface Window {
 
 type EventPayloadMapping = {
   startServer: string;
-  startOverlay;
+  startOverlay: null;
+  "overlay:start": Partial<OverlayConfig>;
+  "overlay:stop": void;
+  "overlay:setConfig": Partial<OverlayConfig>;
+  "overlay:status": OverlayStatus;
+  "overlay:getStatus": OverlayStatus;
+  "overlay:getDisplays": OverlayDisplay[];
   sendFrameAction: FrameWindowAction;
   openExternalLink: string;
   getPlayers: Promise<Player[]>;
@@ -144,11 +156,27 @@ interface Match {
     id: string | null;
     wins: number;
   };
-  matchType: "bo1" | "bo2" | "bo3" | "bo5";
+  matchType: "bo1" | "bo3" | "bo5";
   vetos: Veto[];
 }
 
 type MapConfig = SingleLayer | DoubleLayer;
+
+type OverlayDisplay = {
+  id: number;
+  label: string;
+};
+
+interface OverlayConfig {
+  displayId: number | null;
+  scale: number;
+}
+
+interface OverlayStatus {
+  isVisible: boolean;
+  config: OverlayConfig;
+  displays: OverlayDisplay[];
+}
 
 type Weapon =
   | "ak47"

@@ -5,7 +5,14 @@ import {
   openHudsDirectory,
   openHudAssetsDirectory,
 } from "../helpers/index.js";
-import { createHudWindow } from "../hudWindow.js";
+import {
+  showOverlay,
+  hideOverlay,
+  getCurrentOverlayStatus,
+  onOverlayStatusChange,
+  setOverlayConfig,
+  listDisplays,
+} from "../hudWindow.js";
 import * as PlayersModel from "../api/v2/players/players.data.js";
 // Handle expects a response
 export function ipcMainEvents(mainWindow: BrowserWindow) {
@@ -35,9 +42,27 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
   });
 
   ipcMainOn("startOverlay", () => {
-    const hudWindow = createHudWindow();
-    hudWindow.show();
+    showOverlay();
   });
+
+  ipcMainOn("overlay:start", (config: Partial<OverlayConfig>) => {
+    if (config) {
+      setOverlayConfig(config);
+    }
+    showOverlay();
+  });
+
+  ipcMainOn("overlay:stop", () => {
+    hideOverlay();
+  });
+
+  ipcMainOn("overlay:setConfig", (config: Partial<OverlayConfig>) => {
+    setOverlayConfig(config);
+  });
+
+  ipcMainHandle("overlay:getStatus", () => getCurrentOverlayStatus());
+
+  ipcMainHandle("overlay:getDisplays", () => listDisplays());
 
   ipcMainOn("openExternalLink", (url) => {
     shell.openExternal(url);
@@ -49,5 +74,9 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
 
   ipcMainOn("openHudAssetsDirectory", () => {
     openHudAssetsDirectory();
+  });
+
+  onOverlayStatusChange(() => {
+    mainWindow.webContents.send("overlay:status", getCurrentOverlayStatus());
   });
 }

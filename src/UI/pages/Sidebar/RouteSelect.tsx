@@ -5,13 +5,11 @@ import {
   MdGroups,
   MdDashboard,
   MdAddCircle,
-  MdPlayArrow,
   MdSports,
-  MdRefresh,
   MdOutlineMonitor,
+  MdLiveTv,
 } from "react-icons/md";
 import { useDrawer } from "../../hooks";
-import { socket } from "../../api/socket";
 
 interface RouteConfig {
   Icon: IconType;
@@ -29,11 +27,6 @@ const baseRoutes: RouteConfig[] = [
   { Icon: MdDashboard, title: "Dashboard", to: "dashboard" },
 ];
 
-const refreshHud = () => {
-  console.log("Refreshing hud");
-  socket.emit("refreshHUD");
-};
-
 export const RouteSelect = () => {
   const { isOpen } = useDrawer();
 
@@ -44,30 +37,20 @@ export const RouteSelect = () => {
           <NavRoutes key={route.to} {...route} isOpen={isOpen} />
         ))}
         <div className="mt-4 flex size-full w-full border-t border-border pt-4 text-text">
-          <NavRoutes
-            Icon={MdOutlineMonitor}
-            title="HUD"
-            to="hud"
-            isOpen={isOpen}
-          />
-        </div>
-        <div className="mt-4 flex size-full w-full border-t border-border pt-4 text-text">
-          <button
-            className="relative flex h-7 w-full items-center gap-1 rounded-lg bg-primary py-5 hover:bg-primary-dark"
-            onClick={() => window.electron.startOverlay()}
-          >
-            <MdPlayArrow className="absolute left-3.5 size-7" />
-            {isOpen && <p className="pl-14 font-semibold">Overlay</p>}
-          </button>
-        </div>
-        <div className="flex size-full w-full text-text">
-          <button
-            className="relative flex h-7 w-full items-center gap-1 rounded-lg bg-primary py-5 hover:bg-primary-dark"
-            onClick={refreshHud}
-          >
-            <MdRefresh className="absolute left-3.5 size-7" />
-            {isOpen && <p className="pl-14 font-semibold">Refresh hud</p>}
-          </button>
+          <div className="flex w-full flex-col gap-2">
+            <NavRoutes
+              Icon={MdOutlineMonitor}
+              title="HUD"
+              to="hud"
+              isOpen={isOpen}
+            />
+            <NavRoutes
+              Icon={MdLiveTv}
+              title="Overlay"
+              to="overlay"
+              isOpen={isOpen}
+            />
+          </div>
         </div>
       </div>
     </div>

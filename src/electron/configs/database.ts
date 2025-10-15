@@ -80,7 +80,7 @@ export const database = new sqlite3.Database(getDatabasePath(), (error) => {
         left_wins INTEGER DEFAULT 0 CHECK (left_wins BETWEEN 0 AND 5),
         right_id TEXT,
         right_wins INTEGER DEFAULT 0 CHECK (right_wins BETWEEN 0 AND 5),
-        matchType TEXT NOT NULL CHECK (matchType IN ('bo1', 'bo2', 'bo3', 'bo5')),
+        matchType TEXT NOT NULL CHECK (matchType IN ('bo1', 'bo3', 'bo5')),
         vetos TEXT NOT NULL,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,

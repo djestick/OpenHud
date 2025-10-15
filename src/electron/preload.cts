@@ -16,7 +16,27 @@ electron.contextBridge.exposeInMainWorld("electron", {
     ipcSend("sendFrameAction", payload);
   },
 
-  startOverlay: () => ipcSend("startOverlay", null),
+  startOverlay: (config?: Partial<OverlayConfig>) => {
+    if (config) {
+      ipcSend("overlay:start", config);
+    } else {
+      ipcSend("overlay:start", {});
+    }
+  },
+  stopOverlay: () => ipcSend("overlay:stop", undefined),
+  onOverlayStatus: (callback: (status: OverlayStatus) => void) => {
+    const listener = (
+      _: Electron.IpcRendererEvent,
+      payload: OverlayStatus,
+    ) => callback(payload);
+    electron.ipcRenderer.on("overlay:status", listener);
+    return () => {
+      electron.ipcRenderer.removeListener("overlay:status", listener);
+    };
+  },
+  getOverlayStatus: () => ipcInvoke("overlay:getStatus"),
+  setOverlayConfig: (config: Partial<OverlayConfig>) =>
+    ipcSend("overlay:setConfig", config),
   openExternalLink: (url) => ipcSend("openExternalLink", url),
   openHudsDirectory: () => ipcSend("openHudsDirectory", undefined),
   openHudAssetsDirectory: () => ipcSend("openHudAssetsDirectory", undefined),

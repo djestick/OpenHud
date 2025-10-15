@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MatchTypes } from "./MatchPage";
+import { MatchTypes, MatchTypeKey } from "./matchConstants";
 import { VetoRow } from "./VetoRow";
 import { ButtonContained, Container, Dialog } from "../../components";
 import { useMatches } from "./useMatches";
@@ -10,11 +10,36 @@ interface MatchFormProps {
   setOpen: (open: boolean) => void;
 }
 
+type VetoType = Veto["type"];
+
+const VETO_CONFIG: Record<MatchTypeKey, VetoType[]> = {
+  bo1: ["ban", "ban", "ban", "ban", "ban", "ban", "decider"],
+  bo3: ["ban", "ban", "pick", "pick", "ban", "ban", "decider"],
+  bo5: ["pick", "pick", "pick", "pick", "decider"],
+};
+
+const MATCH_TYPES: readonly MatchTypeKey[] = MatchTypes;
+const DEFAULT_MATCH_TYPE: MatchTypeKey = MATCH_TYPES[0];
+const FALLBACK_MATCH_TYPE: MatchTypeKey =
+  MATCH_TYPES[1] ?? DEFAULT_MATCH_TYPE;
+
+const createEmptyVeto = (type: VetoType): Veto => ({
+  teamId: "",
+  mapName: "",
+  side: "NO",
+  type,
+  mapEnd: false,
+  reverseSide: false,
+});
+
+const buildDefaultVetos = (matchType: MatchTypeKey): Veto[] =>
+  VETO_CONFIG[matchType].map((type) => createEmptyVeto(type));
+
 export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
   const {
-  isEditing,
-  selectedMatch,
-  setCurrentMatch,
+    isEditing,
+    selectedMatch,
+    setCurrentMatch,
     createMatch,
     updateMatch,
     setIsEditing,
@@ -22,26 +47,15 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
   } = useMatches();
   const { teams } = useTeams();
 
-  const [matchType, setMatchType] = useState<"bo1" | "bo2" | "bo3" | "bo5">(
-    "bo1",
-  );
+  const [matchType, setMatchType] = useState<MatchTypeKey>(DEFAULT_MATCH_TYPE);
   const [leftTeamId, setLeftTeamId] = useState<string | null>(null);
   const [leftTeamWins, setLeftTeamWins] = useState<number>(0);
   const [rightTeamId, setRightTeamId] = useState<string | null>(null);
   const [rightTeamWins, setRightTeamWins] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState(""); // Added for error message
-  const [vetos, setVetos] = useState<Veto[]>(
-    Array(9)
-      .fill(null)
-      .map(() => ({
-        teamId: "",
-        mapName: "",
-        side: "NO",
-        type: "ban",
-        mapEnd: false,
-      })),
-  );
+  const [vetos, setVetos] = useState<Veto[]>(() => buildDefaultVetos(DEFAULT_MATCH_TYPE));
+  const [autoTeamsFirst, setAutoTeamsFirst] = useState<"left" | "right">("left");
 
   const leftTeam = teams.find((team) => team._id === leftTeamId);
   const rightTeam = teams.find((team) => team._id === rightTeamId);
@@ -52,13 +66,30 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
       setRightTeamId(selectedMatch.right.id);
       setLeftTeamWins(selectedMatch.left.wins);
       setRightTeamWins(selectedMatch.right.wins);
-      setMatchType(selectedMatch.matchType);
+      const maybeType = selectedMatch.matchType as MatchTypeKey;
+      const safeType = MATCH_TYPES.includes(maybeType)
+        ? maybeType
+        : FALLBACK_MATCH_TYPE;
+      setMatchType(safeType);
       setCurrentMatch(selectedMatch);
       setVetos(selectedMatch.vetos);
     } else {
       handleReset();
     }
   }, [isEditing, selectedMatch]);
+
+  useEffect(() => {
+    setVetos((prevVetos) => {
+      const config = VETO_CONFIG[matchType];
+      return config.map((type, index) => {
+        const existing = prevVetos[index];
+        if (existing) {
+          return { ...existing, type };
+        }
+        return createEmptyVeto(type);
+      });
+    });
+  }, [matchType]);
 
   const validateForm = () => {
     let isValid = true;
@@ -69,7 +100,7 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
       isValid = false;
     }
 
-    if (!["bo1", "bo2", "bo3", "bo5"].includes(matchType)) {
+    if (!MATCH_TYPES.includes(matchType)) {
       setErrorMessage("Invalid match type selected.");
       isValid = false;
     }
@@ -92,7 +123,7 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
       id: selectedMatch?.id || "",
       left: { id: leftTeamId, wins: leftTeamWins },
       right: { id: rightTeamId, wins: rightTeamWins },
-      matchType: matchType as "bo1" | "bo2" | "bo3" | "bo5",
+      matchType,
       current: selectedMatch ? selectedMatch.current : false,
       vetos: vetos,
     };
@@ -123,22 +154,49 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
     setLeftTeamId(null);
     setRightTeamId(null);
     setCurrentMatch(null);
-    setMatchType("bo1");
+    setMatchType(DEFAULT_MATCH_TYPE);
     setLeftTeamWins(0);
     setRightTeamWins(0);
     setErrorMessage("");
-    const newVetos: Veto[] = vetos.map(() => ({
-      type: "pick",
-      teamId: "",
-      mapName: "",
-      side: "NO",
-      reverseSide: false,
-      mapEnd: false,
-    }));
-    setVetos(newVetos);
+    setAutoTeamsFirst("left");
+    setVetos(buildDefaultVetos(DEFAULT_MATCH_TYPE));
   };
 
-  const vetoSource = selectedMatch?.vetos || vetos;
+  const handleAutoAssignTeams = () => {
+    if (!leftTeamId || !rightTeamId) {
+      setErrorMessage("Please select both teams before auto assigning vetos.");
+      return;
+    }
+
+    setErrorMessage("");
+
+    const startsWithLeft = autoTeamsFirst === "left";
+    const firstTeamId = startsWithLeft ? leftTeamId : rightTeamId;
+    const secondTeamId = startsWithLeft ? rightTeamId : leftTeamId;
+    const config = VETO_CONFIG[matchType];
+
+    setVetos((prevVetos) =>
+      config.map((type, index) => {
+        const existing = prevVetos[index] ?? createEmptyVeto(type);
+        const assignedTeam =
+          type === "decider"
+            ? ""
+            : index % 2 === 0
+            ? firstTeamId
+            : secondTeamId;
+
+        return {
+          ...existing,
+          type,
+          teamId: assignedTeam,
+        };
+      }),
+    );
+
+    setAutoTeamsFirst(startsWithLeft ? "right" : "left");
+  };
+
+  const vetoSource = vetos;
 
   return (
     <Dialog onClose={handleCancel} open={open}>
@@ -154,6 +212,7 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
           <div className="my-2 flex items-center justify-center gap-4">
             <div className="bg-background-primary">
               <select
+                className="min-w-[12rem] w-auto rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text"
                 value={leftTeamId || ""}
                 onChange={(e) => setLeftTeamId(e.target.value)}
                 name="Team One"
@@ -174,6 +233,7 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
 
             <div className="bg-background-primary">
               <select
+                className="min-w-[12rem] w-auto rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text"
                 value={rightTeamId || ""}
                 onChange={(e) => setRightTeamId(e.target.value)}
                 name="Team Two"
@@ -215,8 +275,8 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
             </div>
           </div>
 
-          <div className="flex items-center justify-center">
-            <form className="flex flex-col items-center justify-center bg-background-primary">
+          <div className="flex items-center justify-center gap-4">
+            <form className="flex flex-col items-center justify-center gap-2 rounded-md bg-background-primary p-3">
               <label
                 htmlFor="Match Type"
                 className="text-sm font-semibold uppercase text-gray-400"
@@ -224,10 +284,9 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
                 Best of
               </label>
               <select
+                className="min-w-[8rem] w-auto rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text"
                 value={matchType}
-                onChange={(e) =>
-                  setMatchType(e.target.value as "bo1" | "bo2" | "bo3" | "bo5")
-                }
+                onChange={(e) => setMatchType(e.target.value as MatchTypeKey)}
                 name="Match Type"
               >
                 {MatchTypes.map((type) => (
@@ -237,10 +296,12 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
                 ))}
               </select>
             </form>
+            <ButtonContained type="button" onClick={handleAutoAssignTeams}>
+              Auto teams
+            </ButtonContained>
           </div>
 
           <h5 className="mt-4 font-semibold">Set Vetos:</h5>
-          {/* <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3"> */}
           <table className="min-w-full divide-y divide-slate-400">
             <thead className="bg-background-secondary">
               <tr>
@@ -248,8 +309,6 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
                 <TableTH title="type" />
                 <TableTH title="Team" />
                 <TableTH title="Map" />
-                <TableTH title="Side" />
-                <TableTH title="Reverse side" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700 p-4">

@@ -1,0 +1,13 @@
+{
+  "name": "@djestick Observer HUD",
+  "version": "1.0.1",
+  "author": "@djestick",
+  "legacy": false,
+  "radar": true,
+  "killfeed": false,
+  "game": "cs2",
+  "boltobserv": {
+    "css": false,
+    "maps": false
+  }
+}

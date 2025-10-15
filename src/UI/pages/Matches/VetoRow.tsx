@@ -1,5 +1,5 @@
 import React from "react";
-import { maps } from "./MatchPage";
+import { maps } from "./matchConstants";
 
 interface VetoRowProps {
   index: number;
@@ -56,6 +56,7 @@ export const VetoRow: React.FC<VetoRowProps> = ({
       <td className="px-6 py-4">
         <div className="w-full">
           <select
+            className="min-w-[10rem] w-auto rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text disabled:cursor-not-allowed disabled:opacity-70"
             disabled={veto.type === "decider"}
             value={veto.type === "decider" ? "decider" : veto.teamId || ""}
             onChange={(e) => onVetoChange(index, "teamId", e.target.value)}
@@ -79,6 +80,7 @@ export const VetoRow: React.FC<VetoRowProps> = ({
       <td className="px-6 py-4">
         <div className="w-full">
           <select
+            className="min-w-[10rem] w-auto rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text"
             value={veto.mapName || ""}
             onChange={(e) => {
               onVetoChange(index, "mapName", e.target.value);
@@ -94,32 +96,6 @@ export const VetoRow: React.FC<VetoRowProps> = ({
               </option>
             ))}
           </select>
-        </div>
-      </td>
-      <td className="px-6 py-4">
-        <div className="w-full">
-          <select
-            value={veto.side}
-            onChange={(e) => {
-              const newSide = e.target.value as "CT" | "T" | "NO";
-              onVetoChange(index, "side", newSide);
-            }}
-            name="Side"
-          >
-            <option value="NO">No Side</option>
-            <option value="CT">CT</option>
-            <option value="T">T</option>
-          </select>
-        </div>
-      </td>
-      <td className="px-6 py-4">
-        <div className="col-span-2 flex w-full flex-col items-center justify-center">
-          <input
-            type="checkbox"
-            id={`reverseSide-${index}`}
-            checked={veto.reverseSide === true}
-            onChange={(e) => onVetoChange(index, "reverseSide", e.target.checked)}
-          />
         </div>
       </td>
     </tr>
