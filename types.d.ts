@@ -5,6 +5,7 @@ interface Window {
     startOverlay: () => void;
     openExternalLink: (url: string) => void;
     openHudsDirectory: () => void;
+    openHudAssetsDirectory: () => void;
   };
   update: {
     updateMessage: (callback: (message: string) => void) => void;
@@ -28,6 +29,7 @@ type EventPayloadMapping = {
   getPlayers: Promise<Player[]>;
   updateMessage: string;
   openHudsDirectory: void;
+  openHudAssetsDirectory: void;
 };
 
 type FrameWindowAction =

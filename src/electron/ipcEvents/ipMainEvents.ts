@@ -3,6 +3,7 @@ import {
   ipcMainHandle,
   ipcMainOn,
   openHudsDirectory,
+  openHudAssetsDirectory,
 } from "../helpers/index.js";
 import { createHudWindow } from "../hudWindow.js";
 import * as PlayersModel from "../api/v2/players/players.data.js";
@@ -44,5 +45,9 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
 
   ipcMainOn("openHudsDirectory", () => {
     openHudsDirectory();
+  });
+
+  ipcMainOn("openHudAssetsDirectory", () => {
+    openHudAssetsDirectory();
   });
 }

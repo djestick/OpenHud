@@ -1,5 +1,5 @@
 import { ipcMain, WebContents, WebFrameMain, Notification } from "electron";
-import { getUIPath } from "./pathResolver.js";
+import { getAssetPath, getUIPath } from "./pathResolver.js";
 import { pathToFileURL } from "url";
 import { app, shell } from "electron";
 import path from "path";
@@ -97,5 +97,10 @@ export function showNotification(body: string) {
 
 export function openHudsDirectory() {
   const customHudDir = path.join(app.getPath("home"), "OpenHud-Huds");
-  shell.openPath(customHudDir); // ✅ Correct way to open the folder
+  shell.openPath(customHudDir);
+}
+
+export function openHudAssetsDirectory() {
+  const assetsPath = getAssetPath();
+  shell.openPath(assetsPath);
 }
