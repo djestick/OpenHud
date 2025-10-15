@@ -42,11 +42,24 @@ Match creation has been **fully optimized**:
 
 ---
 
+### Settings tab
+<p align="left">
+  <img src="https://i.ibb.co/C5w0cVN1/image.png" alt="Match Setup Screenshot" width="600">
+</p>
+- Appearance      <br> 
+Choose between Light and Dark mode and adjust the Interface Scale (from 75% to 150%) for better visibility.    <br>   
+- Fix GSI      <br> 
+Installs the OpenHUD GameState Integration configuration directly into your Counter-Strike folder.     <br>  
+- Legacy Import<br> 
+Allows you to import old data from a previous OpenHUD installation.  <br>     
+
+---
+
 ###  🕹️ Quick Actions
 
 At the bottom of the menu, two important buttons have been added:
 
-- **Switch Sides** — instantly swaps team sides  
+- **Switch Sides** — instantly swaps team sides   
 - **Refresh HUD** — reloads your HUD without restarting the app  
 - **Settings tab** — was removed
 
