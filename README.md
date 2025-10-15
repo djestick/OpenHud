@@ -1,36 +1,52 @@
-# OpenHud - An open source CS2 Custom Hud.
+# Forked [OpenHud](https://github.com/JohnTimmermann/OpenHud)
 
-Join the community [Discord](https://discord.gg/HApB9HyaWM)!
+### ⚙️ Overview
 
-- Tech: Electron, React, Typescript, NodeJS, Express, Socketio, SQLite3
-- Styling: TailwindCSS (admin panel) / Sass (hud)
+This project is a **fork of the OpenHUD Manager**, featuring a redesigned and more functional interface    
+It introduces a faster and more convenient way to manage HUDs, overlays, and match settings
 
-## License
+---
 
-This software is licensed under a custom license that allows free use and modification — including in monetized streams and videos — but **forbids resale** of the program or modified versions.
+###  🧩 HUD Manager
 
-If you redistribute modified versions, you must provide proper credit and disclose what changes were made.
+<p align="left">
+  <img src="https://i.ibb.co/Hf99QBqg/image.png" alt="HUD Manager Screenshot" width="600">
+</p>
 
-See [LICENSE](./LICENSE) for full details.
+Now you can instantly switch between HUDs with a single click.  
+The new **HUD Manager tab** allows quick access to all installed HUDs and applies them without restarting.
 
-# Getting Started:
+---
 
-- Download the latest .zip form the releases page and unzip it.
-- Copy the gamestate_integration_openhud.cfg file from the .zip /resources/src/assets to your CS config folder (the same folder you'd put an autoexec.cfg). (Will make it automatic in the future)
-- Launch openhud.exe and run CS2 in WindowedFullscreen mode.
-- You're done! Create your players, teams, and matches. Start CS2 and join a match (or demo) as a spectator.
-- For the Spectator overlay, click the overlay button in the side menu of the app.
-- For OBS overlay, create a Browser Source, delete all of the custom css, and use the url: http://localhost:1349/api/hud
+###  🖥️ Overlay Controls
 
-Hopefully it ends up looking very nice and lets a lot of people use it in their streams!
+<p align="left">
+  <img src="https://i.ibb.co/kgZq3wDM/image.png" alt="Overlay Controls Screenshot" width="600">
+</p>
 
-# OpenHud React Hud based on [Lexogrine react hud](https://github.com/lexogrine/cs2-react-hud)
+A new **Overlay menu** has been added —  
+you can now choose which monitor to display the overlay on and adjust its **position and size** directly from the UI.
 
-![Custom CS2 Hud](https://i.imgur.com/tWK5Bqj.jpeg)
+---
 
-# Admin Panel
+### ⚡ Match Creation Optimization
+<p align="left">
+  <img src="https://i.ibb.co/0RwW5SzK/image.png" alt="Match Setup Screenshot" width="600">
+</p>
 
-![AdminPanel/Matches](https://i.imgur.com/kr1SMvB.png)
-![AdminPanel/Players](https://i.imgur.com/nkBt4Kn.png)
-![AdminPanel/Teams](https://i.imgur.com/tQVVFAJ.png)
-![AdminPanel/Dashboard](https://i.imgur.com/JNg9Gw8.png)
+Match creation has been **fully optimized**:
+- Veto logic automatically adapts to **BO1**, **BO3**, or **BO5** formats  
+- Picks, bans, and deciders are generated dynamically  
+- You can easily alternate between teams in sequence with a single button —  
+  and even switch which team starts the veto order
+
+---
+
+###  🕹️ Quick Actions
+
+At the bottom of the menu, two important buttons have been added:
+
+- **Switch Sides** — instantly swaps team sides  
+- **Refresh HUD** — reloads your HUD without restarting the app  
+- **Settings tab** — was removed
+
