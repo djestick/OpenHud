@@ -41,6 +41,8 @@ electron.contextBridge.exposeInMainWorld("electron", {
   openHudsDirectory: () => ipcSend("openHudsDirectory", undefined),
   openHudAssetsDirectory: () => ipcSend("openHudAssetsDirectory", undefined),
   setAppZoom: (zoomFactor: number) => ipcSend("app:setZoom", zoomFactor),
+  importLegacyData: () => ipcInvoke("legacy:import"),
+  fixGSI: () => ipcInvoke("gsi:fix"),
 } satisfies Window["electron"]);
 
 function ipcInvoke<Key extends keyof EventPayloadMapping>(

@@ -17,6 +17,11 @@ export const AccountToggle = () => {
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
 
+    if (!window.electron?.getOverlayStatus || !window.electron?.onOverlayStatus) {
+      setOverlayLoading(false);
+      return;
+    }
+
     const loadStatus = async () => {
       try {
         const status = await window.electron.getOverlayStatus();

@@ -13,6 +13,8 @@ interface Window {
     openHudsDirectory: () => void;
     openHudAssetsDirectory: () => void;
     setAppZoom: (zoomFactor: number) => void;
+    importLegacyData: () => Promise<LegacyImportResult>;
+    fixGSI: () => Promise<GSIResult>;
   };
   update: {
     updateMessage: (callback: (message: string) => void) => void;
@@ -44,6 +46,24 @@ type EventPayloadMapping = {
   openHudsDirectory: void;
   openHudAssetsDirectory: void;
   "app:setZoom": number;
+  "legacy:import": LegacyImportResult;
+  "gsi:fix": GSIResult;
+};
+
+type LegacyImportResult = {
+  success: boolean;
+  message: string;
+  players: number;
+  teams: number;
+  coaches: number;
+  matches: number;
+  logs: string[];
+};
+
+type GSIResult = {
+  success: boolean;
+  message: string;
+  targetPath?: string;
 };
 
 type FrameWindowAction =

@@ -14,7 +14,9 @@ export function isDev(): boolean {
 // Using generics to set the type of key which determines the handler type
 export function ipcMainHandle<Key extends keyof EventPayloadMapping>(
   key: Key,
-  handler: () => EventPayloadMapping[Key],
+  handler: () =>
+    | EventPayloadMapping[Key]
+    | Promise<EventPayloadMapping[Key]>,
 ) {
   ipcMain.handle(key, (event) => {
     // Verify the url the user is accessing the fil from
