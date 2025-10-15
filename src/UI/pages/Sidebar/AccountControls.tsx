@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { MdDarkMode, MdLightMode, MdRefresh, MdSwapHoriz } from "react-icons/md";
-import { useThemes } from "../../hooks/useThemes";
+import { NavLink } from "react-router-dom";
+import { MdRefresh, MdSettings, MdSwapHoriz } from "react-icons/md";
 import { useDrawer } from "../../hooks";
 import { socket } from "../../api/socket";
 import useGameData from "../../context/useGameData";
@@ -8,7 +8,6 @@ import { useMatches } from "../Matches/useMatches";
 import { canReverseSides } from "../Matches/matchUtils";
 
 export const AccountToggle = () => {
-  const { theme, toggleTheme } = useThemes();
   const { isOpen } = useDrawer();
   const { gameData } = useGameData();
   const { currentMatch, updateMatch } = useMatches();
@@ -97,18 +96,36 @@ export const AccountToggle = () => {
         <MdSwapHoriz className="size-7 shrink-0" />
         {isOpen && <p className="pl-2 font-semibold">Switch sides</p>}
       </button>
-      <button
-        className="relative flex items-center rounded-lg py-2 pl-4 hover:bg-border"
-        onClick={toggleTheme}
-        title="Toggle theme"
+      <NavLink
+        to="/settings"
+        title="Open settings"
+        className={({ isActive }) =>
+          `relative flex items-center rounded-lg py-2 pl-4 transition-colors ${
+            isActive
+              ? "bg-background-light text-text shadow"
+              : "text-text-secondary hover:bg-border"
+          }`
+        }
       >
-        {theme === "dark" ? (
-          <MdDarkMode className="size-7 shrink-0" />
-        ) : (
-          <MdLightMode className="size-7 shrink-0" />
+        {({ isActive }) => (
+          <>
+            <MdSettings
+              className={`size-7 shrink-0 ${
+                isActive ? "text-primary-light" : "text-text-disabled"
+              }`}
+            />
+            {isOpen && (
+              <p
+                className={`pl-2 font-semibold ${
+                  isActive ? "text-text" : "text-text-secondary"
+                }`}
+              >
+                Settings
+              </p>
+            )}
+          </>
         )}
-        {isOpen && <p className="pl-2 font-semibold">Theme</p>}
-      </button>
+      </NavLink>
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { Layout } from "./pages/Layout";
 import { CoachesPage } from "./pages/Coaches/CoachesPage";
 import { HudPage } from "./pages/Hud/HudPage";
 import { OverlayPage } from "./pages/Overlay";
+import { Settings } from "./pages/Settings";
 
 const AuthenticatedRoutes = () => (
   <AppProviders>
@@ -22,6 +23,7 @@ const AuthenticatedRoutes = () => (
           <Route path="hud" element={<HudPage />} />
           <Route path="overlay" element={<OverlayPage />} />
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>
     </MemoryRouter>

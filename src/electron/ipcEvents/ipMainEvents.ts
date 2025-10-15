@@ -76,6 +76,11 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
     openHudAssetsDirectory();
   });
 
+  ipcMainOn("app:setZoom", (zoomFactor: number) => {
+    const clamped = Math.min(3, Math.max(0.5, zoomFactor));
+    mainWindow.webContents.setZoomFactor(clamped);
+  });
+
   onOverlayStatusChange(() => {
     mainWindow.webContents.send("overlay:status", getCurrentOverlayStatus());
   });

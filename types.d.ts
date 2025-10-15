@@ -12,6 +12,7 @@ interface Window {
     openExternalLink: (url: string) => void;
     openHudsDirectory: () => void;
     openHudAssetsDirectory: () => void;
+    setAppZoom: (zoomFactor: number) => void;
   };
   update: {
     updateMessage: (callback: (message: string) => void) => void;
@@ -42,6 +43,7 @@ type EventPayloadMapping = {
   updateMessage: string;
   openHudsDirectory: void;
   openHudAssetsDirectory: void;
+  "app:setZoom": number;
 };
 
 type FrameWindowAction =

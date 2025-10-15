@@ -4,3 +4,4 @@ export * from "../pages/Players/PlayersContext";
 export * from "../pages/Teams/TeamsContext";
 export * from "./ThemesContext";
 export * from "./DrawerContext";
+export * from "./AppSettingsContext";

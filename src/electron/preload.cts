@@ -40,6 +40,7 @@ electron.contextBridge.exposeInMainWorld("electron", {
   openExternalLink: (url) => ipcSend("openExternalLink", url),
   openHudsDirectory: () => ipcSend("openHudsDirectory", undefined),
   openHudAssetsDirectory: () => ipcSend("openHudAssetsDirectory", undefined),
+  setAppZoom: (zoomFactor: number) => ipcSend("app:setZoom", zoomFactor),
 } satisfies Window["electron"]);
 
 function ipcInvoke<Key extends keyof EventPayloadMapping>(

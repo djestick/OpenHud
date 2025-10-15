@@ -174,7 +174,7 @@ export const OverlayPage = () => {
 
         <div className="flex flex-col gap-3">
           <span className="text-sm font-semibold uppercase tracking-wide text-text-secondary">
-            Overlay scale
+            Overlay scale (25%-200%)
           </span>
           <div className="flex w-full max-w-md items-center gap-3">
             <button
@@ -216,11 +216,6 @@ export const OverlayPage = () => {
               +
             </button>
           </div>
-          <p className="text-xs text-text-disabled">
-            Adjusts the zoom level for the overlay window. Use the buttons for
-            quick steps of 5% or type a value between {MIN_SCALE}% and{" "}
-            {MAX_SCALE}%.
-          </p>
         </div>
       </div>
     </section>
