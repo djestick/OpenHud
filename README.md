@@ -10,7 +10,7 @@ It introduces a faster and more convenient way to manage HUDs, overlays, and mat
 ###  🧩 HUD Manager
 
 <p align="left">
-  <img src="https://i.ibb.co/Hf99QBqg/image.png" alt="HUD Manager Screenshot" width="600">
+  <img src="https://i.ibb.co/Y4WwCRTC/2025-10-16-232449.png" alt="HUD Manager Screenshot" width="50%">
 </p>
 
 Now you can instantly switch between HUDs with a single click.  
@@ -21,7 +21,7 @@ The new **HUD Manager tab** allows quick access to all installed HUDs and applie
 ###  🖥️ Overlay Controls
 
 <p align="left">
-  <img src="https://i.ibb.co/kgZq3wDM/image.png" alt="Overlay Controls Screenshot" width="600">
+  <img src="https://i.ibb.co/6R6VF19v/2025-10-16-232513.png" alt="Overlay Controls Screenshot" width="50%">
 </p>
 
 A new **Overlay menu** has been added —  
@@ -31,7 +31,7 @@ you can now choose which monitor to display the overlay on and adjust its **posi
 
 ### ⚡ Match Creation Optimization
 <p align="left">
-  <img src="https://i.ibb.co/0RwW5SzK/image.png" alt="Match Setup Screenshot" width="600">
+  <img src="https://i.ibb.co/8wrWzHx/2025-10-16-232432.png" alt="Match Setup Screenshot" width="50%">
 </p>
 
 Match creation has been **fully optimized**:
@@ -44,14 +44,21 @@ Match creation has been **fully optimized**:
 
 ### Settings tab
 <p align="left">
-  <img src="https://i.ibb.co/C5w0cVN1/image.png" alt="Match Setup Screenshot" width="600">
+  <img src="https://i.ibb.co/gbd45WBL/2025-10-16-232538.png" alt="Match Setup Screenshot" width="50%">
 </p>
-- Appearance      <br> 
-Choose between Light and Dark mode and adjust the Interface Scale (from 75% to 150%) for better visibility.    <br>   
-- Fix GSI      <br> 
-Installs the OpenHUD GameState Integration configuration directly into your Counter-Strike folder.     <br>  
+<p align="left">
+  <img src="https://i.ibb.co/JwxQwvMf/2025-10-16-232649.png" alt="Match Setup Screenshot" width="50%">
+</p>
+- Appearance<br> 
+Choose between Light and Dark mode and adjust the Interface Scale (from 75% to 150%) for better visibility.<br>   
+- Fix GSI<br> 
+Installs the OpenHUD GameState Integration configuration directly into your Counter-Strike folder.<br>  
 - Legacy Import<br> 
-Allows you to import old data from a previous OpenHUD installation.  <br>     
+Allows you to import old data from a previous OpenHUD installation.<br>
+- Export Data<br> 
+Easily select which items you want to export.<br> 
+- Import Data<br> 
+If you have a .db file, for example a backup, you can easily choose which data you want to import.<br> 
 
 ---
 
