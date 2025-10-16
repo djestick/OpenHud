@@ -43,6 +43,12 @@ electron.contextBridge.exposeInMainWorld("electron", {
   setAppZoom: (zoomFactor: number) => ipcSend("app:setZoom", zoomFactor),
   importLegacyData: () => ipcInvoke("legacy:import"),
   fixGSI: () => ipcInvoke("gsi:fix"),
+  selectImportSource: () => ipcInvoke("data:selectImportSource"),
+  importData: (payload: ImportDataPayload) =>
+    electron.ipcRenderer.invoke("data:import", payload),
+  exportData: (selection: DataExportSelection) =>
+    electron.ipcRenderer.invoke("data:export", selection),
+  openExportsDirectory: () => ipcSend("exports:open", undefined),
 } satisfies Window["electron"]);
 
 function ipcInvoke<Key extends keyof EventPayloadMapping>(

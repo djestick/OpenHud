@@ -6,7 +6,10 @@ import {
   ipcMainOn,
   openHudsDirectory,
   openHudAssetsDirectory,
+  openExportsDirectory,
   getAssetPath,
+  getExportsPath,
+  ensureDirectory,
 } from "../helpers/index.js";
 import {
   showOverlay,
@@ -18,6 +21,16 @@ import {
 } from "../hudWindow.js";
 import { runLegacyImport } from "../legacyMigrator.js";
 import * as PlayersModel from "../api/v2/players/players.data.js";
+import {
+  loadDatabaseSnapshot,
+  importSelectionFromFile,
+  exportDatabaseSelection,
+} from "../helpers/dataTransfer.js";
+import type {
+  DataExportSelection,
+  ExportDataResult,
+  ImportDataResult,
+} from "../helpers/dataTransfer.js";
 // Handle expects a response
 export function ipcMainEvents(mainWindow: BrowserWindow) {
   ipcMainHandle("getPlayers", async () => {
@@ -88,6 +101,78 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
   ipcMainHandle("legacy:import", async () => {
     const result = await runLegacyImport();
     return result;
+  });
+
+  ipcMainHandle("data:selectImportSource", async () => {
+    const selection = await dialog.showOpenDialog(mainWindow, {
+      title: "Select OpenHUD database file",
+      buttonLabel: "Choose",
+      properties: ["openFile"],
+      filters: [{ name: "OpenHUD database", extensions: ["db"] }],
+    });
+
+    if (selection.canceled || selection.filePaths.length === 0) {
+      return { cancelled: true };
+    }
+
+    const filePath = selection.filePaths[0];
+
+    try {
+      const snapshot = await loadDatabaseSnapshot(filePath);
+      return {
+        cancelled: false,
+        filePath,
+        snapshot,
+      };
+    } catch (error) {
+      return {
+        cancelled: false,
+        error: `Failed to read database: ${(error as Error).message}`,
+      };
+    }
+  });
+
+  ipcMainHandle(
+    "data:import",
+    async ({
+      sourcePath,
+      selection,
+    }: {
+      sourcePath: string;
+      selection: DataExportSelection;
+    }): Promise<ImportDataResult> => {
+      try {
+        return await importSelectionFromFile(sourcePath, selection);
+      } catch (error) {
+        return {
+          success: false,
+          message: `Failed to import database: ${(error as Error).message}`,
+        };
+      }
+    },
+  );
+
+  ipcMainHandle(
+    "data:export",
+    async (payload: DataExportSelection): Promise<ExportDataResult> => {
+      const exportsPath = getExportsPath();
+      ensureDirectory(exportsPath);
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      const filePath = path.join(exportsPath, `openhud-export-${timestamp}.db`);
+
+      try {
+        return await exportDatabaseSelection(filePath, payload);
+      } catch (error) {
+        return {
+          success: false,
+          message: `Failed to export data: ${(error as Error).message}`,
+        };
+      }
+    },
+  );
+
+  ipcMainOn("exports:open", () => {
+    openExportsDirectory();
   });
 
   ipcMainHandle("gsi:fix", async () => {

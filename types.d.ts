@@ -15,6 +15,10 @@ interface Window {
     setAppZoom: (zoomFactor: number) => void;
     importLegacyData: () => Promise<LegacyImportResult>;
     fixGSI: () => Promise<GSIResult>;
+    selectImportSource: () => Promise<ImportPreviewResult>;
+    importData: (payload: ImportDataPayload) => Promise<ImportDataResult>;
+    exportData: (selection: DataExportSelection) => Promise<ExportDataResult>;
+    openExportsDirectory: () => void;
   };
   update: {
     updateMessage: (callback: (message: string) => void) => void;
@@ -45,9 +49,13 @@ type EventPayloadMapping = {
   updateMessage: string;
   openHudsDirectory: void;
   openHudAssetsDirectory: void;
+  "exports:open": void;
   "app:setZoom": number;
   "legacy:import": LegacyImportResult;
   "gsi:fix": GSIResult;
+  "data:selectImportSource": ImportPreviewResult;
+  "data:import": ImportDataResult;
+  "data:export": ExportDataResult;
 };
 
 type LegacyImportResult = {
@@ -64,6 +72,95 @@ type GSIResult = {
   success: boolean;
   message: string;
   targetPath?: string;
+};
+
+type DataSelection = {
+  includeAll: boolean;
+  ids: string[];
+};
+
+type DataTransferCounts = Record<
+  "teams" | "players" | "coaches" | "matches",
+  number
+>;
+
+type DataExportSelection = {
+  players: DataSelection;
+  teams: DataSelection;
+  coaches: DataSelection;
+  matches: DataSelection;
+};
+
+type ImportDataResult = {
+  success: boolean;
+  message: string;
+  counts?: DataTransferCounts;
+  cancelled?: boolean;
+  autoIncludedTeams?: string[];
+};
+
+type ExportDataResult = {
+  success: boolean;
+  message: string;
+  counts?: DataTransferCounts;
+  filePath?: string;
+  autoIncludedTeams?: string[];
+  cancelled?: boolean;
+};
+
+type DatabaseTeamRow = {
+  _id: string;
+  name?: string;
+  shortName?: string | null;
+  country?: string | null;
+  logo?: string | null;
+  [key: string]: unknown;
+};
+
+type DatabasePlayerRow = {
+  _id: string;
+  username?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  team?: string | null;
+  steamid?: string;
+  avatar?: string | null;
+  [key: string]: unknown;
+};
+
+type DatabaseCoachRow = {
+  steamid: string;
+  name?: string | null;
+  team?: string | null;
+  [key: string]: unknown;
+};
+
+type DatabaseMatchRow = {
+  id: string;
+  left_id?: string | null;
+  right_id?: string | null;
+  matchType?: string | null;
+  current?: number | boolean;
+  [key: string]: unknown;
+};
+
+type DatabaseSnapshot = {
+  teams: DatabaseTeamRow[];
+  players: DatabasePlayerRow[];
+  coaches: DatabaseCoachRow[];
+  matches: DatabaseMatchRow[];
+};
+
+type ImportPreviewResult = {
+  cancelled: boolean;
+  filePath?: string;
+  snapshot?: DatabaseSnapshot;
+  error?: string;
+};
+
+type ImportDataPayload = {
+  sourcePath: string;
+  selection: DataExportSelection;
 };
 
 type FrameWindowAction =

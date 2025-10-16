@@ -1,4 +1,5 @@
-import { Router } from "express";
+import { Router, static as static_ } from "express";
+import path from "node:path";
 import { playersRoutes } from "./players/players.routes.js";
 import { matchesRoutes } from "./matches/matches.routes.js";
 import { teamsRoutes } from "./teams/teams.routes.js";
@@ -8,6 +9,7 @@ import { HudRoutes } from "./huds/huds.routes.js";
 import { readGameData } from "./gsi/gsi.js";
 import { cameraRoutes } from "./cameras/cameras.routes.js";
 import { coachRoutes } from "./coaches/coaches.routes.js";
+import { getHudPath } from "../../helpers/hudManager.js";
 
 export const APIRouter = Router();
 
@@ -20,4 +22,13 @@ APIRouter.use("/tournament", tournmentRoutes);
 APIRouter.use("/camera", cameraRoutes);
 APIRouter.get("/radar/maps", getMapsHandler);
 APIRouter.use("/hud", HudRoutes);
+APIRouter.use(
+  "/assets",
+  (req, res, next) =>
+    static_(path.join(getHudPath(), "assets"))(req, res, (err) => {
+      if (!err) {
+        next();
+      }
+    }),
+);
 APIRouter.post("/gsi", readGameData);

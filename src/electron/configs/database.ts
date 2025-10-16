@@ -1,19 +1,59 @@
 import sqlite3 from "sqlite3";
 import { getDatabasePath } from "../helpers/pathResolver.js";
 
-/* Initialize the SQLite database with tables */
-export const database = new sqlite3.Database(getDatabasePath(), (error) => {
-  if (error) {
-    console.log(error);
-  }
+export const TABLE_COLUMNS = {
+  teams: [
+    "_id",
+    "name",
+    "country",
+    "shortName",
+    "logo",
+    "extra",
+    "createdAt",
+    "updatedAt",
+  ],
+  players: [
+    "_id",
+    "firstName",
+    "lastName",
+    "username",
+    "avatar",
+    "country",
+    "steamid",
+    "team",
+    "extra",
+    "createdAt",
+    "updatedAt",
+  ],
+  matches: [
+    "id",
+    "current",
+    "left_id",
+    "left_wins",
+    "right_id",
+    "right_wins",
+    "matchType",
+    "vetos",
+    "createdAt",
+    "updatedAt",
+  ],
+  coaches: [
+    "steamid",
+    "name",
+    "team",
+    "createdAt",
+    "updatedAt",
+  ],
+} as const;
 
-  /* Enable foreign key constraints */
-  database.run("PRAGMA foreign_keys = ON");
+type SchemaEntry = {
+  sql: string;
+  onError: (error: Error) => void;
+};
 
-  database.serialize(() => {
-    /* Create teams table first (since players references it) */
-    database.run(
-      `CREATE TABLE IF NOT EXISTS teams (
+const schemaStatements: SchemaEntry[] = [
+  {
+    sql: `CREATE TABLE IF NOT EXISTS teams (
         _id TEXT PRIMARY KEY NOT NULL UNIQUE,
         name TEXT NOT NULL,
         country TEXT,
@@ -23,25 +63,26 @@ export const database = new sqlite3.Database(getDatabasePath(), (error) => {
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
       )`,
-      (error) => {
-        if (error) {
-          console.error("Error creating teams table:", error.message);
-        }
-      },
-    );
-
-    database.run(`
+    onError: (error) =>
+      console.error("Error creating teams table:", error.message),
+  },
+  {
+    sql: `
     CREATE TRIGGER IF NOT EXISTS update_teams_updatedAt
     AFTER UPDATE ON teams
     FOR EACH ROW
     BEGIN
         UPDATE teams SET updatedAt = CURRENT_TIMESTAMP WHERE _id = OLD._id;
     END;
-  `);
-
-    /* Create players table */
-    database.run(
-      `CREATE TABLE IF NOT EXISTS players (
+  `,
+    onError: (error) =>
+      console.error(
+        "Error creating update_teams_updatedAt trigger:",
+        error.message,
+      ),
+  },
+  {
+    sql: `CREATE TABLE IF NOT EXISTS players (
         _id TEXT PRIMARY KEY NOT NULL UNIQUE,
         firstName TEXT,
         lastName TEXT,
@@ -55,25 +96,26 @@ export const database = new sqlite3.Database(getDatabasePath(), (error) => {
         updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (team) REFERENCES teams(_id) ON DELETE SET NULL
       )`,
-      (error) => {
-        if (error) {
-          console.error("Error creating players table:", error.message);
-        }
-      },
-    );
-
-    database.run(`
+    onError: (error) =>
+      console.error("Error creating players table:", error.message),
+  },
+  {
+    sql: `
     CREATE TRIGGER IF NOT EXISTS update_players_updatedAt
     AFTER UPDATE ON players
     FOR EACH ROW
     BEGIN
         UPDATE players SET updatedAt = CURRENT_TIMESTAMP WHERE _id = OLD._id;
     END;
-  `);
-
-    /* Create matches table */
-    database.run(
-      `CREATE TABLE IF NOT EXISTS matches (
+  `,
+    onError: (error) =>
+      console.error(
+        "Error creating update_players_updatedAt trigger:",
+        error.message,
+      ),
+  },
+  {
+    sql: `CREATE TABLE IF NOT EXISTS matches (
         id TEXT PRIMARY KEY NOT NULL UNIQUE,
         current INTEGER DEFAULT 0 CHECK (current IN (0, 1)),
         left_id TEXT,
@@ -88,25 +130,26 @@ export const database = new sqlite3.Database(getDatabasePath(), (error) => {
         FOREIGN KEY (right_id) REFERENCES teams(_id) ON DELETE SET NULL,
         CHECK (left_id != right_id)
       )`,
-      (error) => {
-        if (error) {
-          console.error("Error creating players table:", error.message);
-        }
-      },
-    );
-
-    database.run(`
+    onError: (error) =>
+      console.error("Error creating matches table:", error.message),
+  },
+  {
+    sql: `
     CREATE TRIGGER IF NOT EXISTS update_matches_updatedAt
     AFTER UPDATE ON matches
     FOR EACH ROW
     BEGIN
         UPDATE matches SET updatedAt = CURRENT_TIMESTAMP WHERE id = OLD.id;
     END;
-  `);
-
-    /* Create coaches table */
-    database.run(
-      `CREATE TABLE IF NOT EXISTS coaches (
+  `,
+    onError: (error) =>
+      console.error(
+        "Error creating update_matches_updatedAt trigger:",
+        error.message,
+      ),
+  },
+  {
+    sql: `CREATE TABLE IF NOT EXISTS coaches (
         steamid TEXT PRIMARY KEY NOT NULL UNIQUE,
         name TEXT,
         team TEXT,
@@ -114,20 +157,44 @@ export const database = new sqlite3.Database(getDatabasePath(), (error) => {
         updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (team) REFERENCES teams(_id) ON DELETE SET NULL
       )`,
-      (error) => {
-        if (error) {
-          console.error("Error creating coaches table:", error.message);
-        }
-      },
-    );
-
-    database.run(`
+    onError: (error) =>
+      console.error("Error creating coaches table:", error.message),
+  },
+  {
+    sql: `
     CREATE TRIGGER IF NOT EXISTS update_coaches_updatedAt
     AFTER UPDATE ON coaches
     FOR EACH ROW
     BEGIN
         UPDATE coaches SET updatedAt = CURRENT_TIMESTAMP WHERE steamid = OLD.steamid;
     END;
-  `);
+  `,
+    onError: (error) =>
+      console.error(
+        "Error creating update_coaches_updatedAt trigger:",
+        error.message,
+      ),
+  },
+];
+
+export const applyDatabaseSchema = (db: sqlite3.Database) => {
+  db.run("PRAGMA foreign_keys = ON");
+
+  db.serialize(() => {
+    schemaStatements.forEach(({ sql, onError }) => {
+      db.run(sql, (error) => {
+        if (error) {
+          onError(error);
+        }
+      });
+    });
   });
+};
+
+/* Initialize the SQLite database with tables */
+export const database = new sqlite3.Database(getDatabasePath(), (error) => {
+  if (error) {
+    console.log(error);
+  }
+  applyDatabaseSchema(database);
 });

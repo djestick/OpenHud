@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { MdFolderOpen, MdRefresh } from "react-icons/md";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { MdFolderOpen, MdRefresh, MdLink } from "react-icons/md";
 import api, { HudDescriptor } from "../../api/api";
 import { ButtonContained, Dialog } from "../../components";
 import { socket } from "../../api/socket";
@@ -10,6 +10,8 @@ export const HudPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [confirmHud, setConfirmHud] = useState<HudDescriptor | null>(null);
   const [saving, setSaving] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState(false);
+  const copyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadHuds = useCallback(async () => {
     setLoading(true);
@@ -69,11 +71,54 @@ export const HudPage = () => {
     void loadHuds();
   };
 
+  const handleCopyUrl = async () => {
+    const url = "http://localhost:1349/api/hud";
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = url;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+      setCopyFeedback(true);
+      copyTimeoutRef.current = setTimeout(() => {
+        setCopyFeedback(false);
+        copyTimeoutRef.current = null;
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy HUD URL", err);
+      setError("Failed to copy the HUD URL to clipboard.");
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <section className="relative flex h-full w-full flex-col gap-6 py-6">
       <div className="flex w-full items-center justify-between gap-4">
         <h2 className="text-3xl font-semibold">HUD</h2>
         <div className="flex items-center gap-2">
+          {copyFeedback && (
+            <span className="text-xs font-semibold uppercase text-green-400">
+              Copied to clipboard
+            </span>
+          )}
           <button
             type="button"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-background-light text-text hover:bg-background-light/70 disabled:opacity-50"
@@ -83,6 +128,16 @@ export const HudPage = () => {
             disabled={loading}
           >
             <MdRefresh className="size-5" />
+          </button>
+          <button
+            type="button"
+            className="flex h-10 items-center gap-2 rounded-full bg-background-light px-4 text-sm font-semibold uppercase text-text transition hover:bg-background-light/70 disabled:opacity-50"
+            onClick={handleCopyUrl}
+            title="Copu URL for OBS"
+            aria-label="Copy URL for OBS"
+          >
+            <MdLink className="size-5" />
+            Copy URL
           </button>
           <ButtonContained
             className="gap-2 rounded-full px-4 py-2 uppercase"

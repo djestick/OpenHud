@@ -1,5 +1,5 @@
 import { ipcMain, WebContents, WebFrameMain, Notification } from "electron";
-import { getAssetPath, getUIPath } from "./pathResolver.js";
+import { getAssetPath, getExportsPath, getUIPath } from "./pathResolver.js";
 import { pathToFileURL } from "url";
 import { app, shell } from "electron";
 import path from "path";
@@ -12,18 +12,23 @@ export function isDev(): boolean {
   return process.env.NODE_ENV === "development";
 }
 // Using generics to set the type of key which determines the handler type
-export function ipcMainHandle<Key extends keyof EventPayloadMapping>(
+export function ipcMainHandle<
+  Key extends keyof EventPayloadMapping,
+  Payload = void,
+>(
   key: Key,
-  handler: () =>
+  handler: (
+    payload: Payload,
+  ) =>
     | EventPayloadMapping[Key]
     | Promise<EventPayloadMapping[Key]>,
 ) {
-  ipcMain.handle(key, (event) => {
+  ipcMain.handle(key, (event, payload: Payload) => {
     // Verify the url the user is accessing the fil from
     if (event.senderFrame) {
       validateEventFrame(event.senderFrame);
     }
-    return handler();
+    return handler(payload);
   });
 }
 export function ipcMainOn<Key extends keyof EventPayloadMapping>(
@@ -59,9 +64,9 @@ export function validateEventFrame(frame: WebFrameMain) {
   }
 }
 
-function createMissingDir(directory: string) {
+export function ensureDirectory(directory: string) {
   if (!fs.existsSync(directory)) {
-    fs.mkdirSync(directory);
+    fs.mkdirSync(directory, { recursive: true });
   }
 }
 
@@ -74,7 +79,7 @@ export function checkDirectories() {
   const teamLogosDir = path.join(uploadsDir, "team_logos");
 
   [customHudDir, userData, uploadsDir, playerPicturesDir, teamLogosDir].forEach(
-    createMissingDir,
+    ensureDirectory,
   );
 
   /* Check to see if the user has a custom hud loaded */
@@ -105,4 +110,10 @@ export function openHudsDirectory() {
 export function openHudAssetsDirectory() {
   const assetsPath = getAssetPath();
   shell.openPath(assetsPath);
+}
+
+export function openExportsDirectory() {
+  const exportsPath = getExportsPath();
+  ensureDirectory(exportsPath);
+  shell.openPath(exportsPath);
 }

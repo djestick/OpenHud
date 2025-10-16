@@ -90,7 +90,7 @@ export const AccountToggle = () => {
         disabled={refreshDisabled}
       >
         <MdRefresh className="size-7 shrink-0" />
-        {isOpen && <p className="pl-2 font-semibold">Refresh HUD</p>}
+        {isOpen && <p className="pl-2 font-semibold">Refresh overlay</p>}
       </button>
       <button
         className="relative flex items-center rounded-lg py-2 pl-4 hover:bg-border disabled:cursor-not-allowed disabled:opacity-60"

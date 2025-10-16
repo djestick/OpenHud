@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { Router, static as static_ } from "express";
-import path from "path";
+import path from "node:path";
 import {
   getHudPath,
   getSelectedHud,
@@ -20,6 +20,10 @@ HudRoutes.get("/selected", (_req, res) => {
 });
 
 HudRoutes.get("/", (_req, res) => {
+  if (!_req.originalUrl.endsWith("/")) {
+    res.redirect(302, `${_req.originalUrl}/`);
+    return;
+  }
   res.status(200).sendFile(path.join(getHudPath(), "index.html"));
 });
 
@@ -42,6 +46,11 @@ HudRoutes.post("/select", (req, res) => {
 });
 
 /* ================== STATIC ===================== */
+HudRoutes.use(
+  "/assets",
+  (req, res, next) =>
+    static_(path.join(getHudPath(), "assets"))(req, res, next),
+);
 HudRoutes.use((req, res, next) => {
   const middleware = static_(getHudPath());
   return middleware(req, res, next);

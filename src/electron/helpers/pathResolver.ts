@@ -53,3 +53,14 @@ export function getPlayerPicturesPath() {
 export function getTeamLogosPath() {
   return path.join(getUploadsPath(), "team_logos");
 }
+
+export function getProgramRootPath() {
+  if (isDev()) {
+    return app.getAppPath();
+  }
+  return path.dirname(process.execPath);
+}
+
+export function getExportsPath() {
+  return path.join(getProgramRootPath(), "exports");
+}
