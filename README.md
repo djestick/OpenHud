@@ -70,3 +70,19 @@ At the bottom of the menu, two important buttons have been added:
 - **Refresh HUD** — reloads your HUD without restarting the app  
 - **Settings tab** — was removed
 
+---
+
+## ❤️ Support the Author
+
+If you like this HUD and want to support further updates 👇  
+
+<p align="left">
+  <a href="https://send.monobank.ua/jar/6cSkmWzhNV">
+    <img src="https://i.ibb.co/0VD342yw/image-6.png" width="300" alt="Support on Monobank" />
+  </a>
+</p>
+
+## 💬 Contact
+
+For questions, help, or collaboration —  
+reach out via **any social network** → [@djestick](https://t.me/djestick)
