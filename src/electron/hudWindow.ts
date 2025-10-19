@@ -130,13 +130,18 @@ export function createHudWindow() {
     height: bounds?.height ?? undefined,
     fullscreen: true,
     transparent: true,
+    backgroundColor: "#00000000",
+    backgroundMaterial: "none",
     alwaysOnTop: true,
     resizable: false,
     focusable: true,
     frame: false,
+    hasShadow: false,
     webPreferences: {
       preload: getPreloadPath(),
       backgroundThrottling: false,
+      autoplayPolicy: "no-user-gesture-required",
+      webSecurity: false,
     },
   });
 
@@ -180,5 +185,97 @@ export const getCurrentOverlayStatus = () => ({
   ...getOverlayStatus(),
   displays: listDisplays(),
 });
+
+// ============= WEBM overlay helpers =============
+type WebmOverlayConfig = {
+  url: string;
+  loop?: boolean;
+  muted?: boolean;
+  fullscreen?: boolean;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+};
+
+const injectShowWebmScript = (cfg: WebmOverlayConfig) => {
+  const url = JSON.stringify(cfg.url);
+  const loop = cfg.loop ? "true" : "false";
+  const muted = cfg.muted !== false ? "true" : "false"; // default true for autoplay
+  const fullscreen = cfg.fullscreen ? "true" : "false";
+  const x = Number.isFinite(cfg.x as number) ? String(cfg.x) + "px" : "0px";
+  const y = Number.isFinite(cfg.y as number) ? String(cfg.y) + "px" : "0px";
+  const width = cfg.fullscreen
+    ? "100vw"
+    : Number.isFinite(cfg.width as number)
+      ? String(cfg.width) + "px"
+      : "640px";
+  const height = cfg.fullscreen
+    ? "100vh"
+    : Number.isFinite(cfg.height as number)
+      ? String(cfg.height) + "px"
+      : "360px";
+
+  return `(() => {
+    const id = 'openhud-webm-overlay';
+    let host = document.getElementById(id);
+    if (!host) {
+      host = document.createElement('div');
+      host.id = id;
+      host.style.position = 'fixed';
+      host.style.zIndex = '2147483647';
+      host.style.pointerEvents = 'none';
+      host.style.background = 'transparent';
+      document.body.appendChild(host);
+    }
+    host.style.left = ${fullscreen} ? '0' : ${JSON.stringify(x)};
+    host.style.top = ${fullscreen} ? '0' : ${JSON.stringify(y)};
+    host.style.width = ${JSON.stringify(width)};
+    host.style.height = ${JSON.stringify(height)};
+
+    let video = host.querySelector('video');
+    if (!video) {
+      video = document.createElement('video');
+      video.setAttribute('playsinline', 'true');
+      video.style.width = '100%';
+      video.style.height = '100%';
+      video.style.objectFit = ${fullscreen} ? 'cover' : 'contain';
+      host.appendChild(video);
+    }
+    video.muted = ${muted};
+    video.loop = ${loop};
+    const srcChanged = video.src !== ${url};
+    if (srcChanged) {
+      video.src = ${url};
+    }
+    const playPromise = video.play();
+    if (playPromise && playPromise.catch) {
+      playPromise.catch(() => {});
+    }
+  })();`;
+};
+
+const injectHideWebmScript = () => `(() => {
+  const el = document.getElementById('openhud-webm-overlay');
+  if (el && el.parentElement) {
+    el.parentElement.removeChild(el);
+  }
+})()`;
+
+export const showWebmOverlay = (config: WebmOverlayConfig) => {
+  hudWindows.forEach((window) => {
+    if (!window.isDestroyed()) {
+      window.webContents.executeJavaScript(injectShowWebmScript(config), true).catch(() => {});
+    }
+  });
+};
+
+export const hideWebmOverlay = () => {
+  hudWindows.forEach((window) => {
+    if (!window.isDestroyed()) {
+      window.webContents.executeJavaScript(injectHideWebmScript(), true).catch(() => {});
+    }
+  });
+};
 
 

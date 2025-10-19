@@ -19,6 +19,8 @@ interface Window {
     importData: (payload: ImportDataPayload) => Promise<ImportDataResult>;
     exportData: (selection: DataExportSelection) => Promise<ExportDataResult>;
     openExportsDirectory: () => void;
+    playWebmOverlay: (config: WebmOverlayConfig) => void;
+    stopWebmOverlay: () => void;
   };
   update: {
     updateMessage: (callback: (message: string) => void) => void;
@@ -43,6 +45,8 @@ type EventPayloadMapping = {
   "overlay:status": OverlayStatus;
   "overlay:getStatus": OverlayStatus;
   "overlay:getDisplays": OverlayDisplay[];
+  "overlay:webm:show": WebmOverlayConfig;
+  "overlay:webm:hide": void;
   sendFrameAction: FrameWindowAction;
   openExternalLink: string;
   getPlayers: Promise<Player[]>;
@@ -275,7 +279,7 @@ interface Match {
     id: string | null;
     wins: number;
   };
-  matchType: "bo1" | "bo3" | "bo5";
+  matchType: "bo1" | "bo2" | "bo3" | "bo5";
   vetos: Veto[];
 }
 
@@ -296,6 +300,17 @@ interface OverlayStatus {
   config: OverlayConfig;
   displays: OverlayDisplay[];
 }
+
+type WebmOverlayConfig = {
+  url: string;
+  loop?: boolean;
+  muted?: boolean;
+  fullscreen?: boolean;
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+};
 
 type Weapon =
   | "ak47"

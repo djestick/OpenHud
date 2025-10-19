@@ -81,6 +81,18 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
 
   ipcMainHandle("overlay:getDisplays", () => listDisplays());
 
+  // WebM overlay controls
+  ipcMainOn("overlay:webm:show", (cfg: any) => {
+    // Lazy import to avoid circular types
+    const { showWebmOverlay } = require("../hudWindow.js");
+    showWebmOverlay(cfg);
+  });
+
+  ipcMainOn("overlay:webm:hide", () => {
+    const { hideWebmOverlay } = require("../hudWindow.js");
+    hideWebmOverlay();
+  });
+
   ipcMainOn("openExternalLink", (url) => {
     shell.openExternal(url);
   });

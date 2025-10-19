@@ -1,4 +1,4 @@
-export const MatchTypes = ["bo1", "bo3", "bo5"] as const;
+export const MatchTypes = ["bo1", "bo2", "bo3", "bo5"] as const;
 export type MatchTypeKey = (typeof MatchTypes)[number];
 
 export const maps = [

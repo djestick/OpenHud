@@ -109,6 +109,8 @@ export const OverlayPage = () => {
     ? "gap-2 rounded-full px-4 py-2 uppercase bg-background-dark text-text-disabled hover:bg-background-dark disabled:cursor-not-allowed disabled:text-text-disabled"
     : "gap-2 rounded-full px-4 py-2 uppercase";
 
+  // WebM overlay UI removed
+
   return (
     <section className="relative flex h-full w-full flex-col gap-6 py-6">
       <div className="flex w-full items-center justify-between gap-4">
@@ -217,6 +219,8 @@ export const OverlayPage = () => {
             </button>
           </div>
         </div>
+
+        {/* WebM overlay controller removed */}
       </div>
     </section>
   );

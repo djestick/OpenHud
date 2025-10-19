@@ -14,7 +14,6 @@ type VetoType = Veto["type"];
 
 const VETO_CONFIG: Record<MatchTypeKey, VetoType[]> = {
   bo1: ["ban", "ban", "ban", "ban", "ban", "ban", "decider"],
-  bo2: ["pick", "pick"],
   bo3: ["ban", "ban", "pick", "pick", "ban", "ban", "decider"],
   bo5: ["pick", "pick", "pick", "pick", "decider"],
 };

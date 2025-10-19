@@ -13,6 +13,11 @@ import { closeAllWindows } from "./hudWindow.js";
 
 let mainWindow: BrowserWindow;
 
+// Allow media to autoplay without user gesture (needed for HUD webm animations)
+app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
+// Explicitly keep Chromium's accelerated video pipeline enabled so WebM plays inside transparent overlays
+app.commandLine.appendSwitch("enable-accelerated-video-decode");
+
 app.on("ready", () => {
   mainWindow = createMainWindow();
   createMenu(mainWindow);
