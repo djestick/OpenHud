@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MdFolderOpen, MdRefresh, MdLink } from "react-icons/md";
 import api, { HudDescriptor } from "../../api/api";
 import { ButtonContained, Dialog } from "../../components";
@@ -30,11 +30,6 @@ export const HudPage = () => {
   useEffect(() => {
     void loadHuds();
   }, [loadHuds]);
-
-  const activeHud = useMemo(
-    () => huds.find((hud) => hud.isActive) ?? null,
-    [huds],
-  );
 
   const handleOpenFolder = () => {
     try {
@@ -121,7 +116,7 @@ export const HudPage = () => {
           )}
           <button
             type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-background-light text-text hover:bg-background-light/70 disabled:opacity-50"
+            className="hover:bg-background-light/70 flex h-10 w-10 items-center justify-center rounded-full bg-background-light text-text disabled:opacity-50"
             onClick={handleRefreshClick}
             title="Refresh list"
             aria-label="Refresh HUD list"
@@ -131,7 +126,7 @@ export const HudPage = () => {
           </button>
           <button
             type="button"
-            className="flex h-10 items-center gap-2 rounded-full bg-background-light px-4 text-sm font-semibold uppercase text-text transition hover:bg-background-light/70 disabled:opacity-50"
+            className="hover:bg-background-light/70 flex h-10 items-center gap-2 rounded-full bg-background-light px-4 text-sm font-semibold uppercase text-text transition disabled:opacity-50"
             onClick={handleCopyUrl}
             title="Copu URL for OBS"
             aria-label="Copy URL for OBS"
@@ -155,51 +150,138 @@ export const HudPage = () => {
         </div>
       )}
 
-      <div className="flex w-full flex-1 flex-col overflow-hidden rounded-lg border border-border bg-background-secondary/40">
+      <div className="bg-background-secondary/40 flex w-full flex-1 flex-col overflow-hidden rounded-lg">
         {loading ? (
           <div className="flex flex-1 items-center justify-center text-text-secondary">
             Loading HUDs...
           </div>
         ) : huds.length === 0 ? (
           <div className="flex flex-1 items-center justify-center text-text-secondary">
-            No HUDs found. Place them under resources/src/assets beside the executable.
+            No HUDs found. Place them under resources/src/assets beside the
+            executable.
           </div>
         ) : (
-          <div className="overflow-auto">
-            <table className="w-full table-fixed">
-              <thead className="sticky top-0 bg-background-primary">
-                <tr>
-                  <th className="w-28 px-4 py-3 text-left text-xs font-semibold uppercase text-text-secondary">
-                    Active
-                  </th>
-                  <th className="w-28 px-4 py-3 text-left text-xs font-semibold uppercase text-text-secondary">
-                    Preview
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase text-text-secondary">
-                    Name
-                  </th>
-                  <th className="w-32 px-4 py-3 text-left text-xs font-semibold uppercase text-text-secondary">
-                    Version
-                  </th>
-                  <th className="w-32 px-4 py-3 text-left text-xs font-semibold uppercase text-text-secondary">
-                    Author
-                  </th>
-                  <th className="w-36 px-4 py-3 text-left text-xs font-semibold uppercase text-text-secondary">
-                    Folder
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border bg-background-secondary">
-                {huds.map((hud) => (
-                  <HudRow
+          <div className="w-full overflow-auto p-6">
+            <div
+              className="mx-auto"
+              style={{
+                display: "grid",
+                // auto-fit columns with a clamped column size: columns grow up to 320px
+                // and shrink no smaller than 240px so the grid will drop from 3 → 2 → 1
+                // as the container narrows (responsive behavior without horizontal scroll).
+                // cap the container so it never displays more than 3 columns wide
+                // (3 * 320px + 2 * 24px gap = 1008px).
+                gridTemplateColumns: "repeat(auto-fit, minmax(240px, 320px))",
+                gap: "24px",
+                justifyContent: "center",
+                width: "100%",
+                maxWidth: "1008px",
+              }}
+            >
+              {huds.map((hud) => {
+                // prefer preview data URI from server, then thumbnail, otherwise try preview.png inside hud.path
+                const previewSrcRaw =
+                  hud.previewDataUri ??
+                  hud.thumbnailDataUri ??
+                  (hud.path
+                    ? `${hud.path.replace(/\\/g, "/")}/preview.png`
+                    : null);
+                // If it's not a data/http/file URL, prefix with file:// so electron can load local files
+                const previewSrc = previewSrcRaw
+                  ? /^(data:|https?:|file:)/.test(previewSrcRaw)
+                    ? previewSrcRaw
+                    : `file://${encodeURI(previewSrcRaw)}`
+                  : null;
+                return (
+                  <div
                     key={hud.id}
-                    hud={hud}
-                    onSelect={requestHudChange}
-                    isActive={hud.id === activeHud?.id}
-                  />
-                ))}
-              </tbody>
-            </table>
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => requestHudChange(hud)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ")
+                        requestHudChange(hud);
+                    }}
+                    className={`relative flex h-[260px] w-full max-w-[320px] cursor-pointer flex-col overflow-hidden rounded-lg border bg-[#27272A] shadow-sm transition-none focus:outline-none ${
+                      hud.isActive
+                        ? "ring-primary/30 border-primary ring-2"
+                        : "border-transparent hover:border-gray-500"
+                    }`}
+                  >
+                    <div
+                      className="relative w-full"
+                      style={{ height: 180, backgroundColor: "#27272A" }}
+                    >
+                      {previewSrc ? (
+                        <img
+                          src={previewSrc}
+                          alt={hud.name}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-sm text-text-secondary">
+                          No preview
+                        </div>
+                      )}
+
+                      {/* Active badge on top-right of preview */}
+                      {hud.isActive && (
+                        <span className="absolute right-3 top-3 z-20 rounded bg-primary px-2 py-0.5 text-xs font-semibold text-white">
+                          Active
+                        </span>
+                      )}
+
+                      {/* Avatar overlapping preview and card body - half on preview, half on body */}
+                      <div
+                        className="absolute left-4 z-10 flex items-center justify-center overflow-hidden rounded-lg"
+                        style={{
+                          width: 72,
+                          height: 72,
+                          bottom: -36,
+                          border: "4px solid #27272A",
+                          backgroundColor: "#111827",
+                        }}
+                      >
+                        {hud.thumbnailDataUri ? (
+                          <img
+                            src={hud.thumbnailDataUri}
+                            alt={`${hud.name} logo`}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-xs text-text-secondary">
+                            HUD
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-1 flex-col justify-between pb-3 pl-2 pr-4 pt-0">
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 pl-28 mt-1">
+                            <span className="text-lg font-semibold">
+                              {hud.name}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Bottom info: stick to bottom, centered vertically, folder truncates with ellipsis */}
+                      <div className="mt-2 flex w-full items-center text-sm text-text-secondary">
+                        <span className="flex-shrink-0">
+                          Version: {hud.version ?? "-"}
+                        </span>
+                        <span className="mx-2 flex-shrink-0">·</span>
+                        <span className="flex-1 truncate">
+                          Folder: {hud.folder}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -237,54 +319,5 @@ export const HudPage = () => {
         </div>
       </Dialog>
     </section>
-  );
-};
-
-interface HudRowProps {
-  hud: HudDescriptor;
-  onSelect: (hud: HudDescriptor) => void;
-  isActive: boolean;
-}
-
-const HudRow = ({ hud, onSelect, isActive }: HudRowProps) => {
-  return (
-    <tr
-      className={`transition hover:bg-background-light/30 ${isActive ? "bg-background-light/20" : ""}`}
-    >
-      <td className="px-4 py-3">
-        <input
-          type="radio"
-          className="size-4 accent-primary"
-          name="hud-selection"
-          checked={isActive}
-          onChange={() => onSelect(hud)}
-        />
-      </td>
-      <td className="px-4 py-3">
-        {hud.thumbnailDataUri ? (
-          <img
-            src={hud.thumbnailDataUri}
-            alt={hud.name}
-            className="h-16 w-24 rounded object-cover"
-          />
-        ) : (
-          <div className="flex h-16 w-24 items-center justify-center rounded border border-dashed border-border text-xs text-text-secondary">
-            No preview
-          </div>
-        )}
-      </td>
-      <td className="px-4 py-3">
-        <div className="flex flex-col gap-1">
-          <span className="font-semibold">{hud.name}</span>
-        </div>
-      </td>
-      <td className="px-4 py-3 text-sm text-text-secondary">
-        {hud.version ?? "-"}
-      </td>
-      <td className="px-4 py-3 text-sm text-text-secondary">
-        {hud.author ?? "-"}
-      </td>
-      <td className="px-4 py-3 text-sm text-text-secondary">{hud.folder}</td>
-    </tr>
   );
 };

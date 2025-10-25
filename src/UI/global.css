@@ -126,3 +126,8 @@ body,
   --text-disabled: 0 0 0 / 0.5; /* More Transparent Black */
   background: oklch(var(--background-secondary));
 }
+
+/* Override: use 5.5rem for pl-28 to match custom visual spacing */
+.pl-28 {
+  padding-left: 5.5rem !important;
+}
