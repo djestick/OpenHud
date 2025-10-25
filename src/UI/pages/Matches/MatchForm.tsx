@@ -326,30 +326,32 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
           </div>
 
           <h5 className="mt-4 font-semibold">Set Vetos:</h5>
-          <table className="min-w-full divide-y divide-slate-400">
-            <thead className="bg-background-secondary">
-              <tr>
-                <TableTH title="Veto" />
-                <TableTH title="Type" />
-                <TableTH title="Team" />
-                <TableTH title="Map" />
-                <TableTH title="Result" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-700 p-4">
-              {vetos.map((veto, index) => (
-                <VetoRow
-                  key={index}
-                  index={index}
-                  veto={veto}
-                  leftTeamId={leftTeamId}
-                  rightTeamId={rightTeamId}
-                  teams={teams}
-                  onVetoChange={handleVetoChange}
-                />
-              ))}
-            </tbody>
-          </table>
+          <div className="w-full overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-400">
+              <thead className="bg-background-secondary">
+                <tr>
+                  <TableTH title="Veto" />
+                  <TableTH title="Type" />
+                  <TableTH title="Team" />
+                  <TableTH title="Map" />
+                  <TableTH title="Status" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-700 p-4">
+                {vetos.map((veto, index) => (
+                  <VetoRow
+                    key={index}
+                    index={index}
+                    veto={veto}
+                    leftTeamId={leftTeamId}
+                    rightTeamId={rightTeamId}
+                    teams={teams}
+                    onVetoChange={handleVetoChange}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </Container>
       <div className="inline-flex w-full justify-end gap-2 border-t border-border p-2">

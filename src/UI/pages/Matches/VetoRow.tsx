@@ -210,43 +210,46 @@ export const VetoRow = React.memo<VetoRowProps>(
           </div>
         </td>
         <td className="px-6 py-4">
-          <div className="grid grid-cols-3 gap-8">
-            <div className="flex justify-center">
-              {veto.type !== "ban" && (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={veto.mapEnd}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleMapEndToggle(e.target.checked)
-                    }
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="whitespace-nowrap text-sm">It's over</span>
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col items-center">
-              {veto.mapEnd && (
-                <>
-                  <div className="mb-2 font-medium">
-                    {leftTeam?.name ?? "Team One"}
+          <div className="w-full">
+            {/* Use a horizontal flex container with natural width so the Status column can expand to the right as needed */}
+            <div className="flex w-max items-center gap-8">
+              <div className="flex items-center justify-center">
+                {veto.type !== "ban" && (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={veto.mapEnd}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleMapEndToggle(e.target.checked)
+                      }
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="whitespace-nowrap text-sm">It's over</span>
                   </div>
-                  {renderResultColumn(leftTeamId, "team1")}
-                </>
-              )}
-            </div>
+                )}
+              </div>
 
-            <div className="flex flex-col items-center">
-              {veto.mapEnd && (
-                <>
-                  <div className="mb-2 font-medium">
-                    {rightTeam?.name ?? "Team Two"}
-                  </div>
-                  {renderResultColumn(rightTeamId, "team2")}
-                </>
-              )}
+              <div className="flex flex-col items-center">
+                {veto.mapEnd && (
+                  <>
+                    <div className="mb-2 font-medium">
+                      {leftTeam?.name ?? "Team One"}
+                    </div>
+                    {renderResultColumn(leftTeamId, "team1")}
+                  </>
+                )}
+              </div>
+
+              <div className="flex flex-col items-center">
+                {veto.mapEnd && (
+                  <>
+                    <div className="mb-2 font-medium">
+                      {rightTeam?.name ?? "Team Two"}
+                    </div>
+                    {renderResultColumn(rightTeamId, "team2")}
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </td>
