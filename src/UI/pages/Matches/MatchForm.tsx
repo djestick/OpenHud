@@ -1,5 +1,16 @@
-import { useEffect, useState } from "react";
-import { MatchTypes, MatchTypeKey } from "./matchConstants";
+import { useEffect, useMemo, useState } from "react";
+import {
+  MatchTypes,
+  MatchTypeKey,
+  DEFAULT_MATCH_TYPE,
+  FALLBACK_MATCH_TYPE,
+  VETO_CONFIG,
+  Veto,
+  Match,
+  buildDefaultVetos,
+  createEmptyVeto,
+  calculateSeriesWins,
+} from "./matchConstants";
 import { VetoRow } from "./VetoRow";
 import { ButtonContained, Container, Dialog } from "../../components";
 import { useMatches } from "./useMatches";
@@ -10,32 +21,6 @@ interface MatchFormProps {
   setOpen: (open: boolean) => void;
 }
 
-type VetoType = Veto["type"];
-
-const VETO_CONFIG: Record<MatchTypeKey, VetoType[]> = {
-  bo1: ["ban", "ban", "ban", "ban", "ban", "ban", "decider"],
-  bo2: ["pick", "pick"],
-  bo3: ["ban", "ban", "pick", "pick", "ban", "ban", "decider"],
-  bo5: ["pick", "pick", "pick", "pick", "decider"],
-};
-
-const MATCH_TYPES: readonly MatchTypeKey[] = MatchTypes;
-const DEFAULT_MATCH_TYPE: MatchTypeKey = MATCH_TYPES[0];
-const FALLBACK_MATCH_TYPE: MatchTypeKey =
-  MATCH_TYPES[1] ?? DEFAULT_MATCH_TYPE;
-
-const createEmptyVeto = (type: VetoType): Veto => ({
-  teamId: "",
-  mapName: "",
-  side: "NO",
-  type,
-  mapEnd: false,
-  reverseSide: false,
-});
-
-const buildDefaultVetos = (matchType: MatchTypeKey): Veto[] =>
-  VETO_CONFIG[matchType].map((type) => createEmptyVeto(type));
-
 export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
   const {
     isEditing,
@@ -44,31 +29,41 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
     createMatch,
     updateMatch,
     setIsEditing,
-    setSelectedMatch
+    setSelectedMatch,
   } = useMatches();
   const { teams } = useTeams();
 
   const [matchType, setMatchType] = useState<MatchTypeKey>(DEFAULT_MATCH_TYPE);
   const [leftTeamId, setLeftTeamId] = useState<string | null>(null);
-  const [leftTeamWins, setLeftTeamWins] = useState<number>(0);
   const [rightTeamId, setRightTeamId] = useState<string | null>(null);
-  const [rightTeamWins, setRightTeamWins] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(""); // Added for error message
-  const [vetos, setVetos] = useState<Veto[]>(() => buildDefaultVetos(DEFAULT_MATCH_TYPE));
-  const [autoTeamsFirst, setAutoTeamsFirst] = useState<"left" | "right">("left");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [vetos, setVetos] = useState<Veto[]>(() =>
+    buildDefaultVetos(DEFAULT_MATCH_TYPE),
+  );
+  const [autoTeamsFirst, setAutoTeamsFirst] = useState<"left" | "right">(
+    "left",
+  );
 
   const leftTeam = teams.find((team) => team._id === leftTeamId);
   const rightTeam = teams.find((team) => team._id === rightTeamId);
+  const seriesWins = useMemo(
+    () => calculateSeriesWins(vetos, leftTeamId, rightTeamId),
+    [vetos, leftTeamId, rightTeamId],
+  );
+  const winsForSubmit = seriesWins.hasResults
+    ? seriesWins
+    : {
+        left: selectedMatch?.left.wins ?? 0,
+        right: selectedMatch?.right.wins ?? 0,
+      };
 
   useEffect(() => {
     if (isEditing && selectedMatch) {
       setLeftTeamId(selectedMatch.left.id);
       setRightTeamId(selectedMatch.right.id);
-      setLeftTeamWins(selectedMatch.left.wins);
-      setRightTeamWins(selectedMatch.right.wins);
       const maybeType = selectedMatch.matchType as MatchTypeKey;
-      const safeType = MATCH_TYPES.includes(maybeType)
+      const safeType = MatchTypes.includes(maybeType)
         ? maybeType
         : FALLBACK_MATCH_TYPE;
       setMatchType(safeType);
@@ -92,27 +87,94 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
     });
   }, [matchType]);
 
+  const handleAutoAssignTeams = () => {
+    if (!leftTeamId || !rightTeamId) {
+      setErrorMessage("Please select both teams before auto assigning vetos.");
+      return;
+    }
+
+    setErrorMessage("");
+
+    const startsWithLeft = autoTeamsFirst === "left";
+    const firstTeamId = startsWithLeft ? leftTeamId : rightTeamId;
+    const secondTeamId = startsWithLeft ? rightTeamId : leftTeamId;
+    const config = VETO_CONFIG[matchType];
+
+    setVetos((prevVetos) =>
+      config.map((type, index) => {
+        const existing = prevVetos[index] ?? createEmptyVeto(type);
+        const assignedTeam =
+          type === "decider"
+            ? ""
+            : index % 2 === 0
+              ? firstTeamId
+              : secondTeamId;
+
+        return {
+          ...existing,
+          type,
+          teamId: assignedTeam,
+        };
+      }),
+    );
+
+    setAutoTeamsFirst(startsWithLeft ? "right" : "left");
+  };
+
   const validateForm = () => {
-    let isValid = true;
     setErrorMessage("");
 
     if (!leftTeamId || !rightTeamId) {
       setErrorMessage("Please select both teams.");
-      isValid = false;
+      return false;
     }
 
-    if (!MATCH_TYPES.includes(matchType)) {
+    if (!MatchTypes.includes(matchType)) {
       setErrorMessage("Invalid match type selected.");
-      isValid = false;
+      return false;
     }
 
-    return isValid;
+    for (let i = 0; i < vetos.length; i++) {
+      const veto = vetos[i];
+      if (!veto.mapEnd) continue;
+
+      const leftScore = veto.score?.[leftTeamId];
+      const rightScore = veto.score?.[rightTeamId];
+
+      // First check if we have a winner selected
+      if (
+        !veto.winner ||
+        (veto.winner !== leftTeamId && veto.winner !== rightTeamId)
+      ) {
+        setErrorMessage(`Choose the winner for Veto ${i + 1}.`);
+        return false;
+      }
+
+      // Only check scores if they're provided and there's no winner
+      const hasScores =
+        typeof leftScore === "number" || typeof rightScore === "number";
+      if (
+        hasScores &&
+        (typeof leftScore !== "number" || typeof rightScore !== "number")
+      ) {
+        setErrorMessage(`Enter both scores for Veto ${i + 1}.`);
+        return false;
+      }
+    }
+
+    return true;
   };
 
-  const handleVetoChange = (index: number, key: keyof Veto, value: any) => {
-    const updatedVetos = [...vetos];
-    updatedVetos[index] = { ...updatedVetos[index], [key]: value };
-    setVetos(updatedVetos);
+  const handleVetoChange = (
+    index: number,
+    key: keyof Veto,
+    value: Veto[keyof Veto] | undefined,
+  ) => {
+    setVetos((prevVetos) => {
+      const updatedVetos = [...prevVetos];
+      updatedVetos[index] = { ...updatedVetos[index], [key]: value };
+      return updatedVetos;
+    });
   };
 
   const handleSubmit = async () => {
@@ -122,8 +184,8 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
 
     const newMatch: Match = {
       id: selectedMatch?.id || "",
-      left: { id: leftTeamId, wins: leftTeamWins },
-      right: { id: rightTeamId, wins: rightTeamWins },
+      left: { id: leftTeamId, wins: winsForSubmit.left },
+      right: { id: rightTeamId, wins: winsForSubmit.right },
       matchType,
       current: selectedMatch ? selectedMatch.current : false,
       vetos: vetos,
@@ -156,48 +218,10 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
     setRightTeamId(null);
     setCurrentMatch(null);
     setMatchType(DEFAULT_MATCH_TYPE);
-    setLeftTeamWins(0);
-    setRightTeamWins(0);
     setErrorMessage("");
     setAutoTeamsFirst("left");
     setVetos(buildDefaultVetos(DEFAULT_MATCH_TYPE));
   };
-
-  const handleAutoAssignTeams = () => {
-    if (!leftTeamId || !rightTeamId) {
-      setErrorMessage("Please select both teams before auto assigning vetos.");
-      return;
-    }
-
-    setErrorMessage("");
-
-    const startsWithLeft = autoTeamsFirst === "left";
-    const firstTeamId = startsWithLeft ? leftTeamId : rightTeamId;
-    const secondTeamId = startsWithLeft ? rightTeamId : leftTeamId;
-    const config = VETO_CONFIG[matchType];
-
-    setVetos((prevVetos) =>
-      config.map((type, index) => {
-        const existing = prevVetos[index] ?? createEmptyVeto(type);
-        const assignedTeam =
-          type === "decider"
-            ? ""
-            : index % 2 === 0
-            ? firstTeamId
-            : secondTeamId;
-
-        return {
-          ...existing,
-          type,
-          teamId: assignedTeam,
-        };
-      }),
-    );
-
-    setAutoTeamsFirst(startsWithLeft ? "right" : "left");
-  };
-
-  const vetoSource = vetos;
 
   return (
     <Dialog onClose={handleCancel} open={open}>
@@ -209,11 +233,22 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
         </h3>
       </div>
       <Container>
-        <div className="flex flex-1 flex-col overflow-y-scroll p-6">
+        <div
+          className="flex flex-1 flex-col overflow-y-scroll p-6"
+          style={{ scrollbarWidth: "none" }}
+        >
+          {false && leftTeamId && rightTeamId && (
+            <div className="mb-4 flex flex-wrap items-center justify-center gap-3 text-lg font-semibold">
+              <span className="rounded bg-background-secondary px-3 py-1 text-xl">{winsForSubmit.left}</span>
+              <span className="text-xl font-bold text-text-secondary">-</span>
+              <span className="rounded bg-background-secondary px-3 py-1 text-xl">{winsForSubmit.right}</span>
+            </div>
+          )}
+
           <div className="my-2 flex items-center justify-center gap-4">
             <div className="bg-background-primary">
               <select
-                className="min-w-[12rem] w-auto rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text"
+                className="w-auto min-w-[12rem] rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text"
                 value={leftTeamId || ""}
                 onChange={(e) => setLeftTeamId(e.target.value)}
                 name="Team One"
@@ -230,11 +265,13 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
                 ))}
               </select>
             </div>
-            <h2 className="font-semibold">VS</h2>
+            <span className="rounded bg-background-secondary px-3 py-1 text-xl">{winsForSubmit.left}</span>
+            <h2 className="font-semibold text-text-secondary">VS</h2>
+            <span className="rounded bg-background-secondary px-3 py-1 text-xl">{winsForSubmit.right}</span>
 
             <div className="bg-background-primary">
               <select
-                className="min-w-[12rem] w-auto rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text"
+                className="w-auto min-w-[12rem] rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text"
                 value={rightTeamId || ""}
                 onChange={(e) => setRightTeamId(e.target.value)}
                 name="Team Two"
@@ -253,31 +290,8 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
             </div>
           </div>
 
-          <div className="my-2 flex items-center justify-center gap-4">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Left Wins</label>
-              <input
-                type="number"
-                min={0}
-                className="h-8 w-20 rounded border border-gray-300 px-2"
-                value={leftTeamWins}
-                onChange={(e) => setLeftTeamWins(Number(e.target.value || 0))}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium">Right Wins</label>
-              <input
-                type="number"
-                min={0}
-                className="h-8 w-20 rounded border border-gray-300 px-2"
-                value={rightTeamWins}
-                onChange={(e) => setRightTeamWins(Number(e.target.value || 0))}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-4">
-            <form className="flex flex-col items-center justify-center gap-2 rounded-md bg-background-primary p-3">
+          <div className="flex items-center justify-center">
+            <form className="flex flex-col items-center justify-center bg-background-primary">
               <label
                 htmlFor="Match Type"
                 className="text-sm font-semibold uppercase text-gray-400"
@@ -285,7 +299,7 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
                 Best of
               </label>
               <select
-                className="min-w-[8rem] w-auto rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text"
+                className="w-auto min-w-[8rem] rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text"
                 value={matchType}
                 onChange={(e) => setMatchType(e.target.value as MatchTypeKey)}
                 name="Match Type"
@@ -297,35 +311,38 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
                 ))}
               </select>
             </form>
-            <ButtonContained type="button" onClick={handleAutoAssignTeams}>
-              Auto teams
+            <ButtonContained type="button" onClick={handleAutoAssignTeams} className="mt-5 ml-1.5">
+              AUTO TEAMS
             </ButtonContained>
           </div>
 
           <h5 className="mt-4 font-semibold">Set Vetos:</h5>
-          <table className="min-w-full divide-y divide-slate-400">
-            <thead className="bg-background-secondary">
-              <tr>
-                <TableTH title="veto" />
-                <TableTH title="type" />
-                <TableTH title="Team" />
-                <TableTH title="Map" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-700 p-4">
-              {vetoSource.map((veto, index) => (
-                <VetoRow
-                  key={index}
-                  index={index}
-                  veto={veto}
-                  leftTeamId={leftTeamId}
-                  rightTeamId={rightTeamId}
-                  teams={teams}
-                  onVetoChange={handleVetoChange}
-                />
-              ))}
-            </tbody>
-          </table>
+          <div className="w-full overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-400">
+              <thead className="bg-background-secondary">
+                <tr>
+                  <TableTH title="Veto" />
+                  <TableTH title="Type" />
+                  <TableTH title="Team" />
+                  <TableTH title="Map" />
+                  <TableTH title="Status" />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-700 p-4">
+                {vetos.map((veto, index) => (
+                  <VetoRow
+                    key={index}
+                    index={index}
+                    veto={veto}
+                    leftTeamId={leftTeamId}
+                    rightTeamId={rightTeamId}
+                    teams={teams}
+                    onVetoChange={handleVetoChange}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </Container>
       <div className="inline-flex w-full justify-end gap-2 border-t border-border p-2">

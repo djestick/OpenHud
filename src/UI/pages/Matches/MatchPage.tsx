@@ -4,7 +4,19 @@ import { MatchForm } from "./MatchForm";
 import { Topbar } from "../MainPanel/Topbar";
 import { useMatches } from "./useMatches";
 
-export { MatchTypes, maps } from "./matchConstants";
+export const MatchTypes = ["bo1", "bo2", "bo3", "bo5"];
+export const maps = [
+  "de_mirage",
+  "de_cache",
+  "de_inferno",
+  "de_dust2",
+  "de_train",
+  "de_overpass",
+  "de_nuke",
+  "de_vertigo",
+  "de_ancient",
+  "de_anubis",
+];
 
 export const MatchesPage = () => {
   const [open, setOpen] = useState(false);
