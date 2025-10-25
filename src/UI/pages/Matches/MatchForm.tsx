@@ -141,16 +141,23 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
       const leftScore = veto.score?.[leftTeamId];
       const rightScore = veto.score?.[rightTeamId];
 
-      if (typeof leftScore !== "number" || typeof rightScore !== "number") {
-        setErrorMessage(`Enter both scores for Veto ${i + 1}.`);
-        return false;
-      }
-
+      // First check if we have a winner selected
       if (
         !veto.winner ||
         (veto.winner !== leftTeamId && veto.winner !== rightTeamId)
       ) {
         setErrorMessage(`Choose the winner for Veto ${i + 1}.`);
+        return false;
+      }
+
+      // Only check scores if they're provided and there's no winner
+      const hasScores =
+        typeof leftScore === "number" || typeof rightScore === "number";
+      if (
+        hasScores &&
+        (typeof leftScore !== "number" || typeof rightScore !== "number")
+      ) {
+        setErrorMessage(`Enter both scores for Veto ${i + 1}.`);
         return false;
       }
     }

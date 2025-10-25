@@ -49,10 +49,7 @@ export const VetoRow = React.memo<VetoRowProps>(
       return typeof value === "number" ? value : "";
     };
 
-    const handleScoreChange = (
-      teamId: string | null,
-      rawValue: string,
-    ): void => {
+    const handleScoreChange = (teamId: string | null, rawValue: string) => {
       if (!teamId) return;
 
       if (rawValue === "") {
@@ -75,12 +72,12 @@ export const VetoRow = React.memo<VetoRowProps>(
       onVetoChange(index, "score", nextScore);
     };
 
-    const handleWinnerChange = (teamId: string | null): void => {
+    const handleWinnerChange = (teamId: string | null) => {
       if (!teamId) return;
       onVetoChange(index, "winner", teamId);
     };
 
-    const handleMapEndToggle = (checked: boolean): void => {
+    const handleMapEndToggle = (checked: boolean) => {
       onVetoChange(index, "mapEnd", checked);
       if (!checked) {
         onVetoChange(index, "score", undefined);
@@ -103,8 +100,9 @@ export const VetoRow = React.memo<VetoRowProps>(
             placeholder="0"
             className="border-border/60 bg-background-secondary/60 w-16 rounded-full border px-3 py-1 text-center text-base font-semibold disabled:cursor-not-allowed disabled:opacity-50"
             value={scoreValue}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            onChange={(e) => {
               handleScoreChange(teamId, e.target.value);
+              // If score is set and no winner is selected, automatically set this team as winner
               if (e.target.value && !veto.winner && teamId) {
                 handleWinnerChange(teamId);
               }
@@ -141,7 +139,7 @@ export const VetoRow = React.memo<VetoRowProps>(
                     type="radio"
                     value={option}
                     checked={veto.type === option}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    onChange={(e) => {
                       const newType = e.target.value as
                         | "pick"
                         | "ban"
@@ -168,9 +166,7 @@ export const VetoRow = React.memo<VetoRowProps>(
               className="w-auto min-w-[10rem] rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text disabled:cursor-not-allowed disabled:opacity-70"
               disabled={veto.type === "decider"}
               value={veto.type === "decider" ? "decider" : (veto.teamId ?? "")}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                onVetoChange(index, "teamId", e.target.value)
-              }
+              onChange={(e) => onVetoChange(index, "teamId", e.target.value)}
               name={veto.type === "decider" ? "Decider" : "Team"}
             >
               <option value="" disabled>
@@ -193,7 +189,7 @@ export const VetoRow = React.memo<VetoRowProps>(
             <select
               className="w-auto min-w-[10rem] rounded-md border border-border bg-background-secondary px-3 py-2 text-base text-text"
               value={veto.mapName ?? ""}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+              onChange={(e) => {
                 onVetoChange(index, "mapName", e.target.value);
               }}
               name="Map"
@@ -217,9 +213,7 @@ export const VetoRow = React.memo<VetoRowProps>(
                   <input
                     type="checkbox"
                     checked={veto.mapEnd}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      handleMapEndToggle(e.target.checked)
-                    }
+                    onChange={(e) => handleMapEndToggle(e.target.checked)}
                     className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                   <span className="whitespace-nowrap text-sm">It's over</span>
