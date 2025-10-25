@@ -233,7 +233,10 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
         </h3>
       </div>
       <Container>
-        <div className="flex flex-1 flex-col overflow-y-scroll p-6">
+        <div
+          className="flex flex-1 flex-col overflow-y-scroll p-6"
+          style={{ scrollbarWidth: "none" }}
+        >
           {leftTeamId && rightTeamId && (
             <div className="mb-6 flex flex-wrap items-center justify-center gap-6 text-lg font-semibold">
               <div className="flex items-center gap-2">
