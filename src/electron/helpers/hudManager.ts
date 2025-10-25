@@ -21,6 +21,7 @@ export interface HudInfo {
   version?: string;
   author?: string;
   thumbnailDataUri: string | null;
+  previewDataUri?: string | null;
   metadata: HudMetadata;
   isActive: boolean;
 }
@@ -43,7 +44,19 @@ const HUD_THUMBNAIL_CANDIDATES = [
   "thumbnail.jpg",
 ];
 
-const selectionFilePath = path.join(app.getPath("userData"), HUD_SELECTION_FILENAME);
+const HUD_PREVIEW_CANDIDATES = [
+  "preview.png",
+  "preview.jpg",
+  "preview.jpeg",
+  "preview.webp",
+  "cover.png",
+  "cover.jpg",
+];
+
+const selectionFilePath = path.join(
+  app.getPath("userData"),
+  HUD_SELECTION_FILENAME,
+);
 
 function normalize(p: string) {
   return path.normalize(p);
@@ -78,6 +91,20 @@ function toDataUri(filePath: string): string {
   return `data:${mime};base64,${buffer.toString("base64")}`;
 }
 
+function getPreviewDataUri(directory: string): string | null {
+  for (const candidate of HUD_PREVIEW_CANDIDATES) {
+    const candidatePath = path.join(directory, candidate);
+    if (fs.existsSync(candidatePath)) {
+      try {
+        return toDataUri(candidatePath);
+      } catch (error) {
+        console.warn(`Failed to read HUD preview at ${candidatePath}:`, error);
+      }
+    }
+  }
+  return null;
+}
+
 function getThumbnailDataUri(directory: string): string | null {
   for (const candidate of HUD_THUMBNAIL_CANDIDATES) {
     const candidatePath = path.join(directory, candidate);
@@ -85,7 +112,10 @@ function getThumbnailDataUri(directory: string): string | null {
       try {
         return toDataUri(candidatePath);
       } catch (error) {
-        console.warn(`Failed to read HUD thumbnail at ${candidatePath}:`, error);
+        console.warn(
+          `Failed to read HUD thumbnail at ${candidatePath}:`,
+          error,
+        );
       }
     }
   }
@@ -106,7 +136,9 @@ function buildHudEntry(
   const name =
     (typeof metadata.name === "string" && metadata.name.trim().length > 0
       ? metadata.name.trim()
-      : undefined) ?? fallbackName ?? folder;
+      : undefined) ??
+    fallbackName ??
+    folder;
 
   const version =
     typeof metadata.version === "string" && metadata.version.trim().length > 0
@@ -127,6 +159,7 @@ function buildHudEntry(
     version,
     author,
     thumbnailDataUri: getThumbnailDataUri(directory),
+    previewDataUri: getPreviewDataUri(directory),
     metadata,
   };
 }
@@ -227,16 +260,26 @@ function loadSelection(): HudSelectionFile | null {
       return parsed;
     }
   } catch (error) {
-    console.warn(`Failed to read HUD selection file at ${selectionFilePath}:`, error);
+    console.warn(
+      `Failed to read HUD selection file at ${selectionFilePath}:`,
+      error,
+    );
   }
   return null;
 }
 
 function persistSelection(selection: HudSelectionFile) {
   try {
-    fs.writeFileSync(selectionFilePath, JSON.stringify(selection, null, 2), "utf-8");
+    fs.writeFileSync(
+      selectionFilePath,
+      JSON.stringify(selection, null, 2),
+      "utf-8",
+    );
   } catch (error) {
-    console.warn(`Failed to write HUD selection file at ${selectionFilePath}:`, error);
+    console.warn(
+      `Failed to write HUD selection file at ${selectionFilePath}:`,
+      error,
+    );
   }
 }
 
@@ -271,10 +314,12 @@ export function getHudPath(): string {
 export function getSelectedHud(): HudInfo {
   const entries = gatherHudEntries();
   const active = resolveActiveEntry(entries);
-  return entries.map((entry) => ({
-    ...entry,
-    isActive: entry.id === active.id,
-  })).find((entry) => entry.id === active.id)!;
+  return entries
+    .map((entry) => ({
+      ...entry,
+      isActive: entry.id === active.id,
+    }))
+    .find((entry) => entry.id === active.id)!;
 }
 
 export function listAvailableHuds(): HudInfo[] {

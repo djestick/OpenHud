@@ -1,13 +1,13 @@
 {
-    "name":"LHM CS2 Default HUD",
-    "version":"1.0.6",
-    "author":"Lexogrine",
-    "legacy": false,
-    "radar": true,
-    "killfeed": false,
-    "game":"cs2",
-    "boltobserv":{
-        "css":false,
-        "maps":false
-    }
+  "name": "OpenHud React Hud",
+  "version": "1.0.6",
+  "author": "JohnTimmermann",
+  "legacy": false,
+  "radar": true,
+  "killfeed": false,
+  "game": "cs2",
+  "boltobserv": {
+    "css": false,
+    "maps": false
+  }
 }

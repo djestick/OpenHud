@@ -237,25 +237,11 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
           className="flex flex-1 flex-col overflow-y-scroll p-6"
           style={{ scrollbarWidth: "none" }}
         >
-          {leftTeamId && rightTeamId && (
-            <div className="mb-6 flex flex-wrap items-center justify-center gap-6 text-lg font-semibold">
-              <div className="flex items-center gap-2">
-                <span className="text-text-secondary">
-                  {leftTeam?.name ?? "Team one"}
-                </span>
-                <span className="rounded bg-background-secondary px-3 py-1 text-xl">
-                  {winsForSubmit.left}
-                </span>
-              </div>
+          {false && leftTeamId && rightTeamId && (
+            <div className="mb-4 flex flex-wrap items-center justify-center gap-3 text-lg font-semibold">
+              <span className="rounded bg-background-secondary px-3 py-1 text-xl">{winsForSubmit.left}</span>
               <span className="text-xl font-bold text-text-secondary">-</span>
-              <div className="flex items-center gap-2">
-                <span className="rounded bg-background-secondary px-3 py-1 text-xl">
-                  {winsForSubmit.right}
-                </span>
-                <span className="text-text-secondary">
-                  {rightTeam?.name ?? "Team two"}
-                </span>
-              </div>
+              <span className="rounded bg-background-secondary px-3 py-1 text-xl">{winsForSubmit.right}</span>
             </div>
           )}
 
@@ -279,7 +265,9 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
                 ))}
               </select>
             </div>
-            <h2 className="font-semibold">VS</h2>
+            <span className="rounded bg-background-secondary px-3 py-1 text-xl">{winsForSubmit.left}</span>
+            <h2 className="font-semibold text-text-secondary">VS</h2>
+            <span className="rounded bg-background-secondary px-3 py-1 text-xl">{winsForSubmit.right}</span>
 
             <div className="bg-background-primary">
               <select
@@ -323,8 +311,8 @@ export const MatchForm = ({ open, setOpen }: MatchFormProps) => {
                 ))}
               </select>
             </form>
-            <ButtonContained type="button" onClick={handleAutoAssignTeams}>
-              Auto teams
+            <ButtonContained type="button" onClick={handleAutoAssignTeams} className="mt-5 ml-1.5">
+              AUTO TEAMS
             </ButtonContained>
           </div>
 
