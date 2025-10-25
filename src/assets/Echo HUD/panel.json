@@ -1,0 +1,28 @@
+[
+    {
+        "label": "Advertising",
+        "name":"advertising",
+        "inputs": [
+            {
+                "type": "images",
+                "name": "advertising_image",
+                "label": "Select your sponsors images",
+                "accept": [".png"]
+            },
+            {
+                "type": "action",
+                "name": "advertising_state",
+                "values": [
+                    {
+                        "name": "advertising_toggle",
+                        "label": "Toggle Advertising"
+                    },
+                    {
+                        "name": "advertising_white_toggle",
+                        "label": "Toggle white mode"
+                    }
+                ]
+            }
+        ]
+    }
+]

@@ -1,0 +1,13 @@
+{
+    "name":"Echo HUD",
+    "version":"1.0.0",
+    "author":"cshuds.com",
+    "legacy": false,
+    "radar": true,
+    "killfeed": false,
+    "game":"cs2",
+    "boltobserv":{
+        "css":false,
+        "maps":false
+    }
+}

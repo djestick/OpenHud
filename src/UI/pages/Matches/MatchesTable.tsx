@@ -1,10 +1,16 @@
-import { MdPlayArrow, MdCancel, MdDelete, MdEdit, MdSwapHoriz } from "react-icons/md";
+import {
+  MdPlayArrow,
+  MdCancel,
+  MdDelete,
+  MdEdit,
+  MdSwapHoriz,
+} from "react-icons/md";
 import { PrimaryButton } from "../../components/PrimaryButton";
 import { apiUrl } from "../../api/api";
 import { useMatches } from "../../hooks";
 import useGameData from "../../context/useGameData";
 import { canReverseSides } from "./matchUtils";
-import { teamApi } from '../Teams/teamsApi';
+import { teamApi } from "../Teams/teamsApi";
 import React from "react";
 
 interface MatchTableProps {
@@ -14,10 +20,9 @@ interface MatchTableProps {
 export const MatchesTable = ({ onEdit }: MatchTableProps) => {
   const { filteredMatches } = useMatches();
 
-
   return (
-    <div className="overflow-y-auto relative flex-1 w-full">
-      <table className="table-fixed w-full">
+    <div className="relative w-full flex-1 overflow-y-auto">
+      <table className="w-full table-fixed">
         <thead className="sticky top-0 border-b border-border bg-background-secondary shadow">
           <tr>
             <th className="p-4 text-sm" align="left">
@@ -50,11 +55,16 @@ interface MatchRowProps {
 }
 
 const MatchRow = ({ match, onEdit }: MatchRowProps) => {
-  const { deleteMatch, handleStartMatch, handleStopMatch, currentMatch, updateMatch } = useMatches();
+  const {
+    deleteMatch,
+    handleStartMatch,
+    handleStopMatch,
+    updateMatch,
+    matches,
+  } = useMatches();
   const { gameData } = useGameData();
   const [teamOne, setTeamOne] = React.useState<Team>();
   const [teamTwo, setTeamTwo] = React.useState<Team>();
-
 
   React.useEffect(() => {
     const fetchTeams = async () => {
@@ -81,7 +91,9 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
   const handleReverseSides = async () => {
     try {
       if (!gameData || !gameData.map || !gameData.map.name) return;
-      const mapName = gameData.map.name.substring(gameData.map.name.lastIndexOf("/") + 1);
+      const mapName = gameData.map.name.substring(
+        gameData.map.name.lastIndexOf("/") + 1,
+      );
       const veto = match.vetos.find((v) => v.mapName === mapName);
       if (!veto) return;
       const updatedVetos = match.vetos.map((v) =>
@@ -93,6 +105,8 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
       console.error("Failed to reverse sides on veto:", err);
     }
   };
+
+  const hasLiveMatch = matches?.some((m) => m.current);
 
   return (
     <tr id={"match_" + match.id}>
@@ -119,7 +133,7 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
             alt="Team Logo"
             className="size-12"
           />
-        {match.left && match.left.wins} - {match.right && match.right.wins}{" "}
+          {match.left && match.left.wins} - {match.right && match.right.wins}{" "}
           <img
             src={`${apiUrl}/teams/logo/${teamTwo?._id}`}
             alt="Team Logo"
@@ -129,7 +143,7 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
       </td>
       <td className="px-4 py-2" align="right">
         <div className="inline-flex">
-        {match.current ? (
+          {match.current ? (
             <>
               <PrimaryButton onClick={() => handleStopMatch(match.id)}>
                 <MdCancel className="size-6 text-secondary-light" />
@@ -142,23 +156,22 @@ const MatchRow = ({ match, onEdit }: MatchRowProps) => {
                 <MdSwapHoriz className="size-6" />
               </PrimaryButton>
             </>
-        ) : (
-          currentMatch && currentMatch.id !== match.id ? (
+          ) : // Only show play if there are no live matches
+          hasLiveMatch ? (
             <></>
           ) : (
             <PrimaryButton onClick={() => handleStartMatch(match.id)}>
               <MdPlayArrow className="size-6" />
             </PrimaryButton>
-          )
-        )}
-            <PrimaryButton onClick={() => handleEditClick()}>
-              <MdEdit className="size-6" />
-            </PrimaryButton>
+          )}
+          <PrimaryButton onClick={() => handleEditClick()}>
+            <MdEdit className="size-6" />
+          </PrimaryButton>
 
-            <PrimaryButton onClick={() => deleteMatch(match.id)}>
-              <MdDelete className="size-6" />
-            </PrimaryButton>
-          </div>
+          <PrimaryButton onClick={() => deleteMatch(match.id)}>
+            <MdDelete className="size-6" />
+          </PrimaryButton>
+        </div>
       </td>
     </tr>
   );
