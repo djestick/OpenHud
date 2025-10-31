@@ -1,23 +1,41 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MdClose } from "react-icons/md";
 import { VscChromeMinimize, VscChromeMaximize } from "react-icons/vsc";
 
 export const AppFrame = () => {
+  const appFrameRef = useRef<HTMLDivElement | null>(null);
   const [maximized, setMaximized] = useState<boolean>(false);
 
-  const handle_maximize = () => {
+  const handle_maximize = useCallback(() => {
     if (maximized || screen.availWidth - window.innerWidth === 0) {
       window.electron.sendFrameAction("RESET");
     } else {
       window.electron.sendFrameAction("MAXIMIZE");
     }
     setMaximized(!maximized);
-  };
+  }, [maximized]);
+
+  useEffect(() => {
+    const appFrame = appFrameRef.current;
+    if (!appFrame) return;
+
+    const handleDoubleClick = (event: MouseEvent) => {
+      if (!(event.target instanceof Node)) return;
+      if (!appFrame.contains(event.target)) return;
+      handle_maximize();
+    };
+
+    document.addEventListener("dblclick", handleDoubleClick);
+    return () => {
+      document.removeEventListener("dblclick", handleDoubleClick);
+    };
+  }, [handle_maximize]);
+
   return (
     <div
       id="AppFrame"
+      ref={appFrameRef}
       className="relative flex h-7 w-full items-center bg-background-secondary pl-4 text-text"
-      onDoubleClick={handle_maximize}
     >
       <div className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2 font-semibold text-center">
         <div className="flex items-center gap-1">

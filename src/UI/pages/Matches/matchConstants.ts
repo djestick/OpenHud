@@ -63,7 +63,7 @@ export interface PlayerRoundData {
 }
 
 export const VETO_CONFIG: Record<MatchTypeKey, VetoType[]> = {
-  bo1: ['ban', 'ban', 'ban', 'ban', 'decider'],
+  bo1: ['ban', 'ban', 'ban', 'ban', 'ban', 'ban', 'decider'],
   bo2: ['pick', 'pick'],
   bo3: ['ban', 'ban', 'pick', 'pick', 'ban', 'ban', 'decider'],
   bo5: ['ban', 'ban', 'pick', 'pick', 'pick', 'pick', 'decider']

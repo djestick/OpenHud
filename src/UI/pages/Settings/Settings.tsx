@@ -552,7 +552,7 @@ export const Settings = () => {
             </div>
           </div>
 
-          <div className="mb-6 flex flex-col gap-3 rounded-lg border border-border bg-background-secondary/40 p-6">
+          <div className="flex flex-col gap-3 rounded-lg border border-border bg-background-secondary/40 p-6">
             <span className="text-xs uppercase tracking-wide text-text-secondary">
               FOR DEVELOPERS
             </span>
