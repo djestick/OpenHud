@@ -45,6 +45,14 @@ function createMainWindow() {
     height: 700,
     minHeight: 513,
     frame: false,
+    transparent: true,
+    backgroundColor: "#00000000", // required so CSS rounded corners render over transparent window
+    hasShadow: true,
+    ...(process.platform === "darwin"
+      ? {
+          titleBarStyle: "hiddenInset",
+        }
+      : {}),
     webPreferences: {
       preload: getPreloadPath(),
     },

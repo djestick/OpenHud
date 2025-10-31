@@ -5,7 +5,7 @@ export const Layout = () => {
   const { theme } = useThemes();
   return (
     <div
-      className={`${theme} flex h-screen w-screen flex-col bg-background-secondary text-text`}
+      className={`${theme} window-shell flex h-screen w-screen flex-col bg-background-secondary text-text`}
     >
       <AppFrame />
       <div className="flex flex-1 overflow-hidden">

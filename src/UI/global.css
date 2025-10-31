@@ -47,8 +47,19 @@ body,
 #root {
   width: 100%;
   height: 100%;
+  margin: 0;
   font-family: "Roboto", sans-serif;
   background-color: transparent !important;
+}
+
+body,
+#root {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.window-shell {
+  background: oklch(var(--background-secondary));
 }
 .hud {
   position: fixed;
