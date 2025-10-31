@@ -18,7 +18,7 @@ export const AppFrame = () => {
   return (
     <div
       id="AppFrame"
-      className="relative flex h-7 w-full items-center gap-10 bg-background-contrast pl-4 text-text"
+      className="relative flex h-7 w-full items-center gap-10 bg-background-secondary pl-4 text-text"
     >
       <div className="flex items-center gap-4">
         <button

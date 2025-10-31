@@ -22,3 +22,18 @@
 /* ::-webkit-scrollbar-thumb:hover {
     background: rgb(43, 57, 77);
   } */
+
+.inline-svg-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: currentColor;
+}
+
+.inline-svg-icon path,
+.inline-svg-icon rect,
+.inline-svg-icon circle,
+.inline-svg-icon polygon,
+.inline-svg-icon line {
+  fill: currentColor;
+}

@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { MdRefresh, MdSettings, MdSwapHoriz } from "react-icons/md";
 import { useDrawer } from "../../hooks";
 import { socket } from "../../api/socket";
 import useGameData from "../../context/useGameData";
 import { useMatches } from "../Matches/useMatches";
 import { canReverseSides } from "../Matches/matchUtils";
+import settingsIcon from "../../assets/settings.svg?raw";
+import reloadIcon from "../../assets/reload.svg?raw";
+import switchSidesIcon from "../../assets/switch-sides.svg?raw";
+import { InlineSvgIcon } from "../../components/InlineSvgIcon";
 
 export const AccountToggle = () => {
   const { isOpen } = useDrawer();
@@ -89,7 +92,7 @@ export const AccountToggle = () => {
         title={refreshTitle}
         disabled={refreshDisabled}
       >
-        <MdRefresh className="size-7 shrink-0" />
+        <InlineSvgIcon svg={reloadIcon} className="size-7 shrink-0 p-1" />
         {isOpen && <p className="pl-2 font-semibold">Refresh overlay</p>}
       </button>
       <button
@@ -98,7 +101,7 @@ export const AccountToggle = () => {
         title="Switch sides for current map"
         disabled={switchSidesDisabled}
       >
-        <MdSwapHoriz className="size-7 shrink-0" />
+        <InlineSvgIcon svg={switchSidesIcon} className="size-7 shrink-0 p-1" />
         {isOpen && <p className="pl-2 font-semibold">Switch sides</p>}
       </button>
       <NavLink
@@ -108,26 +111,17 @@ export const AccountToggle = () => {
           `relative flex items-center rounded-lg py-2 pl-4 transition-colors ${
             isActive
               ? "bg-background-light text-text shadow"
-              : "text-text-secondary hover:bg-border"
+              : "text-text-disabled hover:bg-border"
           }`
         }
       >
         {({ isActive }) => (
           <>
-            <MdSettings
-              className={`size-7 shrink-0 ${
-                isActive ? "text-primary-light" : "text-text-disabled"
-              }`}
+            <InlineSvgIcon
+              svg={settingsIcon}
+              className={`size-7 shrink-0 p-1 ${isActive ? "text-primary-light" : "text-text-disabled"}`}
             />
-            {isOpen && (
-              <p
-                className={`pl-2 font-semibold ${
-                  isActive ? "text-text" : "text-text-secondary"
-                }`}
-              >
-                Settings
-              </p>
-            )}
+            {isOpen && <p className="pl-2 font-semibold">Settings</p>}
           </>
         )}
       </NavLink>

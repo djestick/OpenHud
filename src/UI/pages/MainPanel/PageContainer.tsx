@@ -4,9 +4,11 @@ export const PageContainer = () => {
   return (
     <div
       id="PageContainer"
-      className="relative flex h-full w-full items-center justify-center overflow-y-auto bg-background-primary px-4"
+      className="floating-panel relative z-1000 mr-5 flex h-full w-full flex-1 flex-col overflow-hidden"
     >
-      <Outlet />
+      <div className="flex flex-1 flex-col overflow-y-auto px-6 py-6 md:px-10 md:py-8">
+        <Outlet />
+      </div>
     </div>
   );
 };

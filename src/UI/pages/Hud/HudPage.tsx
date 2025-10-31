@@ -202,15 +202,15 @@ export const HudPage = () => {
                       if (e.key === "Enter" || e.key === " ")
                         requestHudChange(hud);
                     }}
-                    className={`relative flex h-[260px] w-full max-w-[320px] cursor-pointer flex-col overflow-hidden rounded-lg border bg-[#27272A] shadow-sm transition-none focus:outline-none ${
+                    className={`relative flex h-[260px] w-full max-w-[320px] cursor-pointer flex-col overflow-hidden rounded-lg border bg-background-secondary shadow-sm transition-none focus:outline-none ${
                       hud.isActive
                         ? "ring-primary/30 border-primary ring-2"
-                        : "border-transparent hover:border-gray-500"
+                        : "border-transparent hover:border-border"
                     }`}
                   >
                     <div
-                      className="relative w-full"
-                      style={{ height: 180, backgroundColor: "#27272A" }}
+                      className="relative w-full bg-background-secondary"
+                      style={{ height: 180 }}
                     >
                       {previewSrc ? (
                         <img
@@ -233,13 +233,11 @@ export const HudPage = () => {
 
                       {/* Avatar overlapping preview and card body - half on preview, half on body */}
                       <div
-                        className="absolute left-4 z-10 flex items-center justify-center overflow-hidden rounded-lg"
+                        className="absolute left-4 z-10 flex items-center justify-center overflow-hidden rounded-lg border-4 border-background-secondary bg-background-primary"
                         style={{
                           width: 72,
                           height: 72,
                           bottom: -36,
-                          border: "4px solid #27272A",
-                          backgroundColor: "#111827",
                         }}
                       >
                         {hud.thumbnailDataUri ? (

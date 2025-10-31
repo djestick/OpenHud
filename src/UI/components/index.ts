@@ -6,3 +6,4 @@ export * from "./Drawer";
 export * from "./Searchbar";
 export * from "./Loading";
 export * from "./PrimaryButton";
+export * from "./InlineSvgIcon";
