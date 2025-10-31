@@ -32,7 +32,7 @@ export const Topbar = ({ header, buttonText, openForm, rightSlot }: TopBarProps)
   return (
     <div
       id="TopBar"
-      className="sticky top-0 z-10 flex h-16 w-full shrink-0 items-center justify-center bg-background-primary px-2"
+      className="sticky top-0 z-10 flex h-16 w-full shrink-0 items-center justify-center bg-background-primary px-2 before:absolute before:-top-4 before:left-0 before:right-0 before:h-4 before:bg-background-primary before:content-[''] md:before:-top-6 md:before:h-6"
     >
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-4">

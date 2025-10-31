@@ -13,13 +13,17 @@ const MAX_SCALE = 150;
 const clampScale = (value: number) =>
   Math.max(MIN_SCALE, Math.min(MAX_SCALE, value));
 
+const openExternalLink = (href: string) => {
+  if (window.electron?.openExternalLink) {
+    window.electron.openExternalLink(href);
+  } else {
+    window.open(href, "_blank", "noopener,noreferrer");
+  }
+};
+
 const LinkButton = ({ href, label }: { href: string; label: string }) => {
   const handleClick = () => {
-    if (window.electron?.openExternalLink) {
-      window.electron.openExternalLink(href);
-    } else {
-      window.open(href, "_blank", "noopener,noreferrer");
-    }
+    openExternalLink(href);
   };
 
   return (
@@ -82,6 +86,14 @@ export const Settings = () => {
     null,
   );
   const [exportError, setExportError] = useState<string | null>(null);
+
+  const handleOpenDevTools = () => {
+    window.electron?.sendFrameAction?.("CONSOLE");
+  };
+
+  const handleOpenDiscord = () => {
+    openExternalLink("https://discord.gg/HApB9HyaWM");
+  };
 
   useEffect(() => {
     setScaleDraft(String(appScale));
@@ -542,6 +554,19 @@ export const Settings = () => {
 
           <div className="mb-6 flex flex-col gap-3 rounded-lg border border-border bg-background-secondary/40 p-6">
             <span className="text-xs uppercase tracking-wide text-text-secondary">
+              FOR DEVELOPERS
+            </span>
+            <ButtonContained
+              type="button"
+              onClick={handleOpenDevTools}
+              className="self-start inline-flex w-auto"
+            >
+              Open DevTools
+            </ButtonContained>
+          </div>
+
+          <div className="mb-6 flex flex-col gap-3 rounded-lg border border-border bg-background-secondary/40 p-6">
+            <span className="text-xs uppercase tracking-wide text-text-secondary">
               Information
             </span>
             <p className="text-sm leading-relaxed text-text-secondary">
@@ -554,6 +579,13 @@ export const Settings = () => {
               <LinkButton href="https://github.com/djestick" label="djestick" />{" "}
               with love 💖
             </p>
+            <ButtonContained
+              type="button"
+              onClick={handleOpenDiscord}
+              className="self-start inline-flex w-auto"
+            >
+              Official support Discord server
+            </ButtonContained>
           </div>
         </div>
       </section>
