@@ -6,10 +6,10 @@ import { Topbar } from "../MainPanel/Topbar";
 export const TeamsPage = () => {
   const [open, setOpen] = useState(false);
   return (
-    <div className="relative flex size-full flex-col">
+    <section className="relative flex size-full flex-col gap-1">
       <Topbar header="Teams" buttonText="Team" openForm={setOpen} />
       <TeamsForm open={open} setOpen={setOpen} />
       <TeamsTable setOpenState={setOpen} />
-    </div>
+    </section>
   );
 };

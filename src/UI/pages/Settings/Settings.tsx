@@ -4,6 +4,7 @@ import { useThemes } from "../../hooks/useThemes";
 import { useAppSettings } from "../../hooks/useAppSettings";
 import ExportDataModal from "./ExportDataModal";
 import ImportDataModal from "./ImportDataModal";
+import { Topbar } from "../MainPanel/Topbar";
 
 const SCALE_STEP = 5;
 const MIN_SCALE = 75;
@@ -293,10 +294,8 @@ export const Settings = () => {
 
   return (
     <>
-      <section className="relative flex h-full w-full flex-col gap-6 pb-12 pt-6">
-        <div className="flex w-full items-center justify-between gap-4">
-          <h2 className="text-3xl font-semibold">Settings</h2>
-        </div>
+      <section className="relative flex size-full flex-col gap-6 pb-12">
+        <Topbar header="Settings" />
 
         <div className="flex flex-col gap-6">
           <div className="bg-background-secondary/40 flex flex-col gap-6 rounded-lg border border-border p-6">
@@ -541,7 +540,7 @@ export const Settings = () => {
             </div>
           </div>
 
-          <div className="bg-background-secondary/40 flex flex-col gap-3 rounded-lg border border-border p-6">
+          <div className="mb-6 flex flex-col gap-3 rounded-lg border border-border bg-background-secondary/40 p-6">
             <span className="text-xs uppercase tracking-wide text-text-secondary">
               Information
             </span>

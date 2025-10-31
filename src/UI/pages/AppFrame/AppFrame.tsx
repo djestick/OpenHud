@@ -19,6 +19,7 @@ export const AppFrame = () => {
     <div
       id="AppFrame"
       className="relative flex h-7 w-full items-center gap-10 bg-background-secondary pl-4 text-text"
+      onDoubleClick={handle_maximize}
     >
       <div className="flex items-center gap-4">
         <button

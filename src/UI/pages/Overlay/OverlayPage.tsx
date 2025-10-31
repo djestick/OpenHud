@@ -2,6 +2,7 @@ import { ChangeEvent, KeyboardEvent, useEffect, useMemo, useState } from "react"
 import { MdRefresh } from "react-icons/md";
 import { ButtonContained } from "../../components";
 import { socket } from "../../api/socket";
+import { Topbar } from "../MainPanel/Topbar";
 
 const SCALE_STEP = 5;
 const MIN_SCALE = 25;
@@ -106,29 +107,31 @@ export const OverlayPage = () => {
 
   const refreshDisabled = loading || !isOverlayVisible;
   const refreshButtonClass = refreshDisabled
-    ? "gap-2 rounded-full px-4 py-2 uppercase bg-background-dark text-text-disabled hover:bg-background-dark disabled:cursor-not-allowed disabled:text-text-disabled"
+    ? "gap-2 rounded-full px-4 py-2 uppercase bg-background-light text-text disabled:opacity-50 hover:bg-background-light"
     : "gap-2 rounded-full px-4 py-2 uppercase";
 
   // WebM overlay UI removed
 
   return (
-    <section className="relative flex h-full w-full flex-col gap-6 py-6">
-      <div className="flex w-full items-center justify-between gap-4">
-        <h2 className="text-3xl font-semibold">Overlay Settings</h2>
-        <ButtonContained
-          type="button"
-          onClick={handleRefreshOverlay}
-          title={
-            isOverlayVisible ? "Refresh overlay HUD" : "Overlay is not active"
-          }
-          aria-label="Refresh overlay"
-          disabled={refreshDisabled}
-          className={refreshButtonClass}
-        >
-          <MdRefresh className="size-5" />
-          Refresh
-        </ButtonContained>
-      </div>
+    <section className="relative flex size-full flex-col gap-6">
+      <Topbar
+        header="Overlay"
+        rightSlot={
+          <ButtonContained
+            type="button"
+            onClick={handleRefreshOverlay}
+            title={
+              isOverlayVisible ? "Refresh overlay HUD" : "Overlay is not active"
+            }
+            aria-label="Refresh overlay"
+            disabled={refreshDisabled}
+            className={refreshButtonClass}
+          >
+            <MdRefresh className="size-5" />
+            Refresh
+          </ButtonContained>
+        }
+      />
 
       <div className="flex flex-col gap-6 rounded-lg border border-border bg-background-secondary/40 p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">

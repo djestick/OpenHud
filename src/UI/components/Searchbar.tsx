@@ -3,9 +3,10 @@ import { MdSearch, MdClose } from "react-icons/md";
 
 interface SearchBarProps {
   dataSearch: (searchValue: string) => void;
+  align?: "center" | "right";
 }
 
-export const Searchbar = ({ dataSearch }: SearchBarProps) => {
+export const Searchbar = ({ dataSearch, align = "center" }: SearchBarProps) => {
   const [searchValue, setSearchValue] = useState<string>("");
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,7 +23,9 @@ export const Searchbar = ({ dataSearch }: SearchBarProps) => {
   return (
     <div
       id="Search"
-      className="noDrag absolute left-1/2 flex h-8 -translate-x-1/2 items-center justify-center rounded-full border border-border px-2 text-sm"
+      className={`noDrag relative flex h-8 items-center justify-center rounded-full border border-border px-2 text-sm ${
+        align === "center" ? "absolute left-1/2 -translate-x-1/2" : ""
+      }`}
     >
       <MdSearch className="size-5" />
       <input

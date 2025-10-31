@@ -3,6 +3,7 @@ import { MdFolderOpen, MdRefresh, MdLink } from "react-icons/md";
 import api, { HudDescriptor } from "../../api/api";
 import { ButtonContained, Dialog } from "../../components";
 import { socket } from "../../api/socket";
+import { Topbar } from "../MainPanel/Topbar";
 
 export const HudPage = () => {
   const [huds, setHuds] = useState<HudDescriptor[]>([]);
@@ -105,44 +106,46 @@ export const HudPage = () => {
   }, []);
 
   return (
-    <section className="relative flex h-full w-full flex-col gap-6 py-6">
-      <div className="flex w-full items-center justify-between gap-4">
-        <h2 className="text-3xl font-semibold">HUD</h2>
-        <div className="flex items-center gap-2">
-          {copyFeedback && (
-            <span className="text-xs font-semibold uppercase text-green-400">
-              Copied to clipboard
-            </span>
-          )}
-          <button
-            type="button"
-            className="hover:bg-background-light/70 flex h-10 w-10 items-center justify-center rounded-full bg-background-light text-text disabled:opacity-50"
-            onClick={handleRefreshClick}
-            title="Refresh list"
-            aria-label="Refresh HUD list"
-            disabled={loading}
-          >
-            <MdRefresh className="size-5" />
-          </button>
-          <button
-            type="button"
-            className="hover:bg-background-light/70 flex h-10 items-center gap-2 rounded-full bg-background-light px-4 text-sm font-semibold uppercase text-text transition disabled:opacity-50"
-            onClick={handleCopyUrl}
-            title="Copu URL for OBS"
-            aria-label="Copy URL for OBS"
-          >
-            <MdLink className="size-5" />
-            Copy URL
-          </button>
-          <ButtonContained
-            className="gap-2 rounded-full px-4 py-2 uppercase"
-            onClick={handleOpenFolder}
-          >
-            <MdFolderOpen className="size-5" />
-            Open folder
-          </ButtonContained>
-        </div>
-      </div>
+    <section className="relative flex size-full flex-col gap-6">
+      <Topbar
+        header="HUD"
+        rightSlot={
+          <div className="flex items-center gap-2">
+            {copyFeedback && (
+              <span className="text-xs font-semibold uppercase text-green-400">
+                Copied to clipboard
+              </span>
+            )}
+            <ButtonContained
+              type="button"
+              className="gap-2 bg-background-light px-3 py-1.5 text-text hover:bg-background-light/80 disabled:opacity-60 disabled:text-text"
+              onClick={handleRefreshClick}
+              title="Refresh list"
+              aria-label="Refresh HUD list"
+              disabled={loading}
+            >
+              <MdRefresh className="size-5" />
+            </ButtonContained>
+            <ButtonContained
+              type="button"
+              className="gap-2 bg-background-light px-3 py-1.5 text-text hover:bg-background-light/80 disabled:opacity-60 disabled:text-text"
+              onClick={handleCopyUrl}
+              title="Copy URL for OBS"
+              aria-label="Copy URL for OBS"
+            >
+              <MdLink className="size-5" />
+              Copy URL
+            </ButtonContained>
+            <ButtonContained
+              className="gap-2 px-3 py-1.5"
+              onClick={handleOpenFolder}
+            >
+              <MdFolderOpen className="size-5" />
+              Open folder
+            </ButtonContained>
+          </div>
+        }
+      />
 
       {error && (
         <div className="rounded border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">

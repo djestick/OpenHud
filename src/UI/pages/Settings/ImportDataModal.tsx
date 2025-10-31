@@ -357,7 +357,7 @@ export const ImportDataModal = ({
       onClick={handleOverlayClick}
     >
       <div
-        className="relative w-full max-w-3xl rounded-lg bg-background-primary p-6 shadow-2xl"
+        className="relative w-full max-w-3xl rounded-2xl bg-background-primary p-6 shadow-2xl"
         onClick={(event) => event.stopPropagation()}
       >
         <button

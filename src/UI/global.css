@@ -153,6 +153,6 @@ body,
   background: var(--panel-background);
   border: 1px solid var(--panel-border-color);
   border-radius: 16px;
-  box-shadow: var(--panel-shadow);
+  box-shadow: none;
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
