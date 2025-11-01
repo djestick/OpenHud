@@ -136,7 +136,7 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
       title: "Select OpenHUD database file",
       buttonLabel: "Choose",
       properties: ["openFile"],
-      filters: [{ name: "OpenHUD database", extensions: ["db"] }],
+      filters: [{ name: "OpenHUD backup", extensions: ["zip"] }],
     });
 
     if (selection.canceled || selection.filePaths.length === 0) {
@@ -186,7 +186,7 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
       const exportsPath = getExportsPath();
       ensureDirectory(exportsPath);
       const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const filePath = path.join(exportsPath, `openhud-export-${timestamp}.db`);
+      const filePath = path.join(exportsPath, `openhud-export-${timestamp}.zip`);
 
       try {
         return await exportDatabaseSelection(filePath, payload);

@@ -50,4 +50,11 @@ export const coachApi = {
     });
     if (!response.ok) throw new Error("Failed to update coach");
   },
+
+  convertToPlayer: async (steamid: string): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/coach/${steamid}/convert-to-player`, {
+      method: "POST",
+    });
+    if (!response.ok) throw new Error("Failed to convert coach to player");
+  },
 };

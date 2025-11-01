@@ -80,6 +80,11 @@ const buildPlayerAvatarUrl = (player: Player) =>
     ? `${apiUrl}/players/avatar/${player._id}?v=${encodeURIComponent(player.avatar)}`
     : PlayerSilhouette;
 
+const buildCoachAvatarUrl = (coach: Coach) =>
+  coach.avatar
+    ? `${apiUrl}/coach/avatar/${coach.steamid}?v=${encodeURIComponent(coach.avatar)}`
+    : PlayerSilhouette;
+
 const buildTeamLogoUrl = (teamId: string | null | undefined) =>
   teamId ? `${apiUrl}/teams/logo/${teamId}` : undefined;
 
@@ -166,7 +171,8 @@ export const ExportDataModal = ({
               `Team: ${teamName}`,
               `Steam ID: ${coach.steamid}`,
             ],
-            imageUrl: coachTeam?.logo
+            imageUrl: buildCoachAvatarUrl(coach),
+            badgeImageUrl: coachTeam?.logo
               ? buildTeamLogoUrl(coachTeam._id)
               : undefined,
             badgeLabel: !coachTeam?.logo ? teamName : undefined,

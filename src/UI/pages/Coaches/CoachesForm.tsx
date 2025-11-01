@@ -7,6 +7,8 @@ import {
 } from "../../components";
 import { countries } from "../../api/countries";
 import { useCoaches, useTeams } from "../../hooks";
+import { usePlayers } from "../Players/usePlayers";
+import { coachApi } from "./coachApi";
 import { apiUrl } from "../../api/api";
 
 export interface CoachFormPrefill {
@@ -33,8 +35,10 @@ export const CoachForm = ({ open, setOpen, prefill }: CoachFormProps) => {
     isEditing,
     setIsEditing,
     setSelectedCoach,
+    fetchCoaches,
   } = useCoaches();
   const { teams } = useTeams();
+  const { fetchPlayers } = usePlayers();
 
   const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -174,6 +178,27 @@ export const CoachForm = ({ open, setOpen, prefill }: CoachFormProps) => {
     setOpen(false);
   };
 
+  const handleConvertToPlayer = async () => {
+    if (!selectedCoach) {
+      console.log("No selected coach");
+      return;
+    }
+
+    console.log("Converting coach to player:", selectedCoach.steamid);
+
+    try {
+      await coachApi.convertToPlayer(selectedCoach.steamid);
+      console.log("Coach converted to player successfully");
+      fetchCoaches();
+      fetchPlayers();
+      // Optionally, you can add some notification to the user
+      setOpen(false);
+      handleReset();
+    } catch (error) {
+      console.error("Error converting coach to player:", error);
+    }
+  };
+
   return (
     <Dialog onClose={handleCancel} open={open}>
       <h1>{isEditing && "Editing"}</h1>
@@ -295,9 +320,14 @@ export const CoachForm = ({ open, setOpen, prefill }: CoachFormProps) => {
           )}
           <ButtonContained onClick={handleReset}>Reset</ButtonContained>
           {isEditing && (
+            <>
+            <ButtonContained onClick={handleConvertToPlayer}>
+              Convert to Player
+            </ButtonContained>
             <ButtonContained color="secondary" onClick={handleCancel}>
               Cancel
             </ButtonContained>
+            </>
           )}
         </div>
       </div>

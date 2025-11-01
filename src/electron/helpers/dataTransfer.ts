@@ -1,6 +1,8 @@
 import sqlite3 from "sqlite3";
 import { promises as fsPromises } from "node:fs";
 import path from "node:path";
+import AdmZip from "adm-zip";
+import { getUploadsPath } from "./pathResolver.js";
 import {
   applyDatabaseSchema,
   database,
@@ -228,7 +230,13 @@ export const importSelectionFromFile = async (
   sourcePath: string,
   selection: DataExportSelection,
 ): Promise<ImportDataResult> => {
-  const snapshot = await loadDatabaseSnapshot(sourcePath);
+  const zip = new AdmZip(sourcePath);
+  const tempDir = path.join(getUploadsPath(), "..", "temp-import");
+  await fsPromises.rm(tempDir, { recursive: true, force: true });
+  zip.extractAllTo(tempDir, true);
+
+  const dbPath = path.join(tempDir, "database.db");
+  const snapshot = await loadDatabaseSnapshot(dbPath);
   const filtered = filterSnapshotBySelection(snapshot, selection);
 
   const counts: DataTransferCounts = {
@@ -254,6 +262,34 @@ export const importSelectionFromFile = async (
   } finally {
     await runAsync(database, "PRAGMA foreign_keys = ON");
   }
+
+  const uploadsPath = getUploadsPath();
+  const importUploadsPath = path.join(tempDir, "uploads");
+
+  try {
+    await fsPromises.access(importUploadsPath);
+    console.log(`Found uploads folder in import: ${importUploadsPath}`);
+    // copy all files from importUploadsPath to uploadsPath recursively
+    const copyDir = async (src: string, dest: string) => {
+      await fsPromises.mkdir(dest, { recursive: true });
+      const entries = await fsPromises.readdir(src, { withFileTypes: true });
+      for (const entry of entries) {
+        const srcPath = path.join(src, entry.name);
+        const destPath = path.join(dest, entry.name);
+        if (entry.isDirectory()) {
+          await copyDir(srcPath, destPath);
+        } else {
+          console.log(`Copying ${srcPath} to ${destPath}`);
+          await fsPromises.copyFile(srcPath, destPath);
+        }
+      }
+    };
+    await copyDir(importUploadsPath, uploadsPath);
+  } catch (error) {
+    console.error(`Could not process uploads from import:`, error);
+  }
+
+  await fsPromises.rm(tempDir, { recursive: true, force: true });
 
   return {
     success: true,
@@ -333,12 +369,13 @@ export const exportDatabaseSelection = async (
     matches: matches.length,
   };
 
-  const absoluteTarget = path.resolve(targetPath);
-  await fsPromises.mkdir(path.dirname(absoluteTarget), { recursive: true });
-  await fsPromises.rm(absoluteTarget, { force: true });
+  const zip = new AdmZip();
+
+  const tempDbPath = path.join(getUploadsPath(), "..", "temp-export.db");
+  await fsPromises.rm(tempDbPath, { force: true });
 
   const exportDb = await openDatabase(
-    absoluteTarget,
+    tempDbPath,
     sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
   );
 
@@ -363,11 +400,49 @@ export const exportDatabaseSelection = async (
     await closeAsync(exportDb);
   }
 
+  zip.addLocalFile(tempDbPath, "", "database.db");
+  await fsPromises.rm(tempDbPath, { force: true });
+
+  const uploadsPath = getUploadsPath();
+
+  const addFileToZip = async (filePath: string, zipPath: string) => {
+    try {
+      await fsPromises.access(filePath);
+      console.log(`Adding ${filePath} to zip at ${zipPath}`);
+      zip.addLocalFile(filePath, path.dirname(zipPath));
+    } catch (error) {
+      console.error(`Could not add ${filePath} to zip:`, error);
+    }
+  };
+
+  for (const player of players) {
+    if (player.avatar) {
+      const avatarPath = path.join(uploadsPath, "player_pictures", player.avatar);
+      await addFileToZip(avatarPath, `uploads/player_pictures/${player.avatar}`);
+    }
+  }
+
+  for (const coach of coaches) {
+    if (coach.avatar) {
+      const avatarPath = path.join(uploadsPath, "coach_pictures", coach.avatar);
+      await addFileToZip(avatarPath, `uploads/coach_pictures/${coach.avatar}`);
+    }
+  }
+
+  for (const team of teams) {
+    if (team.logo) {
+      const logoPath = path.join(uploadsPath, "team_logos", team.logo);
+      await addFileToZip(logoPath, `uploads/team_logos/${team.logo}`);
+    }
+  }
+
+  zip.writeZip(targetPath);
+
   return {
     success: true,
     message: "Data exported successfully.",
     counts,
-    filePath: absoluteTarget,
+    filePath: targetPath,
     autoIncludedTeams,
   };
 };

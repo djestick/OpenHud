@@ -33,3 +33,4 @@ playersRoutes.put(
 
 /* ================== DELETESs ===================== */
 playersRoutes.delete("/:id", PlayersController.removePlayerHandler);
+playersRoutes.post("/:steamid/convert-to-coach", PlayersController.convertToCoachHandler);

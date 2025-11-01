@@ -52,4 +52,11 @@ export const playerApi = {
     }
     return await response.blob();
   },
+
+  convertToCoach: async (steamid: string): Promise<void> => {
+    const response = await fetch(`${API_BASE_URL}/players/${steamid}/convert-to-coach`, {
+      method: "POST",
+    });
+    if (!response.ok) throw new Error("Failed to convert player to coach");
+  },
 };

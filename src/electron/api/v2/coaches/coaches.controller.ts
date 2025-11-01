@@ -2,7 +2,9 @@ import { Request, Response } from "express";
 import * as CoachService from "./coaches.service.js";
 import path from "path";
 import fs from "fs";
-import { getCoachPicturesPath } from "../../../helpers/pathResolver.js";
+import { v4 as uuidv4 } from "uuid";
+import { getCoachPicturesPath, getPlayerPicturesPath } from "../../../helpers/pathResolver.js";
+import * as PlayerService from "../players/players.service.js";
 import type { CoachRecord } from "./coaches.data.js";
 
 const normalize = (value?: string | string[]): string | undefined => {
@@ -228,3 +230,57 @@ export const getCoachAvatarFileHandler = async (
     }
   }
 };
+
+/**
+ * Controller for converting a coach to a player.
+ * @returns The _id of the newly created player
+ */
+export const convertToPlayerHandler = async (req: Request, res: Response) => {
+  console.log("convertToPlayerHandler called with steamid:", req.params.steamid);
+  try {
+    const coach = await CoachService.getCoachBySteamID(req.params.steamid);
+    if (!coach) {
+      res.sendStatus(404);
+      return;
+    }
+
+    const player: Player = {
+      _id: uuidv4(),
+      steamid: coach.steamid,
+      username: coach.username || '',
+      firstName: coach.firstName || '',
+      lastName: coach.lastName || '',
+      avatar: coach.avatar || '',
+      country: coach.country || '',
+      team: coach.team || '',
+      extra: {},
+    };
+
+    const newPlayer = await PlayerService.createPlayer(player);
+
+    if (coach.avatar) {
+      const oldAvatarPath = path.join(
+        getCoachPicturesPath(),
+        coach.avatar
+      );
+      const newAvatarPath = path.join(
+        getPlayerPicturesPath(),
+        coach.avatar
+      );
+      if (fs.existsSync(oldAvatarPath)) {
+        fs.renameSync(oldAvatarPath, newAvatarPath);
+      }
+    }
+
+    await CoachService.removeCoach(coach.steamid);
+
+    res.status(201).json(newPlayer);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
+  }
+};
+

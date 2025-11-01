@@ -7,6 +7,8 @@ import {
 } from "../../components";
 import { countries } from "../../api/countries";
 import { usePlayers, useTeams } from "../../hooks";
+import { useCoaches } from "../Coaches/useCoaches";
+import { playerApi } from "./playersApi";
 import { apiUrl } from "../../api/api";
 
 interface PlayerFormProps {
@@ -26,8 +28,10 @@ export const PlayerForm = ({ open, setOpen, prefill }: PlayerFormProps) => {
     isEditing,
     setIsEditing,
     setSelectedPlayer,
+    fetchPlayers,
   } = usePlayers();
   const { teams } = useTeams();
+  const { fetchCoaches } = useCoaches();
 
   const [username, setUsername] = useState("");
   const [avatarFile, setAvatarFile] = useState<File | null>(null); // For file upload
@@ -143,6 +147,27 @@ export const PlayerForm = ({ open, setOpen, prefill }: PlayerFormProps) => {
   const handleCancel = () => {
     handleReset(); // Reset form fields
     setOpen(false);
+  };
+
+  const handleConvertToCoach = async () => {
+    if (!selectedPlayer) {
+      console.log("No selected player");
+      return;
+    }
+
+    console.log("Converting player to coach:", selectedPlayer.steamid);
+
+    try {
+      await playerApi.convertToCoach(selectedPlayer.steamid);
+      console.log("Player converted to coach successfully");
+      fetchPlayers();
+      fetchCoaches();
+      // Optionally, you can add some notification to the user
+      setOpen(false);
+      handleReset();
+    } catch (error) {
+      console.error("Error converting player to coach:", error);
+    }
   };
 
   const handleReset = () => {
@@ -285,9 +310,14 @@ export const PlayerForm = ({ open, setOpen, prefill }: PlayerFormProps) => {
           )}
           <ButtonContained onClick={handleReset}>Reset</ButtonContained>
           {isEditing && (
+            <>
+            <ButtonContained onClick={handleConvertToCoach}>
+              Convert to Coach
+            </ButtonContained>
             <ButtonContained color="secondary" onClick={handleCancel}>
               Cancel
             </ButtonContained>
+            </>
           )}
         </div>
       </div>

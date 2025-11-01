@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 import * as PlayerService from "./players.service.js";
 import path from "path";
 import fs from "fs";
-import { getPlayerPicturesPath } from "../../../helpers/pathResolver.js";
+import { getPlayerPicturesPath, getCoachPicturesPath } from "../../../helpers/pathResolver.js";
+import * as CoachService from "../coaches/coaches.service.js";
 
 /**
  * Controller for getting multiple/all players depending on steamid query.
@@ -237,6 +238,49 @@ export const removePlayerHandler = async (req: Request, res: Response) => {
 
     const removedPlayerID = await PlayerService.removePlayer(req.params.id);
     res.status(201).json(removedPlayerID);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    } else {
+      res.status(500).json({ error: "Unknown error" });
+    }
+  }
+};
+
+/**
+ * Controller for converting a player to a coach.
+ * @returns The _id of the newly created coach
+ */
+export const convertToCoachHandler = async (req: Request, res: Response) => {
+  console.log("convertToCoachHandler called with steamid:", req.params.steamid);
+  try {
+    const player = await PlayerService.getPlayerBySteamID(req.params.steamid);
+    if (!player) {
+      res.sendStatus(404);
+      return;
+    }
+
+    const { _id, ...playerData } = player;
+
+    const newCoach = await CoachService.createCoach(playerData);
+
+    if (player.avatar) {
+      const oldAvatarPath = path.join(
+        getPlayerPicturesPath(),
+        player.avatar
+      );
+      const newAvatarPath = path.join(
+        getCoachPicturesPath(),
+        player.avatar
+      );
+      if (fs.existsSync(oldAvatarPath)) {
+        fs.renameSync(oldAvatarPath, newAvatarPath);
+      }
+    }
+
+    await PlayerService.removePlayer(player._id);
+
+    res.status(201).json(newCoach);
   } catch (err: unknown) {
     if (err instanceof Error) {
       res.status(500).json({ error: err.message });

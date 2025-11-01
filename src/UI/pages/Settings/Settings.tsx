@@ -417,7 +417,7 @@ export const Settings = () => {
               Import data
             </span>
             <p className="text-sm text-text-secondary">
-              Import another OpenHUD database by selecting a <code>.db</code>{" "}
+              Import another OpenHUD database by selecting a <code>.zip</code>{" "}
               file.
             </p>
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
