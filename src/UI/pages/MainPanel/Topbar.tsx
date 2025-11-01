@@ -8,9 +8,10 @@ interface TopBarProps {
   buttonText?: string;
   openForm?: (open: boolean) => void;
   rightSlot?: ReactNode;
+  headerSlot?: ReactNode;
 }
 
-export const Topbar = ({ header, buttonText, openForm, rightSlot }: TopBarProps) => {
+export const Topbar = ({ header, buttonText, openForm, rightSlot, headerSlot }: TopBarProps) => {
   const location = useLocation();
   const { searchPlayers } = usePlayers();
   const { searchTeams } = useTeams();
@@ -35,8 +36,9 @@ export const Topbar = ({ header, buttonText, openForm, rightSlot }: TopBarProps)
       className="sticky top-0 z-10 flex h-16 w-full shrink-0 items-center justify-center bg-background-primary px-2 before:absolute before:-top-4 before:left-0 before:right-0 before:h-4 before:bg-background-primary before:content-[''] md:before:-top-6 md:before:h-6"
     >
       <div className="flex w-full items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <h3 className="noDrag capitalize">{header}</h3>
+          {headerSlot}
         </div>
         <div className="flex items-center justify-end gap-4">
           {searchComponent}

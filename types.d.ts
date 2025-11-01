@@ -21,6 +21,8 @@ interface Window {
     openExportsDirectory: () => void;
     playWebmOverlay: (config: WebmOverlayConfig) => void;
     stopWebmOverlay: () => void;
+    getWindowBounds: () => Promise<WindowBounds>;
+    setWindowBounds: (bounds: Partial<WindowBounds>) => void;
   };
   update: {
     updateMessage: (callback: (message: string) => void) => void;
@@ -60,6 +62,8 @@ type EventPayloadMapping = {
   "data:selectImportSource": ImportPreviewResult;
   "data:import": ImportDataResult;
   "data:export": ExportDataResult;
+  "window:getBounds": WindowBounds;
+  "window:setBounds": Partial<WindowBounds>;
 };
 
 type LegacyImportResult = {
@@ -110,6 +114,13 @@ type ExportDataResult = {
   filePath?: string;
   autoIncludedTeams?: string[];
   cancelled?: boolean;
+};
+
+type WindowBounds = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 };
 
 type DatabaseTeamRow = {

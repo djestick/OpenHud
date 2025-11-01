@@ -39,6 +39,7 @@ app.on("window-all-closed", () => {
 });
 
 function createMainWindow() {
+  const isWindows = process.platform === "win32";
   const mainWindow = new BrowserWindow({
     width: 1200,
     minWidth: 800,
@@ -46,13 +47,16 @@ function createMainWindow() {
     minHeight: 513,
     frame: false,
     transparent: true,
-    backgroundColor: "#00000000", // required so CSS rounded corners render over transparent window
-    hasShadow: true,
-    ...(process.platform === "darwin"
+    resizable: true,
+    backgroundColor: "#00000000", // keep window transparent so CSS rounded corners show
+    ...(isWindows
       ? {
-          titleBarStyle: "hiddenInset",
+          // retain resize hit testing on Windows while staying frameless/transparent
+          thickFrame: true,
         }
       : {}),
+    hasShadow: true,
+    ...(process.platform === "darwin" ? { titleBarStyle: "hiddenInset" } : {}),
     webPreferences: {
       preload: getPreloadPath(),
     },

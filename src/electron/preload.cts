@@ -40,6 +40,9 @@ electron.contextBridge.exposeInMainWorld("electron", {
   playWebmOverlay: (config: WebmOverlayConfig) =>
     ipcSend("overlay:webm:show", config),
   stopWebmOverlay: () => ipcSend("overlay:webm:hide", undefined),
+  getWindowBounds: () => ipcInvoke("window:getBounds"),
+  setWindowBounds: (bounds: Partial<WindowBounds>) =>
+    ipcSend("window:setBounds", bounds),
   openExternalLink: (url) => ipcSend("openExternalLink", url),
   openHudsDirectory: () => ipcSend("openHudsDirectory", undefined),
   openHudAssetsDirectory: () => ipcSend("openHudAssetsDirectory", undefined),

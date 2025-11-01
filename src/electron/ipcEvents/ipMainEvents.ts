@@ -1,4 +1,4 @@
-import { BrowserWindow, shell, dialog } from "electron";
+import { BrowserWindow, shell, dialog, ipcMain } from "electron";
 import path from "node:path";
 import { promises as fsPromises } from "node:fs";
 import {
@@ -92,6 +92,22 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
     const { hideWebmOverlay } = require("../hudWindow.js");
     hideWebmOverlay();
   });
+
+  ipcMainHandle("window:getBounds", () => mainWindow.getBounds());
+
+  ipcMain.on(
+    "window:setBounds",
+    (_event, bounds: Partial<WindowBounds>) => {
+      const current = mainWindow.getBounds();
+      const nextBounds = {
+        x: bounds.x ?? current.x,
+        y: bounds.y ?? current.y,
+        width: bounds.width ?? current.width,
+        height: bounds.height ?? current.height,
+      };
+      mainWindow.setBounds(nextBounds);
+    },
+  );
 
   ipcMainOn("openExternalLink", (url) => {
     shell.openExternal(url);

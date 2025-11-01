@@ -1,5 +1,6 @@
 import { Server } from "socket.io";
 import http from "http";
+import { getLatestGameDataSnapshot } from "../gsi/gsi.js";
 
 export let io: Server;
 
@@ -27,6 +28,16 @@ export function initializeWebSocket(server: http.Server) {
     socket.on("refreshHUD", () => {
       // Broadcast to all connected clients including sender
       io.emit("refreshHUD");
+    });
+
+    socket.on("refreshDashboard", () => {
+      const { data, timestamp } = getLatestGameDataSnapshot();
+      const isStale = !timestamp || Date.now() - timestamp > 1000;
+      if (!data || isStale) {
+        socket.emit("dashboard:clear");
+        return;
+      }
+      socket.emit("update", data);
     });
   });
 

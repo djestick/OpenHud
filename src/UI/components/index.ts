@@ -7,3 +7,4 @@ export * from "./Searchbar";
 export * from "./Loading";
 export * from "./PrimaryButton";
 export * from "./InlineSvgIcon";
+export * from "./WindowResizeHandles";

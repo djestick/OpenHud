@@ -129,7 +129,6 @@ export const PlayersTile = ({ playersFromGame, copyToClipboard }: PlayersTilePro
       <PlayerForm open={openPlayerForm} setOpen={setOpenPlayerForm} prefill={playerPrefill} />
       <CoachForm open={openCoachForm} setOpen={setOpenCoachForm} prefill={coachPrefill} />
       <Tile
-        title="Players Connected"
         body={
           <>
             {renderColumn("CT", ctPlayers)}

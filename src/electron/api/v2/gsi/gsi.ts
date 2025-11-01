@@ -10,11 +10,22 @@ export const GSI = new CSGOGSI();
 GSI.regulationMR = 12;
 GSI.overtimeMR = 3;
 
+let latestRawGameData: CSGORaw | null = null;
+let latestRawGameDataTimestamp = 0;
+
+export const getLatestRawGameData = () => latestRawGameData;
+export const getLatestGameDataSnapshot = () => ({
+  data: latestRawGameData,
+  timestamp: latestRawGameDataTimestamp,
+});
+
 export const readGameData = async (req: Request, res: Response) => {
   const data: CSGORaw = req.body;
   const coaches = await selectAllSteamids();
   fixGSIData(data, coaches);
   GSI.digest(data);
+  latestRawGameData = data;
+  latestRawGameDataTimestamp = Date.now();
   io.emit("update", data);
   res.sendStatus(200);
 };

@@ -1,6 +1,7 @@
 import { Sidebar } from "./Sidebar";
 import { AppFrame, MainPanel } from "./MainPanel";
 import { useThemes } from "../hooks";
+import { WindowResizeHandles } from "../components";
 export const Layout = () => {
   const { theme } = useThemes();
   return (
@@ -16,6 +17,7 @@ export const Layout = () => {
           <MainPanel />
         </div>
       </div>
+      <WindowResizeHandles />
     </div>
   );
 };
