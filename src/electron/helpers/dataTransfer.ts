@@ -1,7 +1,7 @@
 import sqlite3 from "sqlite3";
 import { promises as fsPromises } from "node:fs";
 import path from "node:path";
-import AdmZip from "adm-zip";
+// import AdmZip from "adm-zip";
 import { getUploadsPath } from "./pathResolver.js";
 import {
   applyDatabaseSchema,
@@ -226,6 +226,7 @@ const filterSnapshotBySelection = (
   };
 };
 
+/*
 export const importSelectionFromFile = async (
   sourcePath: string,
   selection: DataExportSelection,
@@ -297,7 +298,7 @@ export const importSelectionFromFile = async (
     counts,
     autoIncludedTeams: filtered.autoIncludedTeams,
   };
-};
+};*/
 
 const fetchRowsBySelection = async (
   table: TableKey,
@@ -320,6 +321,7 @@ const fetchRowsBySelection = async (
   );
 };
 
+/*
 export const exportDatabaseSelection = async (
   targetPath: string,
   selection: DataExportSelection,
@@ -445,4 +447,4 @@ export const exportDatabaseSelection = async (
     filePath: targetPath,
     autoIncludedTeams,
   };
-};
+};*/

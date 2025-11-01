@@ -20,7 +20,7 @@ const StatusPill = ({ label, active }: StatusPillProps) => {
     <div className={`${baseClasses} ${active ? activeClasses : inactiveClasses}`}>
       <span
         className={`size-3 rounded-full ${
-          active ? "bg-green-400 shadow-[0_0_6px_2px_rgba(74,222,128,0.5)]" : "bg-neutral-600/50"
+          active ? "bg-green-400" : "bg-neutral-600/50"
         }`}
       />
       {label}

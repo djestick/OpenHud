@@ -32,12 +32,17 @@ export default {
         "button-text": "oklch(var(--button-text))",
       },
       animation: {
-        "fade-in": "fadeIn 0.1s ease",
+        "fade-in": "fadeIn 0.3s ease",
+        "fade-out": "fadeOut 0.3s ease forwards",
       },
       keyframes: {
         fadeIn: {
           "0%": { opacity: 0 },
           "100%": { opacity: 1 },
+        },
+        fadeOut: {
+          "0%": { opacity: 1 },
+          "100%": { opacity: 0 },
         },
       },
       boxShadow: {

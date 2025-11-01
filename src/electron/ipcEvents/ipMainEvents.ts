@@ -23,8 +23,7 @@ import { runLegacyImport } from "../legacyMigrator.js";
 import * as PlayersModel from "../api/v2/players/players.data.js";
 import {
   loadDatabaseSnapshot,
-  importSelectionFromFile,
-  exportDatabaseSelection,
+
 } from "../helpers/dataTransfer.js";
 import type {
   DataExportSelection,
@@ -160,44 +159,9 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
     }
   });
 
-  ipcMainHandle(
-    "data:import",
-    async ({
-      sourcePath,
-      selection,
-    }: {
-      sourcePath: string;
-      selection: DataExportSelection;
-    }): Promise<ImportDataResult> => {
-      try {
-        return await importSelectionFromFile(sourcePath, selection);
-      } catch (error) {
-        return {
-          success: false,
-          message: `Failed to import database: ${(error as Error).message}`,
-        };
-      }
-    },
-  );
 
-  ipcMainHandle(
-    "data:export",
-    async (payload: DataExportSelection): Promise<ExportDataResult> => {
-      const exportsPath = getExportsPath();
-      ensureDirectory(exportsPath);
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const filePath = path.join(exportsPath, `openhud-export-${timestamp}.zip`);
 
-      try {
-        return await exportDatabaseSelection(filePath, payload);
-      } catch (error) {
-        return {
-          success: false,
-          message: `Failed to export data: ${(error as Error).message}`,
-        };
-      }
-    },
-  );
+
 
   ipcMainOn("exports:open", () => {
     openExportsDirectory();
