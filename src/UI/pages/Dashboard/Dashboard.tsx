@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Container, ButtonContained } from "../../components";
 import { useGameData } from "../../context/useGameData";
+import { useAppSettings } from "../../hooks/useAppSettings";
 import { Topbar } from "../MainPanel/Topbar";
 import { PlayersTile } from "./PlayersTile";
 import { MdRefresh } from "react-icons/md";
+import { GameDataDetails } from "./GameDataDetails";
 
 interface StatusPillProps {
   label: string;
@@ -29,7 +31,8 @@ const StatusPill = ({ label, active }: StatusPillProps) => {
 };
 
 export const Dashboard = () => {
-  const { gameData, hasData, refreshGameData } = useGameData();
+  const { gameData, rawGameData, hasData, refreshGameData } = useGameData();
+  const { showAllCGIData } = useAppSettings();
   const [copyStatus, setCopyStatus] = useState<boolean | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -75,12 +78,22 @@ export const Dashboard = () => {
           </ButtonContained>
         }
       />
-      <Container>
+      <Container className="gap-6 max-w-none">
         {gameData && (
-          <div className="flex gap-2">
+          <div className="flex justify-center gap-2">
             <PlayersTile playersFromGame={gameData.players} copyToClipboard={copyToClipboard} />
           </div>
         )}
+        {showAllCGIData &&
+          (gameData || rawGameData ? (
+            <div className="flex w-full flex-col">
+              <GameDataDetails data={gameData ?? null} rawData={rawGameData ?? null} />
+            </div>
+          ) : (
+            <div className="mt-4 rounded-lg border border-border bg-background-secondary/40 p-4 text-sm text-text-secondary">
+              Waiting for GSI data...
+            </div>
+          ))}
         {copyStatus && (
           <div className={`p-4 fixed top-8 left-1/2 -translate-x-1/2 z-50 ${copyStatus ? "bg-green-900 text-green-500 border-green-500" : "bg-red-900 text-red-500 border-red-500"} rounded-lg`}>
             {copyStatus ? "Copied successfully!" : "Failed to copy!"}

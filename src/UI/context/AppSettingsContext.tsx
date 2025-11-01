@@ -13,6 +13,9 @@ interface AppSettingsContextValue {
   increaseAppScale: () => void;
   decreaseAppScale: () => void;
   resetAppScale: () => void;
+  showAllCGIData: boolean;
+  setShowAllCGIData: (value: boolean) => void;
+  toggleShowAllCGIData: () => void;
 }
 
 const DEFAULT_SCALE = 100;
@@ -20,6 +23,7 @@ const MIN_SCALE = 75;
 const MAX_SCALE = 150;
 const SCALE_STEP = 5;
 const STORAGE_KEY = "openhud:app-scale";
+const SHOW_ALL_CGI_STORAGE_KEY = "openhud:show-all-cgi-data";
 
 const clampScale = (value: number) =>
   Math.min(MAX_SCALE, Math.max(MIN_SCALE, Math.round(value)));
@@ -60,6 +64,31 @@ export const AppSettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [appScale]);
 
+  const [showAllCGIData, setShowAllCGIDataState] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      const storedValue =
+        window.localStorage?.getItem(SHOW_ALL_CGI_STORAGE_KEY);
+      if (storedValue === "true") return true;
+      if (storedValue === "false") return false;
+    } catch {
+      /* noop - fall through to default */
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      window.localStorage?.setItem(
+        SHOW_ALL_CGI_STORAGE_KEY,
+        String(showAllCGIData),
+      );
+    } catch {
+      /* ignore storage write errors */
+    }
+  }, [showAllCGIData]);
+
   const setAppScale = useCallback((value: number) => {
     setAppScaleState(clampScale(value));
   }, []);
@@ -76,6 +105,14 @@ export const AppSettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     setAppScaleState(DEFAULT_SCALE);
   }, []);
 
+  const setShowAllCGIData = useCallback((value: boolean) => {
+    setShowAllCGIDataState(value);
+  }, []);
+
+  const toggleShowAllCGIData = useCallback(() => {
+    setShowAllCGIDataState((current) => !current);
+  }, []);
+
   const contextValue = useMemo(
     () => ({
       appScale,
@@ -83,8 +120,20 @@ export const AppSettingsProvider: React.FC<{ children: React.ReactNode }> = ({
       increaseAppScale,
       decreaseAppScale,
       resetAppScale,
+      showAllCGIData,
+      setShowAllCGIData,
+      toggleShowAllCGIData,
     }),
-    [appScale, decreaseAppScale, increaseAppScale, resetAppScale, setAppScale],
+    [
+      appScale,
+      decreaseAppScale,
+      increaseAppScale,
+      resetAppScale,
+      setAppScale,
+      setShowAllCGIData,
+      showAllCGIData,
+      toggleShowAllCGIData,
+    ],
   );
 
   return (

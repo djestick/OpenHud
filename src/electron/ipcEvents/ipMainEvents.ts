@@ -57,6 +57,30 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
     }
   });
 
+  const getDevToolsStatus = () => mainWindow.webContents.isDevToolsOpened();
+  const broadcastDevToolsStatus = (status: boolean) => {
+    mainWindow.webContents.send("devtools:status", status);
+  };
+
+  mainWindow.webContents.on("devtools-opened", () => {
+    broadcastDevToolsStatus(true);
+  });
+
+  mainWindow.webContents.on("devtools-closed", () => {
+    broadcastDevToolsStatus(false);
+  });
+
+  ipcMainHandle("devtools:getStatus", () => getDevToolsStatus());
+
+  ipcMainOn("devtools:setStatus", (shouldOpen: boolean) => {
+    const isOpen = getDevToolsStatus();
+    if (shouldOpen && !isOpen) {
+      mainWindow.webContents.openDevTools();
+    } else if (!shouldOpen && isOpen) {
+      mainWindow.webContents.closeDevTools();
+    }
+  });
+
   ipcMainOn("startOverlay", () => {
     showOverlay();
   });

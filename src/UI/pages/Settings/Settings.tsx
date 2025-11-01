@@ -61,7 +61,8 @@ const Switch = ({
 
 export const Settings = () => {
   const { theme, setTheme } = useThemes();
-  const { appScale, setAppScale } = useAppSettings();
+  const { appScale, setAppScale, showAllCGIData, toggleShowAllCGIData } =
+    useAppSettings();
   const [scaleDraft, setScaleDraft] = useState(String(appScale));
   const [legacyLoading, setLegacyLoading] = useState(false);
   const [legacyResult, setLegacyResult] = useState<LegacyImportResult | null>(
@@ -70,11 +71,7 @@ export const Settings = () => {
   const [legacyError, setLegacyError] = useState<string | null>(null);
   const [gsiLoading, setGsiLoading] = useState(false);
   const [gsiStatus, setGsiStatus] = useState<GSIResult | null>(null);
-
-
-  const handleOpenDevTools = () => {
-    window.electron?.sendFrameAction?.("CONSOLE");
-  };
+  const [isDevToolsOpen, setIsDevToolsOpen] = useState(false);
 
   const handleOpenDiscord = () => {
     openExternalLink("https://discord.gg/HApB9HyaWM");
@@ -88,6 +85,45 @@ export const Settings = () => {
 
   const handleThemeToggle = () => {
     setTheme(isLightTheme ? "dark" : "light");
+  };
+
+  const handleShowAllCGIToggle = () => {
+    toggleShowAllCGIData();
+  };
+
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+
+    if (window.electron?.getDevToolsStatus) {
+      window.electron
+        .getDevToolsStatus()
+        .then((open) => {
+          setIsDevToolsOpen(open);
+        })
+        .catch(() => {
+          setIsDevToolsOpen(false);
+        });
+    }
+
+    if (window.electron?.onDevToolsStatus) {
+      unsubscribe = window.electron.onDevToolsStatus((open) => {
+        setIsDevToolsOpen(open);
+      });
+    }
+
+    return () => {
+      unsubscribe?.();
+    };
+  }, []);
+
+  const handleDevToolsToggle = () => {
+    const nextState = !isDevToolsOpen;
+    if (window.electron?.setDevToolsStatus) {
+      setIsDevToolsOpen(nextState);
+      window.electron.setDevToolsStatus(nextState);
+    } else {
+      window.electron?.sendFrameAction?.("CONSOLE");
+    }
   };
 
   const applyScale = (nextValue: number) => {
@@ -341,17 +377,38 @@ export const Settings = () => {
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 rounded-lg border border-border bg-background-secondary/40 p-6">
+          <div className="flex flex-col gap-6 rounded-lg border border-border bg-background-secondary/40 p-6">
             <span className="text-xs uppercase tracking-wide text-text-secondary">
               FOR DEVELOPERS
             </span>
-            <ButtonContained
-              type="button"
-              onClick={handleOpenDevTools}
-              className="self-start inline-flex w-auto"
-            >
-              Open DevTools
-            </ButtonContained>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold uppercase tracking-wide text-text-secondary">
+                  Show all CGI data
+                </span>
+                <span className="text-lg font-semibold text-text">
+                  Display full GSI data on the dashboard
+                </span>
+              </div>
+              <Switch
+                checked={showAllCGIData}
+                onToggle={handleShowAllCGIToggle}
+                label="Toggle show all CGI data"
+              />
+            </div>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold uppercase tracking-wide text-text-secondary">
+                  Developer tools
+                </span>
+                <span className="text-lg font-semibold text-text">DevTools</span>
+              </div>
+              <Switch
+                checked={isDevToolsOpen}
+                onToggle={handleDevToolsToggle}
+                label="Toggle developer tools"
+              />
+            </div>
           </div>
 
           <div className="mb-6 flex flex-col gap-3 rounded-lg border border-border bg-background-secondary/40 p-6">

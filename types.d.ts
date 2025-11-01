@@ -7,6 +7,9 @@ interface Window {
     onOverlayStatus: (
       callback: (status: OverlayStatus) => void,
     ) => () => void;
+    getDevToolsStatus: () => Promise<boolean>;
+    setDevToolsStatus: (open: boolean) => void;
+    onDevToolsStatus: (callback: (isOpen: boolean) => void) => () => void;
     getOverlayStatus: () => Promise<OverlayStatus>;
     setOverlayConfig: (config: Partial<OverlayConfig>) => void;
     openExternalLink: (url: string) => void;
@@ -64,6 +67,9 @@ type EventPayloadMapping = {
   "data:export": ExportDataResult;
   "window:getBounds": WindowBounds;
   "window:setBounds": Partial<WindowBounds>;
+  "devtools:getStatus": boolean;
+  "devtools:setStatus": boolean;
+  "devtools:status": boolean;
 };
 
 type LegacyImportResult = {

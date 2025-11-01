@@ -1,9 +1,10 @@
 import React, { createContext, useEffect, useRef, useState } from "react";
-import { CSGO } from "csgogsi";
+import { CSGO, CSGORaw } from "csgogsi";
 import { GSI, socket } from "../api/socket";
 
 interface GameDataContextValue {
   gameData: CSGO | null;
+  rawGameData: CSGORaw | null;
   isConnected: boolean;
   hasData: boolean;
   refreshGameData: () => Promise<void>;
@@ -17,6 +18,7 @@ export const GameDataProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [gameData, setGameData] = useState<CSGO | null>(null);
+  const [rawGameData, setRawGameData] = useState<CSGORaw | null>(null);
   const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
   const isRefreshingRef = useRef(false);
 
@@ -25,6 +27,14 @@ export const GameDataProvider: React.FC<{ children: React.ReactNode }> = ({
     GSI.on("data", handleData);
     return () => {
       GSI.off("data", handleData);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleRaw = (data: CSGORaw) => setRawGameData(data);
+    GSI.on("raw", handleRaw);
+    return () => {
+      GSI.off("raw", handleRaw);
     };
   }, []);
 
@@ -41,7 +51,10 @@ export const GameDataProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   useEffect(() => {
-    const handleClear = () => setGameData(null);
+    const handleClear = () => {
+      setGameData(null);
+      setRawGameData(null);
+    };
     socket.on("dashboard:clear", handleClear);
     return () => {
       socket.off("dashboard:clear", handleClear);
@@ -59,6 +72,7 @@ export const GameDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
       isRefreshingRef.current = true;
       setGameData(null);
+      setRawGameData(null);
       let timeoutId: ReturnType<typeof window.setTimeout> | undefined;
 
       const cleanup = () => {
@@ -91,7 +105,7 @@ export const GameDataProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <GameDataContext.Provider
-      value={{ gameData, isConnected, hasData, refreshGameData }}
+      value={{ gameData, rawGameData, isConnected, hasData, refreshGameData }}
     >
       {children}
     </GameDataContext.Provider>

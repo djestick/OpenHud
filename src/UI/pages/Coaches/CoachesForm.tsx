@@ -318,15 +318,13 @@ export const CoachForm = ({ open, setOpen, prefill }: CoachFormProps) => {
           ) : (
             <ButtonContained onClick={handleSubmit}>Submit</ButtonContained>
           )}
-          <ButtonContained onClick={handleReset}>Reset</ButtonContained>
+
           {isEditing && (
             <>
             <ButtonContained onClick={handleConvertToPlayer}>
               Convert to Player
             </ButtonContained>
-            <ButtonContained color="secondary" onClick={handleCancel}>
-              Cancel
-            </ButtonContained>
+
             </>
           )}
         </div>

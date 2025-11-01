@@ -308,15 +308,13 @@ export const PlayerForm = ({ open, setOpen, prefill }: PlayerFormProps) => {
           ) : (
             <ButtonContained onClick={handleSubmit}>Submit</ButtonContained>
           )}
-          <ButtonContained onClick={handleReset}>Reset</ButtonContained>
+
           {isEditing && (
             <>
             <ButtonContained onClick={handleConvertToCoach}>
               Convert to Coach
             </ButtonContained>
-            <ButtonContained color="secondary" onClick={handleCancel}>
-              Cancel
-            </ButtonContained>
+
             </>
           )}
         </div>

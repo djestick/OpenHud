@@ -180,12 +180,8 @@ export const TeamsForm = ({ open, setOpen }: TeamsFormProps) => {
           ) : (
             <ButtonContained onClick={handleSubmit}>Submit</ButtonContained>
           )}
-          <ButtonContained onClick={handleReset}>Reset</ButtonContained>
-          {isEditing && (
-            <ButtonContained color="secondary" onClick={handleCancel}>
-              Cancel
-            </ButtonContained>
-          )}
+
+
         </div>
       </div>
     </Dialog>

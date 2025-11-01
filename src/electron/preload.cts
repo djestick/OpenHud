@@ -15,6 +15,16 @@ electron.contextBridge.exposeInMainWorld("electron", {
   sendFrameAction: (payload) => {
     ipcSend("sendFrameAction", payload);
   },
+  getDevToolsStatus: () => ipcInvoke("devtools:getStatus"),
+  setDevToolsStatus: (open: boolean) => ipcSend("devtools:setStatus", open),
+  onDevToolsStatus: (callback: (isOpen: boolean) => void) => {
+    const listener = (_: Electron.IpcRendererEvent, status: boolean) =>
+      callback(status);
+    electron.ipcRenderer.on("devtools:status", listener);
+    return () => {
+      electron.ipcRenderer.removeListener("devtools:status", listener);
+    };
+  },
 
   startOverlay: (config?: Partial<OverlayConfig>) => {
     if (config) {
