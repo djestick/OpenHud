@@ -145,7 +145,12 @@ type DatabasePlayerRow = {
 
 type DatabaseCoachRow = {
   steamid: string;
+  username?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
   name?: string | null;
+  avatar?: string | null;
+  country?: string | null;
   team?: string | null;
   [key: string]: unknown;
 };

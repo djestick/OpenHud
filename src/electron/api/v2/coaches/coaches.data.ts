@@ -4,15 +4,27 @@ import { database } from "../../../configs/database.js";
 // Parameterbinding to stop SQL injection
 // Try to return a unique identifier when inserting/updating/deleting
 
+export interface CoachRecord {
+  steamid: string;
+  username?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  name?: string | null;
+  avatar?: string | null;
+  country?: string | null;
+  team?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 /**
  * Model for selecting all coaches in the coaches table.
  * @returns An array of coaches
  */
-export const selectAll = (): Promise<string[]> => {
+export const selectAll = (): Promise<CoachRecord[]> => {
   return new Promise((resolve, reject) => {
     const statement = "SELECT * FROM coaches";
-    database.all(statement, [], (error: Error, coaches: string[]) => {
+    database.all(statement, [], (error: Error, coaches: CoachRecord[]) => {
       if (error) {
         console.error("Error getting all coaches:", error);
         reject(error);
@@ -45,10 +57,10 @@ export const selectAllSteamids = (): Promise<string[]> => {
  * @param steamid - The steamid of the coach to select
  * @returns A single coach
  */
-export const selectBySteamID = (steamid: string): Promise<string> => {
+export const selectBySteamID = (steamid: string): Promise<CoachRecord | undefined> => {
   return new Promise((resolve, reject) => {
     const statement = "SELECT * FROM coaches WHERE steamid = ?";
-    database.get(statement, [steamid], (error: Error, coach: string) => {
+    database.get(statement, [steamid], (error: Error, coach: CoachRecord | undefined) => {
       if (error) {
         console.error(`Error finding coach with steamid: ${steamid}`, error);
         reject(error);
@@ -64,25 +76,39 @@ export const selectBySteamID = (steamid: string): Promise<string> => {
  * @param team - The new team
  * @returns The steamid of the newly created coach
  */
-export const insert = (steamid: string, name: string, team: string): Promise<string> => {
+export const insert = (coach: CoachRecord): Promise<string> => {
   return new Promise((resolve, reject) => {
-    if (!steamid) return reject(new Error("steamid is required"));
+    if (!coach.steamid) return reject(new Error("steamid is required"));
 
     try {
       database.serialize(async () => {
         try {
           // ensure steamid is unique
-          const existing = await selectBySteamID(steamid).catch(() => undefined);
+          const existing = await selectBySteamID(coach.steamid).catch(() => undefined);
           if (existing) return reject(new Error("steamid already exists"));
 
-          const statement = "INSERT INTO coaches (steamid, name, team) VALUES (?, ?, ?)";
-          database.run(statement, [steamid, name, team === "" ? null : team], (error: Error) => {
+          const statement =
+            "INSERT INTO coaches (steamid, username, firstName, lastName, name, avatar, country, team) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+          database.run(
+            statement,
+            [
+              coach.steamid,
+              coach.username || null,
+              coach.firstName || null,
+              coach.lastName || null,
+              coach.name || null,
+              coach.avatar || null,
+              coach.country || null,
+              coach.team ? coach.team : null,
+            ],
+            (error: Error) => {
             if (error) {
               console.error("Error creating coach:", error);
               return reject(error);
             }
-            resolve(steamid);
-          });
+            resolve(coach.steamid);
+          },
+          );
         } catch (err) {
           reject(err);
         }
@@ -115,21 +141,47 @@ export const remove = (steamid: string): Promise<string> => {
 /**
  * Model for updating a coach in the coaches table.
  * @param steamid - The steamid of the coach to update
- * @param name - The new name
- * @param team - The new team
+ * @param coach - The updated coach payload
  * @returns The steamid of the updated coach
  */
-export const update = (steamid: string, name: string, team: string): Promise<string> => {
+export const update = (currentSteamid: string, coach: CoachRecord): Promise<string> => {
   return new Promise((resolve, reject) => {
-    if (!steamid) return reject(new Error("steamid is required to update coach"));
+    if (!currentSteamid) return reject(new Error("steamid is required to update coach"));
+    if (!coach.steamid) return reject(new Error("steamid is required for coach payload"));
 
-    const statement = "UPDATE coaches SET name = ?, team = ? WHERE steamid = ?";
-    database.run(statement, [name, team === "" ? null : team, steamid], (error: Error) => {
-      if (error) {
-        console.error("Error updating coach:", error);
-        return reject(error);
+    database.serialize(async () => {
+      try {
+        if (coach.steamid !== currentSteamid) {
+          const existing = await selectBySteamID(coach.steamid).catch(() => undefined);
+          if (existing) return reject(new Error("steamid already exists"));
+        }
+
+        const statement =
+          "UPDATE coaches SET steamid = ?, username = ?, firstName = ?, lastName = ?, name = ?, avatar = ?, country = ?, team = ? WHERE steamid = ?";
+        database.run(
+          statement,
+          [
+            coach.steamid,
+            coach.username || null,
+            coach.firstName || null,
+            coach.lastName || null,
+            coach.name || null,
+            coach.avatar || null,
+            coach.country || null,
+            coach.team ? coach.team : null,
+            currentSteamid,
+          ],
+          (error: Error) => {
+            if (error) {
+              console.error("Error updating coach:", error);
+              return reject(error);
+            }
+            resolve(coach.steamid);
+          },
+        );
+      } catch (err) {
+        reject(err);
       }
-      resolve(steamid);
     });
   });
 };

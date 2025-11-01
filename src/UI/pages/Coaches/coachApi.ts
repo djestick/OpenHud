@@ -2,10 +2,16 @@ import { apiUrl as API_BASE_URL } from "../../api/api";
 
 export interface Coach {
   steamid: string;
-  name: string;
-  team: string;
+  username?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  name?: string | null;
+  avatar?: string | null;
+  country?: string | null;
+  team?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
-
 
 export const coachApi = {
   getAll: async (): Promise<Coach[]> => {
@@ -14,19 +20,16 @@ export const coachApi = {
     return response.json();
   },
 
-  getById: async (id: string): Promise<string> => {
-    const response = await fetch(`${API_BASE_URL}/coach/${id}`);
-    if (!response.ok) throw new Error(`Failed to fetch coach with id: ${id}`);
+  getById: async (steamid: string): Promise<Coach> => {
+    const response = await fetch(`${API_BASE_URL}/coach/${steamid}`);
+    if (!response.ok) throw new Error(`Failed to fetch coach with steamid: ${steamid}`);
     return response.json();
   },
 
-  create: async (coach: Coach): Promise<string> => {
+  create: async (payload: FormData): Promise<string> => {
     const response = await fetch(`${API_BASE_URL}/coach`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(coach),
+      body: payload,
     });
 
     if (!response.ok) throw new Error("Failed to create coach");
@@ -40,15 +43,11 @@ export const coachApi = {
     if (!response.ok) throw new Error("Failed to remove coach");
   },
 
-  update: async (steamid: string, coach: Coach): Promise<void> => {
+  update: async (steamid: string, payload: FormData): Promise<void> => {
     const response = await fetch(`${API_BASE_URL}/coach/${steamid}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(coach),
+      body: payload,
     });
     if (!response.ok) throw new Error("Failed to update coach");
   },
-
 };

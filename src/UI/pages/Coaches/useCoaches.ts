@@ -16,39 +16,58 @@ export const useCoaches = () => {
   } = useCoachesContext();
 
   const searchCoaches = (searchValue: string) => {
-    const filtered = coaches.filter((coach: Coach) =>
-      coach.name.toLowerCase().includes(searchValue.toLowerCase()),
-    );
-    if (searchValue === "") {
+    const term = searchValue.trim().toLowerCase();
+    if (!term) {
       setFilteredCoaches(coaches);
-    } else {
-      setFilteredCoaches(filtered);
+      return;
+    }
+
+    const filtered = coaches.filter((coach: Coach) => {
+      const haystack = [
+        coach.name,
+        coach.username,
+        coach.firstName,
+        coach.lastName,
+        coach.country,
+        coach.steamid,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(term);
+    });
+    setFilteredCoaches(filtered);
+  };
+
+  const createCoach = async (formData: FormData) => {
+    setIsLoading(true);
+    try {
+      await coachApi.create(formData);
+      await fetchCoaches();
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const createCoach = async (coach: Coach) => {
-    // Handle create or update coach logic
+  const updateCoach = async (steamid: string, formData: FormData) => {
     setIsLoading(true);
-    await coachApi.create({ ...coach });
-    fetchCoaches();
-    setIsLoading(false);
-  };
-
-  const updateCoach = async (steamid: string, coach: Coach) => {
-    // Handle update coach logic
-    setIsLoading(true);
-    await coachApi.update(steamid, { ...coach });
-    fetchCoaches();
-    setSelectedCoach(null);
-    setIsLoading(false);
+    try {
+      await coachApi.update(steamid, formData);
+      await fetchCoaches();
+      setSelectedCoach(null);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const deleteCoach = async (steamid: string) => {
-    // Handle delete coach logic
     setIsLoading(true);
-    await coachApi.remove(steamid);
-    fetchCoaches();
-    setIsLoading(false);
+    try {
+      await coachApi.remove(steamid);
+      await fetchCoaches();
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {

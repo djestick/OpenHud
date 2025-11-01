@@ -3,6 +3,7 @@ import { Tile } from "./Tile";
 import { ButtonContained } from "../../components";
 import { PlayerForm } from "../Players/PlayersForm";
 import { CoachForm } from "../Coaches/CoachesForm";
+import type { CoachFormPrefill } from "../Coaches/CoachesForm";
 import { usePlayers } from "../Players/usePlayers";
 import { useCoaches } from "../Coaches/useCoaches";
 import { MdContentCopy, MdEdit, MdPersonAdd, MdSports } from "react-icons/md";
@@ -25,7 +26,7 @@ export const PlayersTile = ({ playersFromGame, copyToClipboard }: PlayersTilePro
   const [openPlayerForm, setOpenPlayerForm] = useState(false);
   const [playerPrefill, setPlayerPrefill] = useState<{ username?: string; steamId?: string }>();
   const [openCoachForm, setOpenCoachForm] = useState(false);
-  const [coachPrefill, setCoachPrefill] = useState<{ name?: string; steamid?: string; teamId?: string }>();
+  const [coachPrefill, setCoachPrefill] = useState<CoachFormPrefill | undefined>(undefined);
 
   const ctPlayers = playersFromGame.filter((p) => (p.team?.side || "").toUpperCase() === "CT");
   const tPlayers = playersFromGame.filter((p) => (p.team?.side || "").toUpperCase() === "T");
@@ -100,7 +101,16 @@ export const PlayersTile = ({ playersFromGame, copyToClipboard }: PlayersTilePro
                         setCoachPrefill(undefined);
                       } else {
                         setCoachIsEditing(false);
-                        setCoachPrefill({ name: player.name, steamid: player.steamid });
+                        setCoachPrefill(() => {
+                          const [first, ...rest] = player.name.split(" ");
+                          return {
+                            username: player.name,
+                            firstName: first ?? player.name,
+                            lastName: rest.join(" ").trim() || "",
+                            name: player.name,
+                            steamId: player.steamid,
+                          };
+                        });
                       }
                       setOpenCoachForm(true);
                     }}
@@ -139,3 +149,4 @@ export const PlayersTile = ({ playersFromGame, copyToClipboard }: PlayersTilePro
     </>
   );
 };
+

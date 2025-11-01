@@ -54,6 +54,11 @@ export function getTeamLogosPath() {
   return path.join(getUploadsPath(), "team_logos");
 }
 
+// Path for coach pictures (in uploads folder)
+export function getCoachPicturesPath() {
+  return path.join(getUploadsPath(), "coach_pictures");
+}
+
 export function getProgramRootPath() {
   if (isDev()) {
     return app.getAppPath();

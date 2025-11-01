@@ -76,9 +76,10 @@ export function checkDirectories() {
   const customHudDir = path.join(app.getPath("home"), "OpenHud-Huds");
   const uploadsDir = path.join(userData, "uploads");
   const playerPicturesDir = path.join(uploadsDir, "player_pictures");
+  const coachPicturesDir = path.join(uploadsDir, "coach_pictures");
   const teamLogosDir = path.join(uploadsDir, "team_logos");
 
-  [customHudDir, userData, uploadsDir, playerPicturesDir, teamLogosDir].forEach(
+  [customHudDir, userData, uploadsDir, playerPicturesDir, coachPicturesDir, teamLogosDir].forEach(
     ensureDirectory,
   );
 

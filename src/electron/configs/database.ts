@@ -39,7 +39,12 @@ export const TABLE_COLUMNS = {
   ],
   coaches: [
     "steamid",
+    "username",
+    "firstName",
+    "lastName",
     "name",
+    "avatar",
+    "country",
     "team",
     "createdAt",
     "updatedAt",
@@ -151,7 +156,12 @@ const schemaStatements: SchemaEntry[] = [
   {
     sql: `CREATE TABLE IF NOT EXISTS coaches (
         steamid TEXT PRIMARY KEY NOT NULL UNIQUE,
+        username TEXT,
+        firstName TEXT,
+        lastName TEXT,
         name TEXT,
+        avatar TEXT,
+        country TEXT,
         team TEXT,
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
         updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -187,6 +197,30 @@ export const applyDatabaseSchema = (db: sqlite3.Database) => {
           onError(error);
         }
       });
+    });
+
+    db.all("PRAGMA table_info(coaches)", (error, columns: Array<{ name: string }>) => {
+      if (error) {
+        console.error("Failed to inspect coaches table schema:", error.message);
+        return;
+      }
+
+      const existing = new Set(columns.map((column) => column.name));
+      const ensureColumn = (name: string, definition: string) => {
+        if (existing.has(name)) return;
+        db.run(`ALTER TABLE coaches ADD COLUMN ${name} ${definition}`, (alterError) => {
+          if (alterError) {
+            console.error(`Failed to add column '${name}' to coaches table:`, alterError.message);
+          }
+        });
+      };
+
+      ensureColumn("username", "TEXT");
+      ensureColumn("firstName", "TEXT");
+      ensureColumn("lastName", "TEXT");
+      ensureColumn("name", "TEXT");
+      ensureColumn("avatar", "TEXT");
+      ensureColumn("country", "TEXT");
     });
   });
 };
