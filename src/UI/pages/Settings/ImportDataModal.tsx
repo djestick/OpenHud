@@ -175,10 +175,20 @@ export const ImportDataModal = ({
         items: snapshot.coaches.map((coach) => {
           const coachTeam = coach.team ? teamById.get(coach.team) : undefined;
           const teamName = coachTeam?.name ?? "Unassigned team";
+          const resolvedName = [coach.firstName, coach.lastName]
+            .filter(Boolean)
+            .join(" ")
+            .trim() || coach.name || "";
           return {
             id: coach.steamid,
-            label: coach.name || coach.steamid,
-            lines: [`Team: ${teamName}`, `Steam ID: ${coach.steamid}`],
+            label: coach.username || resolvedName || coach.steamid,
+            lines: [
+              coach.username ? `Username: ${coach.username}` : undefined,
+              resolvedName ? `Name: ${resolvedName}` : undefined,
+              `Country: ${coach.country ?? "-"}`,
+              `Team: ${teamName}`,
+              `Steam ID: ${coach.steamid}`,
+            ].filter(Boolean) as string[],
             imageUrl: buildCoachAvatarUrl(coach),
             badgeImageUrl: coachTeam?.logo
               ? buildTeamLogoUrl(coachTeam._id)

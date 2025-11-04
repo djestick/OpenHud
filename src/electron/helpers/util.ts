@@ -1,9 +1,11 @@
-import { ipcMain, WebContents, WebFrameMain, Notification } from "electron";
+import electron from "./electronModule.js";
+import type { WebContents, WebFrameMain } from "electron";
 import { getAssetPath, getExportsPath, getUIPath } from "./pathResolver.js";
 import { pathToFileURL } from "url";
-import { app, shell } from "electron";
 import path from "path";
 import fs from "fs";
+
+const { ipcMain, app, shell } = electron;
 
 export let userHasCustomHud: boolean;
 
@@ -97,10 +99,14 @@ export function checkDirectories() {
 }
 
 export function showNotification(body: string) {
-  new Notification({
-    title: "OpenHud:",
-    body,
-  }).show();
+  const { Notification } = electron;
+
+  if (Notification) {
+    new Notification({
+      title: "OpenHud:",
+      body,
+    }).show();
+  }
 }
 
 export function openHudsDirectory() {

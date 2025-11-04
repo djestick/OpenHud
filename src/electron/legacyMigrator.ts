@@ -1,4 +1,4 @@
-import { app } from "electron";
+import electron from "./helpers/electronModule.js";
 import path from "node:path";
 import fs from "node:fs";
 import { promises as fsPromises } from "node:fs";
@@ -11,6 +11,8 @@ import {
   getTeamLogosPath,
 } from "./helpers/pathResolver.js";
 import { database as appDatabase } from "./configs/database.js";
+
+const { app } = electron;
 
 const sqlite3 = sqlite3Init.verbose();
 

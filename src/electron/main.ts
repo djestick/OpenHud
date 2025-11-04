@@ -1,4 +1,5 @@
-import { app, BrowserWindow } from "electron";
+import electron from "./helpers/electronModule.js";
+import type { BrowserWindow as BrowserWindowType } from "electron";
 import {
   checkDirectories,
   isDev,
@@ -11,7 +12,9 @@ import { ipcMainEvents } from "./ipcEvents/index.js";
 import { closeServer, startServer } from "./index.js";
 import { closeAllWindows } from "./hudWindow.js";
 
-let mainWindow: BrowserWindow;
+const { app, BrowserWindow } = electron;
+
+let mainWindow: BrowserWindowType;
 
 // Allow media to autoplay without user gesture (needed for HUD webm animations)
 app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");

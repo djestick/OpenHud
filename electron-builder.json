@@ -1,8 +1,14 @@
 {
   "appId": "com.openhud.electron-app",
   "productName": "OpenHud",
-  "files": ["dist-electron", "dist-react"],
-  "extraResources": ["dist-electron/preload.cjs", "src/assets/**"],
+  "files": [
+    "dist-electron",
+    "dist-react"
+  ],
+  "extraResources": [
+    "dist-electron/preload.cjs",
+    "src/assets/**"
+  ],
   "icon": "./desktopIcon.png",
   "publish": {
     "provider": "github",
@@ -18,7 +24,12 @@
     "category": "Utility"
   },
   "win": {
-    "target": ["portable"],
-    "publish": ["github"]
+    "target": [
+      "portable"
+    ],
+    "publish": [
+      "github"
+    ],
+    "signAndEditExecutable": false
   }
 }

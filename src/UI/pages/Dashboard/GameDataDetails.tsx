@@ -448,7 +448,7 @@ export const GameDataDetails = ({ data, rawData }: GameDataDetailsProps) => {
   const provider = rawData?.provider ?? data?.provider ?? null;
   const map = data?.map;
   const round = data?.round ?? null;
-  const phaseCountdowns = data?.phase_countdowns ?? null;
+  const phaseCountdowns = rawData?.phase_countdowns ?? null;
   const tournamentDraft =
     rawData && (rawData as unknown as { tournament_draft?: unknown }).tournament_draft;
   const previously = rawData?.previously;
@@ -758,4 +758,3 @@ export const GameDataDetails = ({ data, rawData }: GameDataDetailsProps) => {
     </div>
   );
 };
-

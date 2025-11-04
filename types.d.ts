@@ -206,6 +206,8 @@ interface Player {
   steamid: string;
   team: string;
   extra: Record<string, string>;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface Team {

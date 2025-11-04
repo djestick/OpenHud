@@ -4,6 +4,8 @@ import { useThemes } from "../../hooks/useThemes";
 import { useAppSettings } from "../../hooks/useAppSettings";
 
 import { Topbar } from "../MainPanel/Topbar";
+import { ExportDataModal } from "./ExportDataModal";
+import { ImportDataModal } from "./ImportDataModal";
 
 const SCALE_STEP = 5;
 const MIN_SCALE = 75;
@@ -72,6 +74,15 @@ export const Settings = () => {
   const [gsiLoading, setGsiLoading] = useState(false);
   const [gsiStatus, setGsiStatus] = useState<GSIResult | null>(null);
   const [isDevToolsOpen, setIsDevToolsOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [exportResult, setExportResult] = useState<ExportDataResult | null>(null);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importSnapshot, setImportSnapshot] = useState<DatabaseSnapshot | null>(null);
+  const [importSourcePath, setImportSourcePath] = useState("");
+  const [importModalError, setImportModalError] = useState<string | null>(null);
+  const [importInlineError, setImportInlineError] = useState<string | null>(null);
+  const [importLoading, setImportLoading] = useState(false);
+  const [importResult, setImportResult] = useState<ImportDataResult | null>(null);
 
   const handleOpenDiscord = () => {
     openExternalLink("https://discord.gg/HApB9HyaWM");
@@ -124,6 +135,107 @@ export const Settings = () => {
     } else {
       window.electron?.sendFrameAction?.("CONSOLE");
     }
+  };
+
+  const handleOpenExportModal = () => {
+    setIsExportModalOpen(true);
+  };
+
+  const handleCloseExportModal = () => {
+    setIsExportModalOpen(false);
+  };
+
+  const handleExportSuccess = (result: ExportDataResult) => {
+    setExportResult(result);
+  };
+
+  const handleOpenExportsDirectory = () => {
+    window.electron?.openExportsDirectory?.();
+  };
+
+  const handleOpenImportModal = async () => {
+    if (importLoading) return;
+    if (!window.electron?.selectImportSource) {
+      setImportInlineError("Import is not available in this environment.");
+      return;
+    }
+
+    setImportLoading(true);
+    setImportInlineError(null);
+    setImportSnapshot(null);
+    setImportSourcePath("");
+    setImportModalError(null);
+
+    try {
+      const preview = await window.electron.selectImportSource();
+      if (preview.cancelled) {
+        return;
+      }
+      if (preview.error) {
+        setImportInlineError(preview.error);
+        return;
+      }
+      if (!preview.snapshot || !preview.filePath) {
+        setImportInlineError("Selected backup is missing snapshot data.");
+        return;
+      }
+
+      setImportSnapshot(preview.snapshot);
+      console.log("preview.filePath before setting importSourcePath:", preview.filePath);
+      setImportSourcePath(preview.filePath);
+      setIsImportModalOpen(true);
+      setImportResult(null);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to open import source.";
+      setImportInlineError(message);
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
+  const handleCloseImportModal = () => {
+    setIsImportModalOpen(false);
+    setImportSnapshot(null);
+    setImportSourcePath("");
+    setImportModalError(null);
+  };
+
+  const handleImportConfirm = async (selection: DataExportSelection) => {
+    if (!importSourcePath) {
+      setImportModalError("Import source is not available.");
+      throw new Error("Import source is not available.");
+    }
+    if (!window.electron?.importData) {
+      setImportModalError("Import is not available in this environment.");
+      throw new Error("Import is not available in this environment.");
+    }
+
+    setImportModalError(null);
+    setImportInlineError(null);
+
+    const result = await window.electron.importData({
+      sourcePath: importSourcePath,
+      selection,
+    });
+
+    if (result.cancelled) {
+      return;
+    }
+
+    if (!result.success) {
+      const message = result.message || "Import failed.";
+      setImportModalError(message);
+      throw new Error(message);
+    }
+
+    setImportResult(result);
+    handleCloseImportModal();
+  };
+
+  const formatTransferCounts = (counts?: DataTransferCounts) => {
+    if (!counts) return null;
+    return `Players: ${counts.players} | Teams: ${counts.teams} | Coaches: ${counts.coaches} | Matches: ${counts.matches}`;
   };
 
   const applyScale = (nextValue: number) => {
@@ -327,12 +439,97 @@ export const Settings = () => {
                   )}
                 </div>
               )}
+          </div>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="flex flex-col gap-4 rounded-lg border border-border bg-background-secondary/40 p-6">
+            <span className="text-xs uppercase tracking-wide text-text-secondary">
+              Export database
+            </span>
+            <p className="text-sm text-text-secondary">
+              Create a backup containing players, teams, coaches, and matches. You can choose
+              which records to include before exporting.
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <ButtonContained type="button" onClick={handleOpenExportModal}>
+                Select data to export
+              </ButtonContained>
+              <button
+                type="button"
+                onClick={handleOpenExportsDirectory}
+                className="text-sm font-semibold uppercase tracking-wide text-primary transition hover:text-primary-light"
+              >
+                Open exports folder
+              </button>
             </div>
+            {exportResult && (
+              <div className="flex flex-col gap-1 text-sm">
+                <span className="font-semibold text-green-400">
+                  {exportResult.message}
+                </span>
+                {formatTransferCounts(exportResult.counts) && (
+                  <span className="text-text-secondary">
+                    {formatTransferCounts(exportResult.counts)}
+                  </span>
+                )}
+                {exportResult.filePath && (
+                  <span className="text-xs text-text-secondary">
+                    Saved to: {exportResult.filePath}
+                  </span>
+                )}
+                {exportResult.autoIncludedTeams &&
+                  exportResult.autoIncludedTeams.length > 0 && (
+                    <span className="text-xs text-text-secondary">
+                      Auto-included teams: {exportResult.autoIncludedTeams.join(", ")}
+                    </span>
+                  )}
+              </div>
+            )}
           </div>
 
-
-
-
+          <div className="flex flex-col gap-4 rounded-lg border border-border bg-background-secondary/40 p-6">
+            <span className="text-xs uppercase tracking-wide text-text-secondary">
+              Import database
+            </span>
+            <p className="text-sm text-text-secondary">
+              Restore a backup created by OpenHUD. You&apos;ll be able to review and pick the data
+              you want to bring in before applying it.
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+              <ButtonContained
+                type="button"
+                onClick={handleOpenImportModal}
+                disabled={importLoading}
+              >
+                {importLoading ? "Loading backup..." : "Select backup to import"}
+              </ButtonContained>
+            </div>
+            {importInlineError && (
+              <p className="text-sm text-red-400">{importInlineError}</p>
+            )}
+            {importResult && (
+              <div className="flex flex-col gap-1 text-sm">
+                <span
+                  className={`font-semibold ${importResult.success ? "text-green-400" : "text-red-400"}`}
+                >
+                  {importResult.message}
+                </span>
+                {formatTransferCounts(importResult.counts) && (
+                  <span className="text-text-secondary">
+                    {formatTransferCounts(importResult.counts)}
+                  </span>
+                )}
+                {importResult.autoIncludedTeams &&
+                  importResult.autoIncludedTeams.length > 0 && (
+                    <span className="text-xs text-text-secondary">
+                      Auto-included teams: {importResult.autoIncludedTeams.join(", ")}
+                    </span>
+                  )}
+              </div>
+            )}
+          </div>
+        </div>
 
           <div className="bg-background-secondary/40 flex flex-col gap-4 rounded-lg border border-border p-6">
             <span className="text-xs uppercase tracking-wide text-text-secondary">
@@ -436,6 +633,22 @@ export const Settings = () => {
         </div>
       </section>
 
+      <ExportDataModal
+        isOpen={isExportModalOpen}
+        onClose={handleCloseExportModal}
+        onSuccess={handleExportSuccess}
+      />
+
+      {importSnapshot && (
+        <ImportDataModal
+          isOpen={isImportModalOpen}
+          snapshot={importSnapshot}
+          filePath={importSourcePath}
+          onClose={handleCloseImportModal}
+          onConfirm={handleImportConfirm}
+          externalError={importModalError}
+        />
+      )}
     </>
   );
 };

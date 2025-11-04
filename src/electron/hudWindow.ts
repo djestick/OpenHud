@@ -1,9 +1,12 @@
-import { BrowserWindow, screen } from "electron";
+import electron from "./helpers/electronModule.js";
+import type { BrowserWindow as BrowserWindowType } from "electron";
 import { getPreloadPath } from "./helpers/index.js";
 import { apiUrl } from "./index.js";
 import { createMenu } from "./menu.js";
 
-const hudWindows: BrowserWindow[] = [];
+const { BrowserWindow, screen } = electron;
+
+const hudWindows: BrowserWindowType[] = [];
 type OverlayConfig = {
   displayId: number | null;
   scale: number;
@@ -32,7 +35,7 @@ const resolveDisplay = (displayId: number | null) => {
   );
 };
 
-const applyScaleToWindow = (window: BrowserWindow, scalePercent: number) => {
+const applyScaleToWindow = (window: BrowserWindowType, scalePercent: number) => {
   if (window.isDestroyed()) return;
   const factor = Math.max(scalePercent, 1) / 100;
   const script = `
@@ -123,7 +126,7 @@ export function createHudWindow() {
   const display = resolveDisplay(overlayConfig.displayId);
   const { bounds } = display;
 
-  let hudWindow: BrowserWindow | null = new BrowserWindow({
+  let hudWindow: BrowserWindowType | null = new BrowserWindow({
     x: bounds?.x ?? 0,
     y: bounds?.y ?? 0,
     width: bounds?.width ?? undefined,
@@ -168,7 +171,7 @@ export function createHudWindow() {
   notifyOverlayStatus();
 
   hudWindow.on("closed", () => {
-    const index = hudWindows.indexOf(hudWindow as BrowserWindow);
+    const index = hudWindows.indexOf(hudWindow as BrowserWindowType);
     if (index > -1) {
       hudWindows.splice(index, 1);
     }

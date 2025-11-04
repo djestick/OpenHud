@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from "react";
 import { ButtonContained } from "../../components";
 import { PlayerForm } from "../Players/PlayersForm";
 import { CoachForm } from "../Coaches/CoachesForm";
-import type { CoachFormPrefill } from "../Coaches/CoachForm";
+import type { CoachFormPrefill } from "../Coaches/CoachesForm";
 import type { Coach } from "../Coaches/coachApi";
 import { usePlayers } from "../Players/usePlayers";
 import { useCoaches } from "../Coaches/useCoaches";

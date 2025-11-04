@@ -1,6 +1,8 @@
 import path from "path";
-import { app } from "electron";
+import electron from "./electronModule.js";
 import { isDev } from "./util.js";
+
+const { app } = electron;
 
 /* Determine preload path based on if we are in dev */
 export function getPreloadPath() {

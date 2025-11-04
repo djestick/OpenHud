@@ -1,6 +1,9 @@
-import { BrowserWindow, shell, dialog, ipcMain } from "electron";
+import electron from "../helpers/electronModule.js";
+import type { BrowserWindow as BrowserWindowType } from "electron";
 import path from "node:path";
 import { promises as fsPromises } from "node:fs";
+const { shell, dialog, ipcMain } = electron;
+
 import {
   ipcMainHandle,
   ipcMainOn,
@@ -23,7 +26,8 @@ import { runLegacyImport } from "../legacyMigrator.js";
 import * as PlayersModel from "../api/v2/players/players.data.js";
 import {
   loadDatabaseSnapshot,
-
+  exportDatabaseSnapshot,
+  importDatabaseSelection,
 } from "../helpers/dataTransfer.js";
 import type {
   DataExportSelection,
@@ -31,7 +35,7 @@ import type {
   ImportDataResult,
 } from "../helpers/dataTransfer.js";
 // Handle expects a response
-export function ipcMainEvents(mainWindow: BrowserWindow) {
+export function ipcMainEvents(mainWindow: BrowserWindowType) {
   ipcMainHandle("getPlayers", async () => {
     const players = await PlayersModel.selectAll();
     return players;
@@ -168,6 +172,10 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
 
     const filePath = selection.filePaths[0];
 
+    if (typeof filePath !== "string") {
+      return { cancelled: true, error: "No file selected or invalid file path." };
+    }
+
     try {
       const snapshot = await loadDatabaseSnapshot(filePath);
       return {
@@ -183,12 +191,61 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
     }
   });
 
+  ipcMainHandle(
+    "data:import",
+    async (payload: {
+      filePath?: string;
+      sourcePath?: string;
+      selection: DataExportSelection;
+    }) => {
+    try {
+      const resolvedPath =
+        typeof payload.filePath === "string" && payload.filePath.length > 0
+          ? payload.filePath
+          : typeof payload.sourcePath === "string" && payload.sourcePath.length > 0
+            ? payload.sourcePath
+            : "";
 
+      if (resolvedPath.length === 0) {
+        return {
+          cancelled: false,
+          success: false,
+          message: "Import failed: No database file path provided.",
+        };
+      }
 
+      const result = await importDatabaseSelection(
+        resolvedPath,
+        payload.selection,
+      );
+      return { cancelled: false, ...result };
+    } catch (error) {
+      return { cancelled: false, success: false, message: `Import failed: ${(error as Error).message}` };
+    }
+  },
+  );
 
+  ipcMainHandle("data:export", async (selection: DataExportSelection) => {
+    const defaultPath = path.join(
+      getExportsPath(),
+      `openhud-export-${new Date().toISOString().replace(/[:.]/g, "-")}.zip`,
+    );
 
-  ipcMainOn("exports:open", () => {
-    openExportsDirectory();
+    const saveDialogResult = await dialog.showSaveDialog(mainWindow, {
+      title: "Export OpenHUD Data",
+      defaultPath,
+      filters: [{ name: "OpenHUD Database", extensions: ["zip"] }],
+    });
+
+    if (saveDialogResult.canceled || !saveDialogResult.filePath) {
+      return { cancelled: true, success: false, message: "Export cancelled." };
+    }
+
+    const result = await exportDatabaseSnapshot(
+      saveDialogResult.filePath,
+      selection,
+    );
+    return { cancelled: false, ...result };
   });
 
   ipcMainHandle("gsi:fix", async () => {
@@ -197,7 +254,8 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
       try {
         await fsPromises.access(sourcePath);
         return true;
-      } catch {
+      }
+      catch {
         return false;
       }
     };
@@ -231,7 +289,8 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
       if (stats.isFile()) {
         chosenPath = path.dirname(chosenPath);
       }
-    } catch (error) {
+    }
+    catch (error) {
       return {
         success: false,
         message: `Unable to inspect selected path: ${(error as Error).message}`,
@@ -253,7 +312,8 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
         try {
           await fsPromises.access(candidate);
           return true;
-        } catch {
+        }
+        catch {
           return false;
         }
       };
@@ -304,14 +364,14 @@ export function ipcMainEvents(mainWindow: BrowserWindow) {
         message: "GSI configuration copied successfully.",
         targetPath: destination,
       } satisfies GSIResult;
-    } catch (error) {
+    }
+    catch (error) {
       return {
         success: false,
         message: `Failed to write config: ${(error as Error).message}`,
       } satisfies GSIResult;
     }
   });
-
   onOverlayStatusChange(() => {
     mainWindow.webContents.send("overlay:status", getCurrentOverlayStatus());
   });

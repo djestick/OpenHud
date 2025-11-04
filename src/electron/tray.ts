@@ -1,6 +1,8 @@
-import { app, Menu, Tray } from "electron";
+import electron from "electron";
 import path from "path";
 import { getAssetPath } from "./helpers/index.js";
+
+const { app, Menu, Tray } = electron;
 
 export function createTray() {
   /* 

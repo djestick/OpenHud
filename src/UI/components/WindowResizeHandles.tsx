@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, type CSSProperties } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 
 type ResizeEdge =
@@ -129,18 +129,22 @@ export const WindowResizeHandles = () => {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[9999]">
-      {edgeConfigs.map(({ edge, className }) => (
-        <div
-          key={edge}
-          className={`pointer-events-auto absolute ${className}`}
-          style={{
-            cursor: edgeCursorMap[edge],
-            WebkitAppRegion: "none",
-          }}
-          onPointerDown={(event) => void startResize(edge, event)}
-          data-edge={edge}
-        />
-      ))}
+      {edgeConfigs.map(({ edge, className }) => {
+        const style: CSSProperties & { WebkitAppRegion?: string } = {
+          cursor: edgeCursorMap[edge],
+          WebkitAppRegion: "none",
+        };
+
+        return (
+          <div
+            key={edge}
+            className={`pointer-events-auto absolute ${className}`}
+            style={style}
+            onPointerDown={(event) => void startResize(edge, event)}
+            data-edge={edge}
+          />
+        );
+      })}
     </div>
   );
 };

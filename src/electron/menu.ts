@@ -1,8 +1,11 @@
-import { app, BrowserWindow, Menu } from "electron";
+import electron from "electron";
+import type { BrowserWindow as BrowserWindowType } from "electron";
 import { isDev } from "./helpers/util.js";
 // import { hudWindowRef } from "./hudWindow.js";
 
-export function createMenu(mainWindow: BrowserWindow) {
+const { app, Menu } = electron;
+
+export function createMenu(mainWindow: BrowserWindowType) {
   Menu.setApplicationMenu(
     Menu.buildFromTemplate([
       {

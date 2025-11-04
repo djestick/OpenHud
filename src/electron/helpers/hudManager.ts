@@ -1,7 +1,9 @@
-import { app } from "electron";
+import electron from "./electronModule.js";
 import fs from "fs";
 import path from "path";
 import { getCustomHudPath, getDefaultHUDPath } from "./pathResolver.js";
+
+const { app } = electron;
 
 type HudType = "builtin" | "custom";
 
