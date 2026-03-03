@@ -1,0 +1,37 @@
+Need to install the following packages:
+ts-prune@0.10.3
+Ok to proceed? (y) 
+\src\electron\hudWindow.ts:125 - createHudWindow (used in module)
+\src\electron\hudWindow.ts:82 - isOverlayVisible (used in module)
+\src\electron\hudWindow.ts:84 - getOverlayConfig
+\src\electron\hudWindow.ts:268 - showWebmOverlay
+\src\electron\hudWindow.ts:276 - hideWebmOverlay
+\src\electron\index.ts:9 - PORT (used in module)
+\src\electron\index.ts:10 - expressApp (used in module)
+\src\electron\index.ts:11 - server (used in module)
+\src\electron\configs\index.ts:4 - TABLE_COLUMNS
+\src\electron\configs\index.ts:190 - applyDatabaseSchema
+\src\electron\helpers\dataTransfer.ts:8 - DataSelection (used in module)
+\src\electron\helpers\dataTransfer.ts:20 - DataTransferCounts (used in module)
+\src\electron\helpers\dataTransfer.ts:579 - DatabaseSnapshot (used in module)
+\src\electron\helpers\hudManager.ts:17 - HudInfo (used in module)
+\src\electron\helpers\index.ts:17 - getDatabasePath
+\src\electron\helpers\index.ts:31 - getCustomHudPath
+\src\electron\helpers\index.ts:36 - getDefaultHUDPath
+\src\electron\helpers\index.ts:45 - getUploadsPath
+\src\electron\helpers\index.ts:64 - getProgramRootPath
+\src\electron\helpers\index.ts:49 - ipcWebContentsSend
+\src\electron\helpers\index.ts:57 - validateEventFrame
+\src\electron\helpers\index.ts:101 - showNotification
+\src\electron\helpers\index.ts:10 - userHasCustomHud
+\src\electron\api\v2\gsi\gsi.ts:7 - GSI (used in module)
+\src\electron\api\v2\gsi\gsi.ts:16 - getLatestRawGameData
+\src\electron\api\v2\helpers\paths.ts:9 - getDefaultHudPath
+\src\electron\api\v2\helpers\paths.ts:14 - getUploadsPath
+\src\electron\api\v2\matches\matches.data.ts:241 - updateCurrent
+\src\electron\api\v2\matches\matches.model.ts:1 - Match
+\src\electron\api\v2\players\players.controller.ts:77 - getPlayersBySteamIDHandler
+\src\electron\api\v2\players\players.model.ts:1 - Player
+\src\electron\api\v2\players\players.service.ts:44 - getPlayerAvatar
+\src\electron\api\v2\teams\teams.models.ts:1 - Team
+\src\electron\api\v2\teams\teams.service.ts:28 - getTeamLogo

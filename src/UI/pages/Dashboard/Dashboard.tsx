@@ -21,9 +21,8 @@ const StatusPill = ({ label, active }: StatusPillProps) => {
   return (
     <div className={`${baseClasses} ${active ? activeClasses : inactiveClasses}`}>
       <span
-        className={`size-3 rounded-full ${
-          active ? "bg-green-400" : "bg-neutral-600/50"
-        }`}
+        className={`size-3 rounded-full ${active ? "bg-green-400" : "bg-neutral-600/50"
+          }`}
       />
       {label}
     </div>
@@ -90,8 +89,14 @@ export const Dashboard = () => {
               <GameDataDetails data={gameData ?? null} rawData={rawGameData ?? null} />
             </div>
           ) : (
-            <div className="mt-4 rounded-lg border border-border bg-background-secondary/40 p-4 text-sm text-text-secondary">
-              Waiting for GSI data...
+            <div className="mt-4 flex min-h-[140px] w-full items-center justify-center rounded-2xl bg-background-secondary/30 shadow-sm ring-1 ring-black/5 dark:ring-white/5 px-6 py-8 text-sm font-medium tracking-wider uppercase text-text-secondary backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                </span>
+                Waiting for GSI data...
+              </div>
             </div>
           ))}
         {copyStatus && (

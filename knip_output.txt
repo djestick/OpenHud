@@ -1,0 +1,99 @@
+[93m[4mUnused files[24m[39m (55)
+types.d.ts                                               
+src/electron/hudWindow.ts                                
+src/electron/index.ts                                    
+src/electron/legacyMigrator.ts                           
+src/electron/main.ts                                     
+src/electron/menu.ts                                     
+src/electron/preload.cts                                 
+src/electron/tray.ts                                     
+src/UI/vite-env.d.ts                                     
+src/electron/configs/database.ts                         
+src/electron/configs/dev.ts                              
+src/electron/configs/index.ts                            
+src/electron/configs/multer.ts                           
+src/electron/helpers/dataTransfer.ts                     
+src/electron/helpers/electronModule.ts                   
+src/electron/helpers/hudManager.ts                       
+src/electron/helpers/index.ts                            
+src/electron/helpers/pathResolver.ts                     
+src/electron/helpers/util.ts                             
+src/electron/ipcEvents/index.ts                          
+src/electron/ipcEvents/ipMainEvents.ts                   
+src/electron/api/v2/api.router.ts                        
+src/electron/api/v2/cameras/cameras.controller.ts        
+src/electron/api/v2/cameras/cameras.models.ts            
+src/electron/api/v2/cameras/cameras.routes.ts            
+src/electron/api/v2/cameras/cameras.service.ts           
+src/electron/api/v2/coaches/coaches.controller.ts        
+src/electron/api/v2/coaches/coaches.data.ts              
+src/electron/api/v2/coaches/coaches.model.ts             
+src/electron/api/v2/coaches/coaches.routes.ts            
+src/electron/api/v2/coaches/coaches.service.ts           
+src/electron/api/v2/gsi/gsi.ts                           
+src/electron/api/v2/helpers/paths.ts                     
+src/electron/api/v2/helpers/utilities.ts                 
+src/electron/api/v2/huds/huds.routes.ts                  
+src/electron/api/v2/matches/matches.controller.ts        
+src/electron/api/v2/matches/matches.data.ts              
+src/electron/api/v2/matches/matches.model.ts             
+src/electron/api/v2/matches/matches.routes.ts            
+src/electron/api/v2/matches/matches.service.ts           
+src/electron/api/v2/players/players.controller.ts        
+src/electron/api/v2/players/players.data.ts              
+src/electron/api/v2/players/players.model.ts             
+src/electron/api/v2/players/players.routes.ts            
+src/electron/api/v2/players/players.service.ts           
+src/electron/api/v2/sockets/sockets.ts                   
+src/electron/api/v2/teams/teams.controller.ts            
+src/electron/api/v2/teams/teams.data.ts                  
+src/electron/api/v2/teams/teams.models.ts                
+src/electron/api/v2/teams/teams.routes.ts                
+src/electron/api/v2/teams/teams.service.ts               
+src/electron/api/v2/tournaments/tournaments.controller.ts
+src/electron/api/v2/tournaments/tournaments.data.ts      
+src/electron/api/v2/tournaments/tournaments.routes.ts    
+src/electron/api/v2/tournaments/tournaments.service.ts   
+[93m[4mUnused dependencies[24m[39m (8)
+adm-zip    package.json:26:6
+cors       package.json:27:6
+exceljs    package.json:29:6
+express    package.json:30:6
+multer     package.json:31:6
+socket.io  package.json:36:6
+sqlite3    package.json:38:6
+uuid       package.json:40:6
+[93m[4mUnused devDependencies[24m[39m (8)
+@types/adm-zip           package.json:45:6
+@types/cors              package.json:46:6
+@types/express           package.json:47:6
+@types/multer            package.json:48:6
+@types/react-router-dom  package.json:52:6
+@types/sqlite3           package.json:53:6
+node-abi                 package.json:63:6
+vitest                   package.json:72:6
+[93m[4mUnresolved imports[24m[39m (2)
+./types      tsconfig.app.json         
+../../types  src/electron/tsconfig.json
+[93m[4mUnused exports[24m[39m (11)
+MatchTypes                        src/UI/pages/Matches/MatchPage.tsx:9:14         
+maps                              src/UI/pages/Matches/MatchPage.tsx:10:14        
+apiV2                   function  src/UI/api/api.ts:5:23                          
+getCountry                        src/UI/api/countries.ts:252:14                  
+Drawer                            src/UI/components/Drawer.tsx:11:14              
+Loading                           src/UI/components/Loading.tsx:3:14              
+MATCH_TYPES                       src/UI/pages/Matches/matchConstants.ts:6:14     
+getMapNameFromGameData            src/UI/pages/Matches/matchUtils.ts:3:14         
+default                           src/UI/pages/Matches/matchUtils.ts:14:16        
+default                           src/UI/pages/Settings/ExportDataModal.tsx:624:16
+default                           src/UI/pages/Settings/ImportDataModal.tsx:526:16
+[93m[4mUnused exported types[24m[39m (2)
+MapKey           type       src/UI/pages/Matches/matchConstants.ts:21:13
+PlayerRoundData  interface  src/UI/pages/Matches/matchConstants.ts:59:18
+[93m[4mDuplicate exports[24m[39m (5)
+useGameData|default      src/UI/context/useGameData.ts            
+MatchTypes|MATCH_TYPES   src/UI/pages/Matches/matchConstants.ts   
+canReverseSides|default  src/UI/pages/Matches/matchUtils.ts       
+ExportDataModal|default  src/UI/pages/Settings/ExportDataModal.tsx
+ImportDataModal|default  src/UI/pages/Settings/ImportDataModal.tsx
+[33m[4mConfiguration hints[24m (1)[39m

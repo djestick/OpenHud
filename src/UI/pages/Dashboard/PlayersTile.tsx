@@ -69,8 +69,8 @@ export const PlayersTile = ({ playersFromGame, copyToClipboard }: PlayersTilePro
         const avatarSrc = existingPlayer?.avatar
           ? `${apiUrl}/players/avatar/${existingPlayer._id}?t=${existingPlayer.updatedAt ?? ""}`
           : existingCoach?.avatar
-          ? `${apiUrl}/coach/avatar/${existingCoach.steamid}?t=${existingCoach.updatedAt ?? ""}`
-          : playerSilhouette;
+            ? `${apiUrl}/coach/avatar/${existingCoach.steamid}?t=${existingCoach.updatedAt ?? ""}`
+            : playerSilhouette;
 
         return { player, existingPlayer, existingCoach, avatarSrc };
       });
@@ -274,137 +274,151 @@ export const PlayersTile = ({ playersFromGame, copyToClipboard }: PlayersTilePro
     const columnCoaches = coachesByLabel[label];
 
     return (
-    <div className="p-3">
-      <div className="mb-3 flex items-center justify-between">
-        <h5 className="font-semibold">{label}</h5>
-        <span className="rounded-full border border-border bg-background-secondary px-2 py-0.5 text-xs text-text/80">
-          {columnDetails.length}
-        </span>
-      </div>
-      <div className="flex flex-col gap-2">
-        {columnDetails.map(({ player, existingPlayer, existingCoach, avatarSrc }) => (
-                <div
-                  className="flex items-center justify-between rounded-lg border border-border bg-background-secondary px-3 py-2 hover:bg-background-light"
-                  key={player.steamid}
-                >
-                  <div className="flex min-w-0 items-center">
-                    <img src={avatarSrc} alt="Player avatar" className="mr-3 size-12 rounded object-cover" />
-                    <div className="min-w-0">
-                      <div className="truncate font-semibold">{player.name}</div>
-                      <button
-                        type="button"
-                        title="Copy SteamID"
-                        className="mt-1 inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5 text-xs text-text/80 hover:bg-background-light"
-                        onClick={() => copyToClipboard(player.steamid)}
-                      >
-                        <MdContentCopy className="size-3.5" />
-                        <span className="truncate max-w-[140px] md:max-w-[200px]">{player.steamid}</span>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="ml-3 flex shrink-0 items-center gap-2">
-                    {existingCoach ? (
+      <div className="flex flex-col rounded-2xl bg-background-secondary/30 shadow-sm backdrop-blur-sm overflow-hidden ring-1 ring-black/5 dark:ring-white/5">
+        <div className="flex items-center justify-between px-5 py-4 bg-background-secondary/50">
+          <div className="flex flex-col gap-1">
+            <span className="text-sm font-semibold uppercase tracking-[0.2em] text-text">
+              {label === "CT" ? "Counter-Terrorists" : "Terrorists"}
+            </span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
+              Players
+            </span>
+          </div>
+          <span className="rounded-full bg-background-secondary px-3 py-1 text-xs font-bold text-text/80 shadow-sm">
+            {columnDetails.length}
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-3 p-5">
+          {columnDetails.map(({ player, existingPlayer, existingCoach, avatarSrc }) => (
+            <div
+              className="flex items-center justify-between rounded-xl bg-background shadow-sm hover:shadow-md hover:bg-background-light transition-all duration-200 px-4 py-3"
+              key={player.steamid}
+            >
+              <div className="flex min-w-0 items-center gap-4">
+                <img src={avatarSrc} alt="Player avatar" className="size-12 rounded-lg bg-background-secondary object-cover shadow-sm" />
+                <div className="flex min-w-0 flex-col py-0.5">
+                  <div className="truncate font-semibold text-sm leading-tight text-text/90">{player.name}</div>
+                  <button
+                    type="button"
+                    title="Copy SteamID"
+                    className="mt-1.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-background-secondary hover:bg-primary/10 hover:text-primary px-2.5 py-0.5 text-[11px] font-medium text-text-secondary transition-colors"
+                    onClick={() => copyToClipboard(player.steamid)}
+                  >
+                    <MdContentCopy className="size-3" />
+                    <span className="truncate max-w-[150px] md:max-w-[200px] font-mono tracking-tight">{player.steamid}</span>
+                  </button>
+                </div>
+              </div>
+              <div className="ml-4 flex shrink-0 items-center gap-2">
+                {existingCoach ? (
+                  <ButtonContained
+                    className="px-3 py-1.5 text-[11px] font-semibold tracking-wider uppercase shadow-none bg-background-secondary hover:bg-background-light text-text/80"
+                    title="Edit Coach"
+                    onClick={() => {
+                      setSelectedCoach(existingCoach);
+                      setCoachIsEditing(true);
+                      setCoachPrefill(undefined);
+                      setOpenCoachForm(true);
+                    }}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <MdEdit className="size-3.5" /> Edit
+                    </span>
+                  </ButtonContained>
+                ) : (
+                  <ButtonContained
+                    className="px-3 py-1.5 text-[11px] font-semibold tracking-wider uppercase shadow-none bg-background-secondary hover:bg-background-light text-text/80"
+                    title={existingPlayer ? "Edit Player" : "Create Player"}
+                    onClick={() => {
+                      if (existingPlayer) {
+                        setSelectedPlayer(existingPlayer);
+                        setIsEditing(true);
+                        setPlayerPrefill(undefined);
+                      } else {
+                        setIsEditing(false);
+                        setPlayerPrefill({ username: player.name, steamId: player.steamid });
+                      }
+                      setOpenPlayerForm(true);
+                    }}
+                  >
+                    {existingPlayer ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <MdEdit className="size-3.5" /> Edit
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5">
+                        <MdPersonAdd className="size-3.5" /> Create
+                      </span>
+                    )}
+                  </ButtonContained>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {columnCoaches.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-black/5 dark:border-white/5">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-text-secondary">
+                  Coaches
+                </span>
+                <span className="rounded-full bg-background-secondary px-2.5 py-0.5 text-[10px] font-bold text-text/80 shadow-sm">
+                  {columnCoaches.length}
+                </span>
+              </div>
+              <div className="flex flex-col gap-3">
+                {columnCoaches.map((coach) => {
+                  const displayName =
+                    [coach.firstName, coach.lastName]
+                      .filter(Boolean)
+                      .join(" ")
+                      .trim() || coach.name || coach.username || "Unnamed Coach";
+                  const coachAvatar = coach.avatar
+                    ? `${apiUrl}/coach/avatar/${coach.steamid}?t=${coach.updatedAt ?? ""}`
+                    : playerSilhouette;
+                  return (
+                    <div
+                      className="flex items-center justify-between rounded-xl bg-background shadow-sm hover:shadow-md hover:bg-background-light transition-all duration-200 px-4 py-3"
+                      key={`coach-${coach.steamid}`}
+                    >
+                      <div className="flex min-w-0 items-center gap-4">
+                        <img src={coachAvatar} alt="Coach avatar" className="size-12 rounded-lg bg-background-secondary object-cover shadow-sm" />
+                        <div className="flex min-w-0 flex-col py-0.5">
+                          <div className="truncate font-semibold text-sm leading-tight text-text/90">{displayName}</div>
+                          <button
+                            type="button"
+                            title="Copy SteamID"
+                            className="mt-1.5 inline-flex w-fit items-center gap-1.5 rounded-full bg-background-secondary hover:bg-primary/10 hover:text-primary px-2.5 py-0.5 text-[11px] font-medium text-text-secondary transition-colors"
+                            onClick={() => copyToClipboard(coach.steamid)}
+                          >
+                            <MdContentCopy className="size-3" />
+                            <span className="truncate max-w-[150px] md:max-w-[200px] font-mono tracking-tight">{coach.steamid}</span>
+                          </button>
+                        </div>
+                      </div>
                       <ButtonContained
-                        className="px-3 py-1 text-xs"
+                        className="ml-4 px-3 py-1.5 text-[11px] font-semibold tracking-wider uppercase shadow-none bg-background-secondary hover:bg-background-light text-text/80 shrink-0"
                         title="Edit Coach"
                         onClick={() => {
-                          setSelectedCoach(existingCoach);
+                          setSelectedCoach(coach);
                           setCoachIsEditing(true);
                           setCoachPrefill(undefined);
                           setOpenCoachForm(true);
                         }}
                       >
-                        <span className="inline-flex items-center gap-1">
-                          <MdEdit className="size-4" /> Edit
+                        <span className="inline-flex items-center gap-1.5">
+                          <MdEdit className="size-3.5" /> Edit
                         </span>
                       </ButtonContained>
-                    ) : (
-                      <ButtonContained
-                        className="px-3 py-1 text-xs"
-                        title={existingPlayer ? "Edit Player" : "Create Player"}
-                        onClick={() => {
-                          if (existingPlayer) {
-                            setSelectedPlayer(existingPlayer);
-                            setIsEditing(true);
-                            setPlayerPrefill(undefined);
-                          } else {
-                            setIsEditing(false);
-                            setPlayerPrefill({ username: player.name, steamId: player.steamid });
-                          }
-                          setOpenPlayerForm(true);
-                        }}
-                      >
-                        {existingPlayer ? (
-                          <span className="inline-flex items-center gap-1">
-                            <MdEdit className="size-4" /> Edit
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1">
-                            <MdPersonAdd className="size-4" /> Create
-                          </span>
-                        )}
-                      </ButtonContained>
-                    )}
-                  </div>
-                </div>
-              ))}
-      </div>
-      {columnCoaches.length > 0 && (
-              <div className="mt-6">
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-text/60">
-                  {label} coaches
-                </div>
-                <div className="flex flex-col gap-2">
-                  {columnCoaches.map((coach) => {
-                    const displayName =
-                      [coach.firstName, coach.lastName]
-                        .filter(Boolean)
-                        .join(" ")
-                        .trim() || coach.name || coach.username || "Unnamed Coach";
-                    const coachAvatar = coach.avatar
-                      ? `${apiUrl}/coach/avatar/${coach.steamid}?t=${coach.updatedAt ?? ""}`
-                      : playerSilhouette;
-                    return (
-                      <div
-                        className="flex items-center justify-between rounded-lg border border-border bg-background-secondary px-3 py-2"
-                        key={`coach-${coach.steamid}`}
-                      >
-                        <div className="flex min-w-0 items-center">
-                          <img src={coachAvatar} alt="Coach avatar" className="mr-3 size-12 rounded object-cover" />
-                          <div className="min-w-0">
-                            <div className="truncate font-semibold">{displayName}</div>
-                            <button
-                              type="button"
-                              title="Copy SteamID"
-                              className="mt-1 inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5 text-xs text-text/80 hover:bg-background-light"
-                              onClick={() => copyToClipboard(coach.steamid)}
-                            >
-                              <MdContentCopy className="size-3.5" />
-                              <span className="truncate max-w-[140px] md:max-w-[200px]">{coach.steamid}</span>
-                            </button>
-                          </div>
-                        </div>
-                        <ButtonContained
-                          className="px-3 py-1 text-xs"
-                          title="Edit Coach"
-                          onClick={() => {
-                            setSelectedCoach(coach);
-                            setCoachIsEditing(true);
-                            setCoachPrefill(undefined);
-                            setOpenCoachForm(true);
-                          }}
-                        >
-                          <span className="inline-flex items-center gap-1">
-                            <MdEdit className="size-4" /> Edit
-                          </span>
-                        </ButtonContained>
-                      </div>
-                    );
-                  })}
-                </div>
+                    </div>
+                  );
+                })}
               </div>
-            )}
-    </div>
+            </div>
+          )}
+        </div>
+      </div>
     );
   };
 
